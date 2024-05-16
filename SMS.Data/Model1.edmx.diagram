@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="ed73471ea4ec4eceb37fc7966078dc7f" Name="Diagram1">
+        <EntityTypeShape EntityType="sms_dbModel.Student" Width="1.5" PointX="3" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="sms_dbModel.Student_Subject_Teacher_Allocation" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="sms_dbModel.Subject" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="sms_dbModel.Teacher" Width="1.5" PointX="0.75" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="sms_dbModel.Teacher_Subject_Allocation" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
+        <AssociationConnector Association="sms_dbModel.FK__Student_S__Stude__440B1D61" ManuallyRouted="false" />
+        <AssociationConnector Association="sms_dbModel.FK__Student_S__Subje__44FF419A" ManuallyRouted="false" />
+        <AssociationConnector Association="sms_dbModel.FK__Teacher_S__Subje__45F365D3" ManuallyRouted="false" />
+        <AssociationConnector Association="sms_dbModel.FK__Teacher_S__Teach__46E78A0C" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

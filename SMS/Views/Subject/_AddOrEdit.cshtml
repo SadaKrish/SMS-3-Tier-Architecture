@@ -1,0 +1,127 @@
+﻿@model SMS.Models.Subject.SubjectBO
+
+@{
+    ViewBag.Title = "AddOrEdit";
+}
+<style>
+    .card {
+        margin-bottom: 10px;
+    }
+
+    .control-label, .form-control {
+        font-size: 14px;
+    }
+</style>
+<div class="container d-flex justify-content-center align-items-center w-100 " style="min-height: calc(80vh - 80px); margin-bottom: 30px;">
+    <div class="card p-4" style="max-width: 500px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px;">
+        @*<div class="col-md-12 ">*@
+        @using (Ajax.BeginForm("AddOrEdit", "Subject", new AjaxOptions
+        {
+            HttpMethod = "POST",
+            OnSuccess = "addSubjectSuccess",
+            OnFailure = "addSubjectFailure"
+        }))
+
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(model => model.SubjectID)
+
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.SubjectCode, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.SubjectCode, new { htmlAttributes = new { @class = "form-control", id = "subjectCode" } })
+                    @Html.ValidationMessageFor(model => model.SubjectCode, "", new { @class = "text-danger" })
+                    <span id="subjectCodeValidation" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Name, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", id = "name" } })
+                    <span id="nameAvailability" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.IsEnable, new { @class = "control-label" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.CheckBoxFor(model => model.IsEnable, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+            <div class="form-group m-3">
+                <input type="submit" value="@(Model.SubjectID== 0 ? "Add" : "Update")" class="btn btn-primary" />
+                <button id="back-to-list" class="btn btn-outline-primary m-4" onclick="LoadList()" >Back</button>
+            </div>
+        }
+        @*</div>*@
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.required').append('<span style="color: red">*</span>');
+    });
+
+
+
+    $(document).ready(function () {
+        $('#subjectCode').blur(function () {
+            var subCode = $(this).val();
+            $.ajax({
+                url: '@Url.Action("CheckSubjectCode", "Subject")', // Replace with your action method
+                type: 'GET',
+                data: { subCode: subCode },
+                success: function (result) {
+                    if (result) {
+                        $('#subjectCodeValidation').text('Subject Code already exists.');
+                    } else {
+                        $('#subjectCodeValidation').text('');
+                    }
+                }
+            });
+        });
+
+
+
+        $('#name').blur(function () {
+            var name = $(this).val();
+            $.ajax({
+                url: '@Url.Action("CheckSubjectName", "Subject")', // Replace with your action method
+                type: 'GET',
+                data: { name: name },
+                success: function (result) {
+                    if (result) {
+                        $('#nameAvailability').text('Subject Name already exists.');
+                    } else {
+                        $('nameAvailability').text('');
+                    }
+                }
+            });
+        });
+    });
+
+
+
+
+
+
+
+    function addSubjectFailure(error) {
+        console.error(error);
+        Swal.fire('Error!', 'An error occurred while adding the subject', 'error');
+    }
+</script>
+
+
+

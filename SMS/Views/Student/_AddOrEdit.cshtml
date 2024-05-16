@@ -1,0 +1,203 @@
+﻿@model SMS.Models.Student.StudentBO
+
+@{
+    ViewBag.Title = "AddOrEdit";
+}
+<style>
+    .fr-div {
+        margin-bottom: 10px;
+    }
+
+    .control-label, .form-control {
+        font-size: 12px;
+    }
+</style>
+<div class="container d-flex justify-content-center align-items-center w-100 m-2" style="min-height: calc(100vh - 100px); margin-bottom: 50px;">
+    <div class="card p-4 fr-div" style="max-width: 500px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px;">
+        @*<div class="col-md-12 ">*@
+        @using (Ajax.BeginForm("AddOrEdit", "Student", new AjaxOptions
+        {
+            HttpMethod = "POST",
+            OnSuccess = "addStudentSuccess",
+            OnFailure = "addStudentFailure"
+        }))
+
+        {
+
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(model => model.StudentID)
+
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.StudentRegNo, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.StudentRegNo, new { htmlAttributes = new { @class = "form-control", id = "teacherRegNo" } })
+                    @Html.ValidationMessageFor(model => model.StudentRegNo, "", new { @class = "text-danger" })
+                    <span id="regNoAvailability" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.FirstName, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.MiddleName, new { @class = "control-label " })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.MiddleName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.LastName, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.DisplayName, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.DisplayName, new { htmlAttributes = new { @class = "form-control", id = "displayName" } })
+                    @Html.ValidationMessageFor(model => model.DisplayName, "", new { @class = "text-danger" })
+                    <span id="displayNameAvailability" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Email, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", type = "email" } })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Gender, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    <select class="form-control" id="genderSelect" name="Gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.DOB, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control datepicker", placeholder = "Select Date (YYYY-MM-DD)" } })
+                    @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.Address, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.ContactNo, new { @class = "control-label required" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.EditorFor(model => model.ContactNo, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ContactNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row form-group d-flex">
+                <div class="col-md-4">
+                    @Html.LabelFor(model => model.IsEnable, new { @class = "control-label" })
+                </div>
+                <div class="col-md p-2">
+                    @Html.CheckBoxFor(model => model.IsEnable, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+
+            <div class="form-group align-content-center">
+                <input type="submit" value="@(Model.StudentID== 0 ? "Add" : "Update")" class="btn btn-primary" style="font-size:14px;" />
+                <button id="back-to-list" class="btn btn-outline-primary m-4" onclick="LoadList()">Back</button>
+            </div>
+        }
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.required').append('<span style="color: red">*</span>');
+    });
+
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            dateFormat: 'yy-mm-dd', // Change the date format as needed
+            changeYear: true, // Enable year selection
+            yearRange: "-50:+0" // Adjust the range to 50 years before and including the current year
+        });
+    });
+
+    $(document).ready(function () {
+        $('#stuentRegNo').blur(function () {
+            var teacherRegNo = $(this).val();
+            $.ajax({
+                url: '@Url.Action("CheckStudentRegNo", "Student")', // Replace with your action method
+                type: 'GET',
+                data: { studentRegNo: studentRegNo },
+                success: function (result) {
+                    if (result) {
+                        $('#regNoAvailability').text('Student Reg No already exists.');
+                    } else {
+                        $('#regNoAvailability').text('');
+                    }
+                }
+            });
+        });
+
+
+
+        $('#displayName').blur(function () {
+            var displayName = $(this).val();
+            $.ajax({
+                url: '@Url.Action("CheckDisplayName", "Student")', // Replace with your action method
+                type: 'GET',
+                data: { displayName: displayName },
+                success: function (result) {
+                    if (result) {
+                        $('#displayNameAvailability').text('Display Name already exists.');
+                    } else {
+                        $('#displayNameAvailability').text('');
+                    }
+                }
+            });
+        });
+    });
+
+
+
+    
+</script>
+
+
