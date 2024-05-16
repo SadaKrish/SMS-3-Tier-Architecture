@@ -9,6 +9,7 @@ namespace SMS.Models.Student_Allocation
     public class Student_Subject_Teacher_AllocationBO
     {
         public long SubjectID;
+        public long TeacherID;
 
         public long StudentAllocationID { set; get; }
         public long StudentID { get; set; }

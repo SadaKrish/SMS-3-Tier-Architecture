@@ -4,6 +4,7 @@ using SMS.Models.Student_Allocation;
 using SMS.Models.Subject;
 using SMS.Models.Teacher;
 using SMS.Models.Teacher_Subject_Allocation;
+using SMS.ViewModel.Allocation;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations.Sql;
@@ -38,7 +39,10 @@ namespace SMS.BL.Allocation
             return null;
         }
 
-
+        //public IEnumerable<SubjectAllocationViewModel> GetAllSubjectAllocations()
+        //{
+        //    var
+        //}
         public Teacher_Subject_AllocationBO GetSubjectAllocationById(long subjectAllocationId)
         {
             var results = Teacher_Subject_Allocation.Select(s => new Teacher_Subject_AllocationBO()
@@ -164,15 +168,24 @@ namespace SMS.BL.Allocation
         //{
         //    var enabledTeacher=Teachers.Where(t=>t.TeacherID==id)
         //}
-        public bool SaveStudentAllocation(Student_Subject_Teacher_AllocationBO allocation, out string message)
+        public bool SaveStudentAllocation(Student_Subject_Teacher_AllocationBO allocationBO, out string message)
         {
             message = "";
 
-            bool allocationExists = Student_Subject_Teacher_Allocation
-                                        .Any(a => a.StudentID == allocation.StudentID && a.SubjectAllocationID==a.SubjectAllocationID);
-
             try
             {
+                // Convert allocationBO to Student_Subject_Teacher_Allocation
+                var allocation = new SMS.Data.Student_Subject_Teacher_Allocation
+                {
+                    StudentAllocationID = allocationBO.StudentAllocationID,
+                    StudentID = allocationBO.StudentID,
+                    SubjectAllocationID = allocationBO.SubjectAllocationID
+                    // Assign other properties as needed
+                };
+
+                bool allocationExists = Student_Subject_Teacher_Allocation
+                                            .Any(a => a.StudentID == allocation.StudentID && a.SubjectAllocationID == allocation.SubjectAllocationID);
+
                 if (allocationExists)
                 {
                     var editAllocation = Student_Subject_Teacher_Allocation.SingleOrDefault(s => s.StudentAllocationID == allocation.StudentAllocationID);
@@ -181,33 +194,16 @@ namespace SMS.BL.Allocation
                         message = "Unable to find the allocation for edit";
                         return false;
                     }
-                    
-                        editAllocation.StudentID = allocation.StudentID;
-                        editAllocation.SubjectAllocationID = allocation.SubjectAllocationID;
-                        SaveChanges();
-                        message = "Allocation Updated successfully";
-                        return true;
-                    
+
+                    editAllocation.StudentID = allocation.StudentID;
+                    editAllocation.SubjectAllocationID = allocation.SubjectAllocationID;
+                    SaveChanges();
+                    message = "Allocation Updated successfully";
+                    return true;
                 }
                 else
                 {
-                    // Check if the student is already allocated to the same subject under another teacher
-                    bool studentFollowsSubject = Student_Subject_Teacher_Allocation
-                                .Any(a => a.StudentID == allocation.StudentID &&
-                                          a.Teacher_Subject_Allocation.SubjectID == allocation.SubjectID);
-
-                    if (studentFollowsSubject)
-                    {
-                        // If student already follows the subject under another teacher, return false with a message
-                        message = "The student is already following the subject under another teacher";
-                        return false;
-                    }
-
-                    // If no existing allocation, create a new one
-                    var newAllocation = new SMS.Data.Student_Subject_Teacher_Allocation();
-                    newAllocation.StudentID = allocation.StudentID;
-                    newAllocation.SubjectAllocationID = allocation.SubjectAllocationID;
-                    Student_Subject_Teacher_Allocation.Add(newAllocation);
+                    Student_Subject_Teacher_Allocation.Add(allocation);
                     SaveChanges();
                     message = "Allocation added successfully";
                     return true;
@@ -219,6 +215,10 @@ namespace SMS.BL.Allocation
                 return false;
             }
         }
+
+
+
+
 
         public bool DeleteStudentAllocation(long id, out string msg)
         {

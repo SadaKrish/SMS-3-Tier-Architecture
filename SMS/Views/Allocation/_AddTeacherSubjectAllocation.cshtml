@@ -58,28 +58,7 @@
     $(document).ready(function () {
         $('.required').append('<span style="color: red">*</span>');
     });
-    function addAllocationSuccess(response) {
-        if (response.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.message,
-                showCancelButton: false,
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    loadData();
-                    $('#button').show();
-                    $('#studentlist').show();
-                    $('#back-to-list').hide();
-                    $('#createoredit').empty();
-
-                }
-            });
-        } else {
-            Swal.fire({ icon: 'error', title: 'Error', text: response.message });
-        }
-    }
+    
 
 
 </script>

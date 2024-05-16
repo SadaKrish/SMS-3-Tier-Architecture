@@ -64,6 +64,10 @@
       <Project>{4887e7b8-e40c-421a-99c0-2494731a3437}</Project>
       <Name>SMS.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SMS.ViewModel\SMS.ViewModel.csproj">
+      <Project>{ADCB0029-DD14-4AA8-A064-190605D7B197}</Project>
+      <Name>SMS.ViewModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
