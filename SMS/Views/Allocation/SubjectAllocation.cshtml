@@ -40,7 +40,7 @@
    }
    
     #studentlist_wrapper {
-        max-width: 1200px; /* Adjust the maximum width as needed */
+        max-width: 800px; /* Adjust the maximum width as needed */
         margin: 0 auto; /* Center the table horizontally */
     }
 </style>
@@ -58,9 +58,9 @@
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
                 <thead style="text-align:center;">
                     <tr>
-                        <th style="background-color: #cbf5ee; text-align: center;">Teacher Information</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">Subjects</th>
-                        <th style="background-color: #cbf5ee;"></th>
+                        <th style="background-color: #cbf5ee; text-align: center;">Teacher Details</th>
+                        <th style="background-color: #cbf5ee; text-align: center;">Subject Details</th>
+                      
                      </tr>
                 </thead>
             </table>
@@ -221,30 +221,37 @@ $(document).ready(function () {
                     }
                 },
                 "columns": [
-                    { "data": "TeacherRegNo", "title": "Teacher Registration NO" },
-                    { "data": "DisplayName", "title": "Teacher Name" },
+                    {
+                        "data": null,
+                        "title": "Teacher Details",
+                        "render": function (data, type, row) {
+                            return row.TeacherRegNo + ' - ' + row.DisplayName;
+                        }
+                    },
                     {
                         "data": "Subjects",
-                        "title": "Subjects",
+                        "title": "Subject Details",
                         "render": function (data, type, row) {
                             var subjectButtons = data.map(function (subject) {
                                 return `
-                            <div class="subject-item">
-                                <span>${subject.SubjectCode} - ${subject.Name}</span>
-                                <div class="subject-buttons">
-                                   
-                                    <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'><i class='bi bi-trash' style='color:red;'></i></a>
-                                </div>
-                            </div>
-                        `;
+                    <div class="subject-item">
+                        <span>${subject.SubjectCode} - ${subject.Name}</span>
+                        <div class="subject-buttons">
+                            <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'>
+                                <i class='bi bi-trash' style='color:red;'></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
                             }).join('');
 
                             return subjectButtons;
                         }
                     }
-                ],
+                ]
+,
                 "columnDefs": [
-                    { "width": "300px", "targets": 2 } // Adjust width of the second column (Teacher Name)
+                   // { "width": "300px", "targets": 1 } // Adjust width of the second column (Teacher Name)
                 ],
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25]
