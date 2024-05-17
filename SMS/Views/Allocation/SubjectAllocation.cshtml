@@ -137,6 +137,7 @@
                         $("#back-to-list").hide();
 
                         // Reload the data table
+                        var datatable = $("#studentlist").DataTable();
                         datatable.ajax.reload();
 
 
@@ -231,7 +232,7 @@ $(document).ready(function () {
                             <div class="subject-item">
                                 <span>${subject.SubjectCode} - ${subject.Name}</span>
                                 <div class="subject-buttons">
-                                    <a class='btn' onclick='LoadEditPage(${subject.SubjectAllocationID})'><i class='bi bi-pencil-square'></i></a>
+                                   
                                     <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'><i class='bi bi-trash' style='color:red;'></i></a>
                                 </div>
                             </div>

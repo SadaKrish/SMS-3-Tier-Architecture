@@ -20,6 +20,5 @@ namespace SMS.Data
     
         public virtual Student Student { get; set; }
         public virtual Teacher_Subject_Allocation Teacher_Subject_Allocation { get; set; }
-       
     }
 }

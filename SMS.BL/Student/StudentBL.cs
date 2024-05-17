@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SMS.BL.Student
 {
-    public class StudentBL: sms_dbEntities
+    public class StudentBL: SMS_DBEntities
     {
         private bool requiresConfirmation;
         /// <summary>

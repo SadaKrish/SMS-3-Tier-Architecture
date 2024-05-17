@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SMS.BL.Subject
 {
-    public class SubjectBL: sms_dbEntities
+    public class SubjectBL: SMS_DBEntities
     {
         /// <summary>
         /// Retrieving the subject list

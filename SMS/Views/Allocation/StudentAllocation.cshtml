@@ -64,7 +64,7 @@
                         <th style="background-color: #cbf5ee; text-align: center;">Subjects</th>
 
 
-                        <th style="background-color: #cbf5ee;"></th>
+                       
                     </tr>
                 </thead>
             </table>
@@ -144,6 +144,7 @@
                         $("#back-to-list").hide();
 
                         // Reload the data table
+                        var datatable = $("#studentlist").DataTable();
                         datatable.ajax.reload();
 
 
@@ -224,54 +225,63 @@
                 },
                 "columns": [
                     {
-                        "data": "StudentRegNo",
-                        "title": "Student Registration NO"
+                        "data": null,
+                        "title": "Student Registration No - Student Name",
+                        "render": function (data, type, row) {
+                            return data.StudentRegNo + ' - ' + data.DisplayName;
+                        }
                     },
                     {
-                        "data": "DisplayName",
-                        "title": "Student Name"
-                    },
-                    {
-                        "data": "StudentAllocations",
+                        "data": null,
                         "title": "Teacher Information",
                         "render": function (data, type, row) {
-                            // Render teacher information
-                            var teacherInfo = data.map(function (allocation) {
-                                return allocation.TeacherRegNo + ' - ' + allocation.TeacherName;
-                            }).join('<br>');
+                            // Group teachers
+                            var teachers = [];
+                            data.StudentAllocations.forEach(function (allocation) {
+                                // Check if teacher is already in teachers array
+                                if (!teachers.find(t => t.TeacherRegNo === allocation.TeacherRegNo)) {
+                                    teachers.push({
+                                        TeacherRegNo: allocation.TeacherRegNo,
+                                        TeacherName: allocation.TeacherName
+                                    });
+                                }
+                            });
+                            // Render teacher information with left alignment and space between teachers
+                            var teacherInfo = teachers.map(function (teacher) {
+                                return "<div style='margin-top:10px;'><div style='text-align: left; margin-bottom: 20px;'>" + teacher.TeacherRegNo + ' - ' + teacher.TeacherName + "</div></div>";
+                            }).join('');
                             return teacherInfo;
                         }
                     },
                     {
-                        "data": "StudentAllocations",
+                        "data": null,
                         "title": "Subjects",
                         "render": function (data, type, row) {
                             // Render subjects with edit and delete buttons for each subject
-                            var subjectButtons = data.map(function (subject) {
+                            var subjectButtons = data.StudentAllocations.map(function (allocation) {
                                 return `
-                            <div class="subject-item">
-                                <span>${subject.SubjectCode} - ${subject.Name}</span>
-                                <div class="subject-buttons">
-                                    <a class='btn' onclick='LoadEditPage(${subject.StudentAllocationID})'>
-                                        <i class='bi bi-pencil-square'></i>
-                                    </a>
-                                    <a class='btn' onclick='Delete(${subject.StudentAllocationID})'>
-                                        <i class='bi bi-trash' style='color:red;'></i>
-                                    </a>
-                                </div>
-                            </div>
-                        `;
+                                    <div class="subject-item">
+                                        <span>${allocation.SubjectCode} - ${allocation.Name}</span>
+                                        <div class="subject-buttons">
+                                            <a class='btn' onclick='Delete(${allocation.StudentAllocationID})'>
+                                                <i class='bi bi-trash' style='color:red;'></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
                             }).join('');
-
                             return subjectButtons;
                         }
                     }
-                ],
+                ]
+,
+
+
                 "columnDefs": [
-                    { "width": "20%", "targets": 0 }, // Adjust width of Student Registration NO column
-                    { "width": "20%", "targets": 1 }, // Adjust width of Student Name column
-                    { "width": "20%", "targets": 2 }, // Adjust width of Teacher Information column
-                    { "width": "40%", "targets": 3 }  // Adjust width of Subjects column
+                    { "width": "30%", "targets": 0 }, // Adjust width of Student Registration NO column
+                    { "width": "30%", "targets": 1 }, // Adjust width of Student Name column
+                    { "width": "40%", "targets": 2 }, // Adjust width of Teacher Information column
+                      // Adjust width of Subjects column
                 ],
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25]

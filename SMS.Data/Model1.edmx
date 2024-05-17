@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="sms_dbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="SMS_DBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Student">
           <Key>
             <PropertyRef Name="StudentID" />
@@ -35,7 +35,7 @@
             <PropertyRef Name="SubjectID" />
           </Key>
           <Property Name="SubjectID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="SubjectCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="SubjectCode" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="IsEnable" Type="bit" Nullable="false" />
         </EntityType>
@@ -64,7 +64,7 @@
           <Property Name="TeacherID" Type="bigint" Nullable="false" />
           <Property Name="SubjectID" Type="bigint" Nullable="false" />
         </EntityType>
-        <Association Name="FK__Student_S__Stude__440B1D61">
+        <Association Name="FK__Student_S__Stude__5629CD9C">
           <End Role="Student" Type="Self.Student" Multiplicity="1" />
           <End Role="Student_Subject_Teacher_Allocation" Type="Self.Student_Subject_Teacher_Allocation" Multiplicity="*" />
           <ReferentialConstraint>
@@ -76,7 +76,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Student_S__Subje__44FF419A">
+        <Association Name="FK__Student_S__Subje__571DF1D5">
           <End Role="Teacher_Subject_Allocation" Type="Self.Teacher_Subject_Allocation" Multiplicity="1" />
           <End Role="Student_Subject_Teacher_Allocation" Type="Self.Student_Subject_Teacher_Allocation" Multiplicity="*" />
           <ReferentialConstraint>
@@ -88,7 +88,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Teacher_S__Subje__45F365D3">
+        <Association Name="FK__Teacher_S__Subje__5812160E">
           <End Role="Subject" Type="Self.Subject" Multiplicity="1" />
           <End Role="Teacher_Subject_Allocation" Type="Self.Teacher_Subject_Allocation" Multiplicity="*" />
           <ReferentialConstraint>
@@ -100,7 +100,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Teacher_S__Teach__46E78A0C">
+        <Association Name="FK__Teacher_S__Teach__59063A47">
           <End Role="Teacher" Type="Self.Teacher" Multiplicity="1" />
           <End Role="Teacher_Subject_Allocation" Type="Self.Teacher_Subject_Allocation" Multiplicity="*" />
           <ReferentialConstraint>
@@ -112,25 +112,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="sms_dbModelStoreContainer">
+        <EntityContainer Name="SMS_DBModelStoreContainer">
           <EntitySet Name="Student" EntityType="Self.Student" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Student_Subject_Teacher_Allocation" EntityType="Self.Student_Subject_Teacher_Allocation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Subject" EntityType="Self.Subject" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Teacher" EntityType="Self.Teacher" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Teacher_Subject_Allocation" EntityType="Self.Teacher_Subject_Allocation" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Student_S__Stude__440B1D61" Association="Self.FK__Student_S__Stude__440B1D61">
+          <AssociationSet Name="FK__Student_S__Stude__5629CD9C" Association="Self.FK__Student_S__Stude__5629CD9C">
             <End Role="Student" EntitySet="Student" />
             <End Role="Student_Subject_Teacher_Allocation" EntitySet="Student_Subject_Teacher_Allocation" />
           </AssociationSet>
-          <AssociationSet Name="FK__Student_S__Subje__44FF419A" Association="Self.FK__Student_S__Subje__44FF419A">
+          <AssociationSet Name="FK__Student_S__Subje__571DF1D5" Association="Self.FK__Student_S__Subje__571DF1D5">
             <End Role="Teacher_Subject_Allocation" EntitySet="Teacher_Subject_Allocation" />
             <End Role="Student_Subject_Teacher_Allocation" EntitySet="Student_Subject_Teacher_Allocation" />
           </AssociationSet>
-          <AssociationSet Name="FK__Teacher_S__Subje__45F365D3" Association="Self.FK__Teacher_S__Subje__45F365D3">
+          <AssociationSet Name="FK__Teacher_S__Subje__5812160E" Association="Self.FK__Teacher_S__Subje__5812160E">
             <End Role="Subject" EntitySet="Subject" />
             <End Role="Teacher_Subject_Allocation" EntitySet="Teacher_Subject_Allocation" />
           </AssociationSet>
-          <AssociationSet Name="FK__Teacher_S__Teach__46E78A0C" Association="Self.FK__Teacher_S__Teach__46E78A0C">
+          <AssociationSet Name="FK__Teacher_S__Teach__59063A47" Association="Self.FK__Teacher_S__Teach__59063A47">
             <End Role="Teacher" EntitySet="Teacher" />
             <End Role="Teacher_Subject_Allocation" EntitySet="Teacher_Subject_Allocation" />
           </AssociationSet>
@@ -139,7 +139,7 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="sms_dbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="SMS_DBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="Student">
           <Key>
             <PropertyRef Name="StudentID" />
@@ -156,7 +156,7 @@
           <Property Name="Address" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="ContactNo" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IsEnable" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Student_Subject_Teacher_Allocation" Relationship="Self.FK__Student_S__Stude__440B1D61" FromRole="Student" ToRole="Student_Subject_Teacher_Allocation" />
+          <NavigationProperty Name="Student_Subject_Teacher_Allocation" Relationship="Self.FK__Student_S__Stude__5629CD9C" FromRole="Student" ToRole="Student_Subject_Teacher_Allocation" />
         </EntityType>
         <EntityType Name="Student_Subject_Teacher_Allocation">
           <Key>
@@ -165,18 +165,18 @@
           <Property Name="StudentAllocationID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="StudentID" Type="Int64" Nullable="false" />
           <Property Name="SubjectAllocationID" Type="Int64" Nullable="false" />
-          <NavigationProperty Name="Student" Relationship="Self.FK__Student_S__Stude__440B1D61" FromRole="Student_Subject_Teacher_Allocation" ToRole="Student" />
-          <NavigationProperty Name="Teacher_Subject_Allocation" Relationship="Self.FK__Student_S__Subje__44FF419A" FromRole="Student_Subject_Teacher_Allocation" ToRole="Teacher_Subject_Allocation" />
+          <NavigationProperty Name="Student" Relationship="Self.FK__Student_S__Stude__5629CD9C" FromRole="Student_Subject_Teacher_Allocation" ToRole="Student" />
+          <NavigationProperty Name="Teacher_Subject_Allocation" Relationship="Self.FK__Student_S__Subje__571DF1D5" FromRole="Student_Subject_Teacher_Allocation" ToRole="Teacher_Subject_Allocation" />
         </EntityType>
         <EntityType Name="Subject">
           <Key>
             <PropertyRef Name="SubjectID" />
           </Key>
           <Property Name="SubjectID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SubjectCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SubjectCode" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IsEnable" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Teacher_Subject_Allocation" Relationship="Self.FK__Teacher_S__Subje__45F365D3" FromRole="Subject" ToRole="Teacher_Subject_Allocation" />
+          <NavigationProperty Name="Teacher_Subject_Allocation" Relationship="Self.FK__Teacher_S__Subje__5812160E" FromRole="Subject" ToRole="Teacher_Subject_Allocation" />
         </EntityType>
         <EntityType Name="Teacher">
           <Key>
@@ -194,7 +194,7 @@
           <Property Name="Address" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="ContactNo" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="IsEnable" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Teacher_Subject_Allocation" Relationship="Self.FK__Teacher_S__Teach__46E78A0C" FromRole="Teacher" ToRole="Teacher_Subject_Allocation" />
+          <NavigationProperty Name="Teacher_Subject_Allocation" Relationship="Self.FK__Teacher_S__Teach__59063A47" FromRole="Teacher" ToRole="Teacher_Subject_Allocation" />
         </EntityType>
         <EntityType Name="Teacher_Subject_Allocation">
           <Key>
@@ -203,11 +203,11 @@
           <Property Name="SubjectAllocationID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TeacherID" Type="Int64" Nullable="false" />
           <Property Name="SubjectID" Type="Int64" Nullable="false" />
-          <NavigationProperty Name="Student_Subject_Teacher_Allocation" Relationship="Self.FK__Student_S__Subje__44FF419A" FromRole="Teacher_Subject_Allocation" ToRole="Student_Subject_Teacher_Allocation" />
-          <NavigationProperty Name="Subject" Relationship="Self.FK__Teacher_S__Subje__45F365D3" FromRole="Teacher_Subject_Allocation" ToRole="Subject" />
-          <NavigationProperty Name="Teacher" Relationship="Self.FK__Teacher_S__Teach__46E78A0C" FromRole="Teacher_Subject_Allocation" ToRole="Teacher" />
+          <NavigationProperty Name="Student_Subject_Teacher_Allocation" Relationship="Self.FK__Student_S__Subje__571DF1D5" FromRole="Teacher_Subject_Allocation" ToRole="Student_Subject_Teacher_Allocation" />
+          <NavigationProperty Name="Subject" Relationship="Self.FK__Teacher_S__Subje__5812160E" FromRole="Teacher_Subject_Allocation" ToRole="Subject" />
+          <NavigationProperty Name="Teacher" Relationship="Self.FK__Teacher_S__Teach__59063A47" FromRole="Teacher_Subject_Allocation" ToRole="Teacher" />
         </EntityType>
-        <Association Name="FK__Student_S__Stude__440B1D61">
+        <Association Name="FK__Student_S__Stude__5629CD9C">
           <End Role="Student" Type="Self.Student" Multiplicity="1" />
           <End Role="Student_Subject_Teacher_Allocation" Type="Self.Student_Subject_Teacher_Allocation" Multiplicity="*" />
           <ReferentialConstraint>
@@ -219,7 +219,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Student_S__Subje__44FF419A">
+        <Association Name="FK__Student_S__Subje__571DF1D5">
           <End Role="Teacher_Subject_Allocation" Type="Self.Teacher_Subject_Allocation" Multiplicity="1" />
           <End Role="Student_Subject_Teacher_Allocation" Type="Self.Student_Subject_Teacher_Allocation" Multiplicity="*" />
           <ReferentialConstraint>
@@ -231,7 +231,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Teacher_S__Subje__45F365D3">
+        <Association Name="FK__Teacher_S__Subje__5812160E">
           <End Role="Subject" Type="Self.Subject" Multiplicity="1" />
           <End Role="Teacher_Subject_Allocation" Type="Self.Teacher_Subject_Allocation" Multiplicity="*" />
           <ReferentialConstraint>
@@ -243,7 +243,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Teacher_S__Teach__46E78A0C">
+        <Association Name="FK__Teacher_S__Teach__59063A47">
           <End Role="Teacher" Type="Self.Teacher" Multiplicity="1" />
           <End Role="Teacher_Subject_Allocation" Type="Self.Teacher_Subject_Allocation" Multiplicity="*" />
           <ReferentialConstraint>
@@ -255,25 +255,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="sms_dbEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="SMS_DBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Students" EntityType="Self.Student" />
           <EntitySet Name="Student_Subject_Teacher_Allocation" EntityType="Self.Student_Subject_Teacher_Allocation" />
           <EntitySet Name="Subjects" EntityType="Self.Subject" />
           <EntitySet Name="Teachers" EntityType="Self.Teacher" />
           <EntitySet Name="Teacher_Subject_Allocation" EntityType="Self.Teacher_Subject_Allocation" />
-          <AssociationSet Name="FK__Student_S__Stude__440B1D61" Association="Self.FK__Student_S__Stude__440B1D61">
+          <AssociationSet Name="FK__Student_S__Stude__5629CD9C" Association="Self.FK__Student_S__Stude__5629CD9C">
             <End Role="Student" EntitySet="Students" />
             <End Role="Student_Subject_Teacher_Allocation" EntitySet="Student_Subject_Teacher_Allocation" />
           </AssociationSet>
-          <AssociationSet Name="FK__Student_S__Subje__44FF419A" Association="Self.FK__Student_S__Subje__44FF419A">
+          <AssociationSet Name="FK__Student_S__Subje__571DF1D5" Association="Self.FK__Student_S__Subje__571DF1D5">
             <End Role="Teacher_Subject_Allocation" EntitySet="Teacher_Subject_Allocation" />
             <End Role="Student_Subject_Teacher_Allocation" EntitySet="Student_Subject_Teacher_Allocation" />
           </AssociationSet>
-          <AssociationSet Name="FK__Teacher_S__Subje__45F365D3" Association="Self.FK__Teacher_S__Subje__45F365D3">
+          <AssociationSet Name="FK__Teacher_S__Subje__5812160E" Association="Self.FK__Teacher_S__Subje__5812160E">
             <End Role="Subject" EntitySet="Subjects" />
             <End Role="Teacher_Subject_Allocation" EntitySet="Teacher_Subject_Allocation" />
           </AssociationSet>
-          <AssociationSet Name="FK__Teacher_S__Teach__46E78A0C" Association="Self.FK__Teacher_S__Teach__46E78A0C">
+          <AssociationSet Name="FK__Teacher_S__Teach__59063A47" Association="Self.FK__Teacher_S__Teach__59063A47">
             <End Role="Teacher" EntitySet="Teachers" />
             <End Role="Teacher_Subject_Allocation" EntitySet="Teacher_Subject_Allocation" />
           </AssociationSet>
@@ -283,9 +283,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="sms_dbModelStoreContainer" CdmEntityContainer="sms_dbEntities">
+        <EntityContainerMapping StorageEntityContainer="SMS_DBModelStoreContainer" CdmEntityContainer="SMS_DBEntities">
           <EntitySetMapping Name="Students">
-            <EntityTypeMapping TypeName="sms_dbModel.Student">
+            <EntityTypeMapping TypeName="SMS_DBModel.Student">
               <MappingFragment StoreEntitySet="Student">
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
                 <ScalarProperty Name="StudentRegNo" ColumnName="StudentRegNo" />
@@ -303,7 +303,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Student_Subject_Teacher_Allocation">
-            <EntityTypeMapping TypeName="sms_dbModel.Student_Subject_Teacher_Allocation">
+            <EntityTypeMapping TypeName="SMS_DBModel.Student_Subject_Teacher_Allocation">
               <MappingFragment StoreEntitySet="Student_Subject_Teacher_Allocation">
                 <ScalarProperty Name="StudentAllocationID" ColumnName="StudentAllocationID" />
                 <ScalarProperty Name="StudentID" ColumnName="StudentID" />
@@ -312,7 +312,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Subjects">
-            <EntityTypeMapping TypeName="sms_dbModel.Subject">
+            <EntityTypeMapping TypeName="SMS_DBModel.Subject">
               <MappingFragment StoreEntitySet="Subject">
                 <ScalarProperty Name="SubjectID" ColumnName="SubjectID" />
                 <ScalarProperty Name="SubjectCode" ColumnName="SubjectCode" />
@@ -322,7 +322,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Teachers">
-            <EntityTypeMapping TypeName="sms_dbModel.Teacher">
+            <EntityTypeMapping TypeName="SMS_DBModel.Teacher">
               <MappingFragment StoreEntitySet="Teacher">
                 <ScalarProperty Name="TeacherID" ColumnName="TeacherID" />
                 <ScalarProperty Name="TeacherRegNo" ColumnName="TeacherRegNo" />
@@ -340,7 +340,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Teacher_Subject_Allocation">
-            <EntityTypeMapping TypeName="sms_dbModel.Teacher_Subject_Allocation">
+            <EntityTypeMapping TypeName="SMS_DBModel.Teacher_Subject_Allocation">
               <MappingFragment StoreEntitySet="Teacher_Subject_Allocation">
                 <ScalarProperty Name="SubjectAllocationID" ColumnName="SubjectAllocationID" />
                 <ScalarProperty Name="TeacherID" ColumnName="TeacherID" />

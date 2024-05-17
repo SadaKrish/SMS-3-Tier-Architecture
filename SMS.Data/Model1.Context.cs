@@ -13,10 +13,10 @@ namespace SMS.Data
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class sms_dbEntities : DbContext
+    public partial class SMS_DBEntities : DbContext
     {
-        public sms_dbEntities()
-            : base("name=sms_dbEntities")
+        public SMS_DBEntities()
+            : base("name=SMS_DBEntities")
         {
         }
     

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace SMS.BL.Allocation
 {
-    public class AllocationBL: sms_dbEntities
+    public class AllocationBL: SMS_DBEntities
     {
 
        /// <summary>
@@ -261,11 +261,11 @@ namespace SMS.BL.Allocation
 
             try
             {
-                if (studentAllocation.SubjectAllocationID == 0)
-                {
-                    msg = "Please Fill All Details";
-                    return false;
-                }
+                //if (studentAllocation.SubjectAllocationID == 0)
+                //{
+                //    msg = "Please Fill All Details";
+                //    return false;
+                //}
 
                 if (isStudentAllocated)
                 {

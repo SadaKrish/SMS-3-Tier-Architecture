@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SMS.BL.Teacher
 {
-    public class TeacherBL: sms_dbEntities
+    public class TeacherBL: SMS_DBEntities
     {
         /// <summary>
         /// Get the Teacher list

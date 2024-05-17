@@ -72,31 +72,34 @@
 
 
 <script>
-    $(document).ready(function () {
-        $('.required').append('<span style="color: red">*</span>');
+   $(document).ready(function () {
+    $('.required').append('<span style="color: red">*</span>');
 
-        $('#subjectDropdown').change(function () {
-            var subjectID = $(this).val();
-            if (subjectID) {
-                $.ajax({
-                    url: '@Url.Action("GetTeachersBySubjectID", "Allocation")',
-                    type: 'GET',
-                    dataType: 'json',
-                    data: { subjectID: subjectID },
-                    success: function (data) {
-                        $('#teacherDropdown').empty(); // Clear the existing options
-                        $('#teacherDropdown').append($('<option>').text('Select Teacher').attr('value', ''));
-                        $.each(data, function (index, teacher) {
-                            $('#teacherDropdown').append($('<option>').text(teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(error);
-                    }
-                });
-            } else {
-                $('#teacherDropdown').empty(); // Clear the teachers dropdown if no subject is selected
-            }
-        });
+    $('#subjectDropdown').change(function () {
+        var subjectID = $(this).val();
+        if (subjectID) {
+            $.ajax({
+                url: '@Url.Action("GetTeachersBySubjectID", "Allocation")',
+                type: 'GET',
+                dataType: 'json',
+                data: { subjectID: subjectID },
+                success: function (data) {
+                    $('#teacherDropdown').empty(); // Clear the existing options
+                    $('#teacherDropdown').append($('<option>').text('Select Teacher').attr('value', ''));
+                    $.each(data, function (index, teacher) {
+                        $('#teacherDropdown').append($('<option>').text(teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error retrieving teachers:", error);
+                    // Optionally display an error message to the user
+                    $('#teacherDropdown').empty().append($('<option>').text('Error retrieving teachers').attr('value', ''));
+                }
+            });
+        } else {
+            $('#teacherDropdown').empty(); // Clear the teachers dropdown if no subject is selected
+        }
     });
+});
+
 </script>
