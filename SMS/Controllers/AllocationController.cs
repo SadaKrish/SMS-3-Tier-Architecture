@@ -26,9 +26,9 @@ namespace SMS.Controllers
 
         public ActionResult GetAllSubjectAllocation()
         {
-            var allAllocatedSubject = _allocationBL.GetAllSubjectAllocation();
+            var allAllocatedSubject = _allocationBL.GetAllSubjectAllocations();
 
-            if (allAllocatedSubject != null)
+            if (allAllocatedSubject.Any())
             {
                 return Json(new { success = true, data = allAllocatedSubject }, JsonRequestBehavior.AllowGet);
             }
@@ -36,8 +36,8 @@ namespace SMS.Controllers
             {
                 return Json(new { success = false, message = "No Data Found" }, JsonRequestBehavior.AllowGet);
             }
-
         }
+
         // GET: TeacherSubjectAllocation/AddOrEdit
         public ActionResult AddOrEdit(long id=0)
         {
@@ -99,19 +99,11 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult DeleteSubjectAllocation(long id)
         {
-            try
-            {
-                string message;
-                bool success = _allocationBL.DeleteSubjectAllocation(id, out message); // Call BL method
-
-                // Return JSON response based on success or failure
-                return Json(new { success, message });
-            }
-            catch
-            {
-                return Json(new { success = false, message = "Error On delete" });
-            }
+            string msg;
+            var result = _allocationBL.DeleteSubjectAllocation(id, out msg);
+            return Json(new { success = result, message = msg });
         }
+
         /// <summary>
         /// Student ALlocation page
         /// </summary>

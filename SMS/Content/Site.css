@@ -3,7 +3,7 @@
     margin-top: 15px;
     padding-left: 15px;
     padding-right: 15px;
-    height:700px;
+    height:800px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -46,4 +46,9 @@ footer {
     width: 100%;
     color: white;
     
+}
+
+#createoredit {
+    position:absolute;
+left:30%;
 }

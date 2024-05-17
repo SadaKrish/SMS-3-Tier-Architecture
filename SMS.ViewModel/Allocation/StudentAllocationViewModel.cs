@@ -8,5 +8,10 @@ namespace SMS.ViewModel.Allocation
 {
     public class StudentAllocationViewModel
     {
+        public long StudentAllocationID { get; set; }
+        public string SubjectCode { get; set; }
+        public string Name { get; set; }
+        public string TeacherRegNo { get; set; }
+        public string TeacherName { get; set; }
     }
 }

@@ -42,7 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Allocation\AllocationViewModel.cs" />
+    <Compile Include="Allocation\StudentAllocationGroupedViewModel.cs" />
     <Compile Include="Allocation\StudentAllocationViewModel.cs" />
+    <Compile Include="Allocation\SubjectAllocationDetailViewModel.cs" />
     <Compile Include="Allocation\SubjectAllocationViewModel.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

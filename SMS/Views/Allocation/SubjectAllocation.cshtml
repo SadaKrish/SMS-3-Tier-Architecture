@@ -5,14 +5,44 @@
 }
 <link href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 <style>
-
+   
     .table {
         font-size: 12px;
         text-align: center;
     }
+    .card {
+        margin: 20px auto; /* Adjust margin as needed */
+        max-width:1000px; /* Adjust max-width as needed */
+        padding: 10px; /* Adjust padding as needed */
+    }
 
-    div .panel-body {
-        margin-bottom: 25px;
+    .panel-heading {
+        padding: 10px; /* Adjust padding as needed */
+    }
+
+    .panel-body {
+        padding: 10px; /* Adjust padding as needed */
+        margin-bottom: 20px; /* Adjust margin as needed */
+    }
+   
+    .subject-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .subject-buttons {
+        margin-left: auto;
+    }
+
+        .subject-buttons .btn {
+            margin-left: 5px;
+            background-color: #cbf5ee;
+        }
+   
+    #studentlist_wrapper {
+        max-width: 1200px; /* Adjust the maximum width as needed */
+        margin: 0 auto; /* Center the table horizontally */
     }
 </style>
 <div class="card panel-default">
@@ -23,19 +53,16 @@
 
     <div class="panel-body card-body">
        
-        <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
+        <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee; margin-left:20px;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
 
         <div class="table-responsive">
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
                 <thead style="text-align:center;">
                     <tr>
-                        <th style="background-color: #cbf5ee; text-align: center;">Teacher @Html.DisplayNameFor(model => model.TeacherList.First().TeacherRegNo)</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.TeacherList.First().DisplayName)</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.SubjectList.First().SubjectCode)</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.SubjectList.First().Name)</th>
-                        
+                        <th style="background-color: #cbf5ee; text-align: center;">Teacher Information</th>
+                        <th style="background-color: #cbf5ee; text-align: center;">Subjects</th>
                         <th style="background-color: #cbf5ee;"></th>
-                    </tr>
+                     </tr>
                 </thead>
             </table>
         </div>
@@ -56,13 +83,10 @@
     <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-    //load the initail data
-        $(document).ready(function () {
-    // Call initializeDataTable function when the DOM is ready
-            initializeDataTable();
-          
-        });
 
+        $(document).ready(function () {
+            initializeDataTable();
+        });
 
 
         //Load create page
@@ -131,7 +155,7 @@
         }
 
         //load edit page
-        function LoadEditPage(Id) {
+        @*function LoadEditPage(Id) {
             // Hide student list, button, and panel body
             $("#studentlist").hide();
             $("#button").hide();
@@ -152,7 +176,7 @@
                     alert('Error loading edit form');
                 }
             });
-        }
+        }*@
 
 
 
@@ -171,41 +195,126 @@
         }
 
         //load table data
+$(document).ready(function () {
+    initializeDataTable();
+});
+
         function initializeDataTable() {
-            datatable= $("#studentlist").DataTable({
-             "ajax": {
+            // Check if the DataTable instance already exists
+            if ($.fn.DataTable.isDataTable("#studentlist")) {
+                // Destroy the existing DataTable instance before reinitializing
+                $("#studentlist").DataTable().destroy();
+            }
+
+            var datatable = $("#studentlist").DataTable({
+                "ajax": {
                     "url": "/Allocation/GetAllSubjectAllocation",
-                 "type": "GET",
-                 "datatype":"json"
-             },
+                    "type": "GET",
+                    "datatype": "json",
+                    "dataSrc": function (json) {
+                        if (json.success) {
+                            return json.data;
+                        } else {
+                            Swal.fire('Error', json.message, 'error');
+                            return [];
+                        }
+                    }
+                },
                 "columns": [
-                 { "data": "TeacherRegNo" },
-                 { "data": "TeacherName" },
-                 { "data": "SubjectCode" },
-                 { "data": "SubjectName" },
+                    { "data": "TeacherRegNo", "title": "Teacher Registration NO" },
+                    { "data": "DisplayName", "title": "Teacher Name" },
+                    {
+                        "data": "Subjects",
+                        "title": "Subjects",
+                        "render": function (data, type, row) {
+                            var subjectButtons = data.map(function (subject) {
+                                return `
+                            <div class="subject-item">
+                                <span>${subject.SubjectCode} - ${subject.Name}</span>
+                                <div class="subject-buttons">
+                                    <a class='btn' onclick='LoadEditPage(${subject.SubjectAllocationID})'><i class='bi bi-pencil-square'></i></a>
+                                    <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'><i class='bi bi-trash' style='color:red;'></i></a>
+                                </div>
+                            </div>
+                        `;
+                            }).join('');
 
-
-                
-                 {
-                     "data": "SubjectAllocationID",
-                     "render": function (data) {
-                         return "<a class='btn' style='background-color: #cbf5ee ;' onclick= LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee ;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>"
-                     },
-                     "orderable": false,
-                     "searchable": false
-                 }
+                            return subjectButtons;
+                        }
+                    }
+                ],
+                "columnDefs": [
+                    { "width": "300px", "targets": 2 } // Adjust width of the second column (Teacher Name)
                 ],
                 "pageLength": 5,
-                "lengthMenu":[5,10,15,20,25]
+                "lengthMenu": [5, 10, 15, 20, 25]
             });
         }
 
 
+function LoadEditPage(allocationID) {
+    $("#studentlist").hide();
+    $("#button").hide();
+    $('.panel-body').hide();
+    $("#back-to-list").show();
+    $(".filter").hide();
+
+    $.ajax({
+        type: "GET",
+        url: "@Url.Action("AddOrEdit", "Allocation")/" + allocationID,
+        cache: false,
+        success: function (data) {
+            $("#createoredit").html(data);
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert('Error loading edit form');
+        }
+    });
+}
+
+function Delete(allocationID) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteSubjectAllocation", "Allocation")/' + allocationID,
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: response.message,
+                            icon: 'success'
+                        });
+                        $('#studentlist').DataTable().ajax.reload(); // Reload the DataTable to reflect changes
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: response.message,
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    Swal.fire('Error!', 'An error occurred while deleting the allocation', 'error');
+                }
+            });
+        }
+    });
+}
 
 
 
 
-        function Delete(id) {
+
+        @*function Delete(id) {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -239,7 +348,7 @@
                     });
                 }
             });
-        }
+        }*@
 
 
 

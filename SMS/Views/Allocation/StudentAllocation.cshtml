@@ -1,4 +1,4 @@
-﻿<!--Author Details-->
+﻿﻿<!--Author Details-->
 @model  SMS.ViewModel.Allocation.AllocationViewModel
 @{
     ViewBag.Title = "StudentAllocation";
@@ -11,8 +11,38 @@
         text-align: center;
     }
 
-    div .panel-body {
-        margin-bottom: 25px;
+    .card {
+        margin: 20px auto; /* Adjust margin as needed */
+        max-width: 1000px; /* Adjust max-width as needed */
+        padding: 10px; /* Adjust padding as needed */
+    }
+
+    .panel-heading {
+        padding: 10px; /* Adjust padding as needed */
+    }
+
+    .panel-body {
+        padding: 10px; /* Adjust padding as needed */
+        margin-bottom: 20px; /* Adjust margin as needed */
+    }
+    .subject-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .subject-buttons {
+        margin-left: auto;
+    }
+
+        .subject-buttons .btn {
+            margin-left: 5px;
+            background-color: #cbf5ee;
+        }
+
+    #studentlist_wrapper {
+        max-width: 1200px; /* Adjust the maximum width as needed */
+        margin: 0 auto; /* Center the table horizontally */
     }
 </style>
 <div class="card panel-default">
@@ -29,12 +59,10 @@
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
                 <thead style="text-align:center;">
                     <tr>
-                        <th style="background-color: #cbf5ee; text-align: center;">Student @Html.DisplayNameFor(model => model.StudentList.First().StudentRegNo)</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.StudentList.First().DisplayName)</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.SubjectList.First().SubjectCode)</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.SubjectList.First().Name)</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">Teacher @Html.DisplayNameFor(model => model.TeacherList.First().TeacherRegNo)</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.TeacherList.First().DisplayName)</th>
+                        <th style="background-color: #cbf5ee; text-align: center;">Student Information</th>
+                        <th style="background-color: #cbf5ee; text-align: center;">Teacher Information</th>
+                        <th style="background-color: #cbf5ee; text-align: center;">Subjects</th>
+
 
                         <th style="background-color: #cbf5ee;"></th>
                     </tr>
@@ -133,7 +161,7 @@
         }
 
         //load edit page
-        function LoadEditPage(Id) {
+        @*function LoadEditPage(Id) {
             // Hide student list, button, and panel body
             $("#studentlist").hide();
             $("#button").hide();
@@ -154,7 +182,7 @@
                     alert('Error loading edit form');
                 }
             });
-        }
+        }*@
 
 
 
@@ -174,33 +202,139 @@
 
         //load table data
         function initializeDataTable() {
-            datatable= $("#studentlist").DataTable({
-             "ajax": {
+            // Check if the DataTable instance already exists
+            if ($.fn.DataTable.isDataTable("#studentlist")) {
+                // Destroy the existing DataTable instance before reinitializing
+                $("#studentlist").DataTable().destroy();
+            }
+
+            var datatable = $("#studentlist").DataTable({
+                "ajax": {
                     "url": "/Allocation/GetAllStudentAllocation",
-                 "type": "GET",
-                 "datatype":"json"
-             },
+                    "type": "GET",
+                    "datatype": "json",
+                    "dataSrc": function (json) {
+                        if (json.success) {
+                            return json.data;
+                        } else {
+                            Swal.fire('Error', json.message, 'error');
+                            return [];
+                        }
+                    }
+                },
                 "columns": [
-                 { "data": "StudentRegNo" },
-                 { "data": "StudentName" },
-                 { "data": "SubjectCode" },
-                 { "data": "SubjectName" },
-                 { "data": "TeacherRegNo" },
-                 { "data": "TeacherName" },
+                    {
+                        "data": "StudentRegNo",
+                        "title": "Student Registration NO"
+                    },
+                    {
+                        "data": "DisplayName",
+                        "title": "Student Name"
+                    },
+                    {
+                        "data": "StudentAllocations",
+                        "title": "Teacher Information",
+                        "render": function (data, type, row) {
+                            // Render teacher information
+                            var teacherInfo = data.map(function (allocation) {
+                                return allocation.TeacherRegNo + ' - ' + allocation.TeacherName;
+                            }).join('<br>');
+                            return teacherInfo;
+                        }
+                    },
+                    {
+                        "data": "StudentAllocations",
+                        "title": "Subjects",
+                        "render": function (data, type, row) {
+                            // Render subjects with edit and delete buttons for each subject
+                            var subjectButtons = data.map(function (subject) {
+                                return `
+                            <div class="subject-item">
+                                <span>${subject.SubjectCode} - ${subject.Name}</span>
+                                <div class="subject-buttons">
+                                    <a class='btn' onclick='LoadEditPage(${subject.StudentAllocationID})'>
+                                        <i class='bi bi-pencil-square'></i>
+                                    </a>
+                                    <a class='btn' onclick='Delete(${subject.StudentAllocationID})'>
+                                        <i class='bi bi-trash' style='color:red;'></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                            }).join('');
 
-
-
-                 {
-                     "data": "StudentAllocationID",
-                     "render": function (data) {
-                         return "<a class='btn' style='background-color: #cbf5ee ;' onclick= LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee ;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>"
-                     },
-                     "orderable": false,
-                     "searchable": false
-                 }
+                            return subjectButtons;
+                        }
+                    }
+                ],
+                "columnDefs": [
+                    { "width": "20%", "targets": 0 }, // Adjust width of Student Registration NO column
+                    { "width": "20%", "targets": 1 }, // Adjust width of Student Name column
+                    { "width": "20%", "targets": 2 }, // Adjust width of Teacher Information column
+                    { "width": "40%", "targets": 3 }  // Adjust width of Subjects column
                 ],
                 "pageLength": 5,
-                "lengthMenu":[5,10,15,20,25]
+                "lengthMenu": [5, 10, 15, 20, 25]
+            });
+        }
+
+        function LoadEditPage(allocationID) {
+            // Hide student list, button, and panel body
+            $("#studentlist").hide();
+            $("#button").hide();
+            $('.panel-body').hide();
+            $("#back-to-list").show(); // Show the "Back to List" button
+            $(".filter").hide();
+
+            // Make an AJAX call to retrieve the edit form for the specified allocation ID
+            $.ajax({
+                type: "GET",
+                url: "/Allocation/AddOrEditStudent/" + allocationID,
+                cache: false,
+                success: function (data) {
+                    $("#createoredit").html(data); // Populate the create/edit form
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('Error loading edit form');
+                }
+            });
+        }
+
+        function Delete(allocationID) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: '/Allocation/DeleteStudentAllocation/' + allocationID,
+                        success: function (data) {
+                            if (data.success) {
+                                $("#studentlist").DataTable().ajax.reload();
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: data.message,
+                                    icon: 'success'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Warning!',
+                                    text: data.message,
+                                    icon: 'warning'
+                                });
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            Swal.fire('Error!', 'An error occurred while deleting the allocation', 'error');
+                        }
+                    });
+                }
             });
         }
 
@@ -209,7 +343,9 @@
 
 
 
-        function Delete(id) {
+
+
+        @*function Delete(id) {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -243,7 +379,7 @@
                     });
                 }
             });
-        }
+        }*@
 
 
 
@@ -254,6 +390,3 @@
     </script>
 
 }
-
-
-
