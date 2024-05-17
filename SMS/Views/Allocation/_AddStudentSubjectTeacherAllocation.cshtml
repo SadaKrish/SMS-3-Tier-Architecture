@@ -14,114 +14,89 @@
     }
 </style>
 
-<div class="container d-flex justify-content-center align-items-center w-100 " style="min-height: calc(80vh - 80px); margin-bottom: 30px;">
-    <div class="card p-4" style="max-width: 500px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px;">
-        @using (Ajax.BeginForm("AddOrEditStudent", "Allocation", new AjaxOptions
-        {
-            HttpMethod = "POST",
-            OnSuccess = "addAllocationSuccess",
-            OnFailure = "addAllocationFailure"
-        }))
-        {
-            @Html.AntiForgeryToken()
-            @Html.HiddenFor(model => model.StudentAllocationID)
-            @Html.HiddenFor(model => model.SubjectAllocationID, new { id = "SubjectAllocationID" })
+@using (Ajax.BeginForm("AddOrEditStudent", "Allocation", new AjaxOptions
+{
+    HttpMethod = "POST",
+    OnSuccess = "addAllocationSuccess",
+    OnFailure = "addAllocationFailure"
+}))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.StudentAllocationID)
 
+    <div class="container d-flex justify-content-center align-items-center w-100 " style="min-height: calc(80vh - 80px); margin-bottom: 30px;">
+        <div class="card p-4" style="max-width: 500px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px;">
 
             <div class="row form-group d-flex">
                 <div class="col-md-4">
                     @Html.LabelFor(model => model.StudentID, "Select Student", new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
-                    @Html.DropDownListFor(model => model.StudentID, ViewBag.StudentList as SelectList, "Select Student", new { @class = "form-control", id = "studentDropdown" })
+                    @Html.DropDownListFor(model => model.StudentID, ViewBag.StudentList as SelectList, "Select Student", new { @class = "form-select dropdown", id = "studentDropdown", name = "StudentID" })
+                    @* Ensure the name attribute is correctly set to "StudentID" *@
                     @Html.ValidationMessageFor(model => model.StudentID, "", new { @class = "text-danger" })
                 </div>
             </div>
+
 
             <div class="row form-group d-flex">
                 <div class="col-md-4">
                     @Html.LabelFor(model => model.SubjectAllocationID, "Select Subject", new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
-                    @Html.DropDownListFor(model => model.SubjectAllocationID, ViewBag.SubjectList as SelectList, "Select Subject", new { @class = "form-control", id = "subjectDropdown" })
+                    @Html.DropDownListFor(model => model.SubjectAllocationID, ViewBag.SubjectList as SelectList, "Select Subject", new { @class = "form-select", id = "subjectDropdown" })
+
                     @Html.ValidationMessageFor(model => model.SubjectAllocationID, "", new { @class = "text-danger" })
                 </div>
             </div>
-
 
             <div class="row form-group d-flex">
                 <div class="col-md-4">
                     @Html.Label("Teacher", htmlAttributes: new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
-                    <select id="teacherDropdown" class="form-control">
+                    <select id="teacherDropdown" class="form-select" name="TeacherSubjectAllocationID">
                         <option value="">Select Teacher</option>
                     </select>
                     @Html.ValidationMessageFor(model => model.SubjectAllocationID, "", new { @class = "text-danger" })
                 </div>
             </div>
 
-
             <div class="form-group align-content-center">
-                <input type="submit" value="@(Model.StudentAllocationID== 0 ? "Add" : "Update")" class="btn btn-primary" style="font-size:14px;" />
-                 <button id="back-to-list" class="btn btn-outline-primary m-4" onclick="LoadList()">Back</button>
+                <input type="submit" value="@(Model.StudentAllocationID == 0 ? "Add" : "Update")" class="btn btn-primary" style="font-size:14px;" />
+                <button id="back-to-list" class="btn btn-secondary m-4" onclick="LoadList()">Back</button>
             </div>
-        }
+        </div>
     </div>
-</div>
+}
+
 
 <script>
     $(document).ready(function () {
         $('.required').append('<span style="color: red">*</span>');
-    });
-    $(document).ready(function () {
-    $('#subjectDropdown').change(function () {
-        var subjectID = $(this).val();
-        if (subjectID) {
-            $.ajax({
-                url: '@Url.Action("GetTeachersBySubjectID", "Allocation")',
-                type: 'GET',
-                dataType: 'json',
-                data: { subjectID: subjectID },
-                success: function (data) {
-                    $('#teacherDropdown').empty(); // Clear the existing options
-                    $.each(data, function (index, teacher) {
-                        $('#teacherDropdown').append($('<option>').text(teacher.DisplayName).attr('value', teacher.TeacherID));
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error(error);
-                }
-            });
-        } else {
-            $('#teacherDropdown').empty(); // Clear the teachers dropdown if no subject is selected
-        }
-    });
-    });
 
-    $('#teacherDropdown').change(function () {
-    var subjectID = $('#subjectDropdown').val();
-    var teacherID = $(this).val();
-
-    if (subjectID && teacherID) {
-        $.ajax({
-            url: '@Url.Action("GetAllocationID", "Allocation")',
-            type: 'GET',
-            dataType: 'json',
-            data: { subjectID: subjectID, teacherID: teacherID },
-            success: function (data) {
-                $('#SubjectAllocationID').val(data); // Assuming data is the AllocationID
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
+        $('#subjectDropdown').change(function () {
+            var subjectID = $(this).val();
+            if (subjectID) {
+                $.ajax({
+                    url: '@Url.Action("GetTeachersBySubjectID", "Allocation")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { subjectID: subjectID },
+                    success: function (data) {
+                        $('#teacherDropdown').empty(); // Clear the existing options
+                        $('#teacherDropdown').append($('<option>').text('Select Teacher').attr('value', ''));
+                        $.each(data, function (index, teacher) {
+                            $('#teacherDropdown').append($('<option>').text(teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            } else {
+                $('#teacherDropdown').empty(); // Clear the teachers dropdown if no subject is selected
             }
         });
-    }
-});
-
-
-
-   
-
+    });
 </script>
-

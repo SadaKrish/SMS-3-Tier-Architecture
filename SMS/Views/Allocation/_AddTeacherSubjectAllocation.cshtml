@@ -24,10 +24,11 @@
         }))
         {
             @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.SubjectAllocationID)
 
             <div class="row form-group d-flex">
                 <div class="col-md-4">
-                    @Html.LabelFor(model => model.TeacherID, "Select Teacher", new { @class = "control-label required" })
+                    @Html.Label("Teacher", htmlAttributes: new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
                     @Html.DropDownListFor(model => model.TeacherID, ViewBag.TeacherList as SelectList, "Select Teacher", new { @class = "form-control", id = "teacherDropdown" })
@@ -37,7 +38,7 @@
 
             <div class="row form-group d-flex">
                 <div class="col-md-4">
-                    @Html.LabelFor(model => model.SubjectID, "Select Subject", new { @class = "control-label required" })
+                    @Html.Label("Subject", htmlAttributes: new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
                     @Html.DropDownListFor(model => model.SubjectID, ViewBag.SubjectList as SelectList, "Select Subject", new { @class = "form-control", id = "subjectDropdown" })
@@ -46,9 +47,10 @@
             </div>
 
 
+
             <div class="form-group align-content-center">
                 <input type="submit" value="@(Model.SubjectAllocationID== 0 ? "Add" : "Update")" class="btn btn-primary" style="font-size:14px;" />
-                <button id="back-to-list" class="btn btn-outline-primary m-4" onclick="LoadList()">Back</button>
+                <button id="back-to-list" class="btn btn btn-secondary m-4" onclick="LoadList()">Back</button>
             </div>
         }
     </div>
