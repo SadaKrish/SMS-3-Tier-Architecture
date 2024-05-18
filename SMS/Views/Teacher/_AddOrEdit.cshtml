@@ -92,7 +92,7 @@
                         @Html.LabelFor(model => model.Gender, new { @class = "control-label required" })
                     </div>
                     <div class="col-md p-2">
-                        <select class="form-control" id="genderSelect" name="Gender">
+                        <select class="form-select" id="genderSelect" name="Gender">
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                             <option value="Other">Other</option>
@@ -106,7 +106,7 @@
                         @Html.LabelFor(model => model.DOB, new { @class = "control-label required" })
                     </div>
                     <div class="col-md p-2">
-                        @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-control datepicker", placeholder = "Select Date (YYYY-MM-DD)" } })
+                        @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-select datepicker", placeholder = "Select Date (YYYY-MM-DD)" } })
                         @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
                     </div>
                 </div>

@@ -31,7 +31,7 @@
                     @Html.Label("Teacher", htmlAttributes: new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
-                    @Html.DropDownListFor(model => model.TeacherID, ViewBag.TeacherList as SelectList, "Select Teacher", new { @class = "form-control", id = "teacherDropdown" })
+                    @Html.DropDownListFor(model => model.TeacherID, ViewBag.TeacherList as SelectList, "Select Teacher", new { @class = "form-select", id = "teacherDropdown" })
                     @Html.ValidationMessageFor(model => model.TeacherID, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -41,7 +41,7 @@
                     @Html.Label("Subject", htmlAttributes: new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
-                    @Html.DropDownListFor(model => model.SubjectID, ViewBag.SubjectList as SelectList, "Select Subject", new { @class = "form-control", id = "subjectDropdown" })
+                    @Html.DropDownListFor(model => model.SubjectID, ViewBag.SubjectList as SelectList, "Select Subject", new { @class = "form-select", id = "subjectDropdown" })
                     @Html.ValidationMessageFor(model => model.SubjectID, "", new { @class = "text-danger" })
                 </div>
             </div>
