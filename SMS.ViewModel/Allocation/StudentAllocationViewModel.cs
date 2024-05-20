@@ -13,5 +13,6 @@ namespace SMS.ViewModel.Allocation
         public string Name { get; set; }
         public string TeacherRegNo { get; set; }
         public string TeacherName { get; set; }
+        public bool IsEnableStudent { get; set; }
     }
 }

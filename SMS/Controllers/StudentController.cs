@@ -158,29 +158,41 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult ToggleEnable(int id)
         {
-            Student student = _studentBL.Students.Include("Student_Subject_Teacher_Allocation").FirstOrDefault(x => x.StudentID == id);
+            // Retrieve the student along with related allocations
+            Student student = _studentBL.Students
+                .Include("Student_Subject_Teacher_Allocation")
+                .FirstOrDefault(x => x.StudentID == id);
 
+            // Check if the student exists
             if (student == null)
             {
                 return HttpNotFound(); // or return some appropriate error response
             }
 
+            // Get the current status of the student
             bool currentStatus = student.IsEnable;
 
-            // If the current status is enabled, check if the teacher is referenced in any related entities
+            // Initialize the message variable
+            string message;
+
+            // If the current status is enabled and the student is referenced in other entities
             if (currentStatus && student.Student_Subject_Teacher_Allocation.Any())
             {
-                return Json(new { success = false, message = "Cannot change status because " + student.DisplayName + " is referenced in other entities" });
+                message = $"Warning: {student.DisplayName} is referenced in other entities. Status changed successfully.";
+            }
+            else
+            {
+                message = currentStatus ? "Disabled Successfully" : "Enabled Successfully";
             }
 
             // Toggle the enable status
             student.IsEnable = !currentStatus;
             _studentBL.SaveChanges();
 
-            string message = currentStatus ? "Disabled Successfully" : "Enabled Successfully";
-
+            // Return the response with success and message
             return Json(new { success = true, message = message }, JsonRequestBehavior.AllowGet);
         }
+
         public ActionResult GetStudentDisplayName(long studentID)
         {
             var teacher = _studentBL.GetStudentByID(studentID);

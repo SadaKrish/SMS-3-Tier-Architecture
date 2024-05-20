@@ -122,12 +122,22 @@ namespace SMS.Controllers
             // result.Teacher_Subject_AllocationList = _allocationBL.GetAllSubjectAllocation();
             return View(result);
         }
-
-        public ActionResult GetAllStudentAllocation()
+        [HttpGet]
+        public ActionResult GetAllStudentAllocation(string status = "all")
         {
-            var allAllocatedStudent = _allocationBL.GetAllStudentAllocation();
+            bool? isEnabled = null;
+            if (status.ToLower() == "enabled")
+            {
+                isEnabled = true;
+            }
+            else if (status.ToLower() == "disabled")
+            {
+                isEnabled = false;
+            }
 
-            if (allAllocatedStudent != null)
+            var allAllocatedStudent = _allocationBL.GetAllStudentAllocation(isEnabled);
+
+            if (allAllocatedStudent != null && allAllocatedStudent.Any())
             {
                 return Json(new { success = true, data = allAllocatedStudent }, JsonRequestBehavior.AllowGet);
             }
@@ -135,8 +145,11 @@ namespace SMS.Controllers
             {
                 return Json(new { success = false, message = "No Data Found" }, JsonRequestBehavior.AllowGet);
             }
-
         }
+
+
+
+
         /// <summary>
         /// Add and edit the student allocation
         /// </summary>

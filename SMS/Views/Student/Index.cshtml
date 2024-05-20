@@ -324,17 +324,18 @@
         cancelButtonText: 'No'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Proceed with toggling the enable status of the teacher
+            // Proceed with toggling the enable status of the student
             $.ajax({
                 type: 'POST',
-                url: '@Url.Action("ToggleEnable", "Student")/' + id,
+                url: '@Url.Action("ToggleEnable", "Student")',
+                data: { id: id },
                 success: function(response) {
                     if (response.success) {
                         datatable.ajax.reload(); // Reload the data table
                         Swal.fire({
                             title: 'Success!',
                             text: response.message,
-                            icon: 'success'
+                            icon: response.message.includes('Warning') ? 'warning' : 'success' // Check if the response message contains 'Warning'
                         });
                     } else {
                         $('#studentCheckbox_' + id).prop('checked', !isChecked);
@@ -346,6 +347,7 @@
                     }
                 },
                 error: function(xhr, status, error) {
+                    $('#studentCheckbox_' + id).prop('checked', !isChecked);
                     Swal.fire({
                         title: 'Error!',
                         text: 'An error occurred while processing your request.',
@@ -358,6 +360,7 @@
         }
     });
 }
+
 
         // Define the getTeacherDisplayName function with a callback
         //function getTeacherDisplayName(id, callback) {

@@ -165,13 +165,19 @@ namespace SMS.BL.Allocation
         /// </summary>
         /// <returns></returns>
 
-        public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation()
+        public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation(bool? status)
         {
-            var allStudentAllocations = Student_Subject_Teacher_Allocation
-                                            .Include("Student")
-                                            .Include("Teacher_Subject_Allocation.Teacher")
-                                            .Include("Teacher_Subject_Allocation.Subject")
-                                            .ToList();
+            IQueryable<Student_Subject_Teacher_Allocation> query = Student_Subject_Teacher_Allocation
+                .Include("Student")
+                .Include("Teacher_Subject_Allocation.Teacher")
+                .Include("Teacher_Subject_Allocation.Subject");
+
+            if (status.HasValue)
+            {
+                query = query.Where(s => s.Student.IsEnable == status.Value);
+            }
+
+            var allStudentAllocations = query.ToList();
 
             var groupedData = allStudentAllocations
                 .GroupBy(item => new { item.Student.StudentRegNo, item.Student.DisplayName })
@@ -185,12 +191,16 @@ namespace SMS.BL.Allocation
                         SubjectCode = item.Teacher_Subject_Allocation.Subject.SubjectCode,
                         Name = item.Teacher_Subject_Allocation.Subject.Name,
                         TeacherRegNo = item.Teacher_Subject_Allocation.Teacher.TeacherRegNo,
-                        TeacherName = item.Teacher_Subject_Allocation.Teacher.DisplayName
+                        TeacherName = item.Teacher_Subject_Allocation.Teacher.DisplayName,
+                        IsEnableStudent = item.Student.IsEnable
                     }).ToList()
                 });
 
             return groupedData;
         }
+
+
+
 
         //public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation()
         //{

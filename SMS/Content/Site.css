@@ -35,7 +35,11 @@ textarea {
     color: black;
 }*/
 /*filter style*/
-#statusFilter {
+.filter {
+    right:0;
+    float:right;
+}
+#statusFilter, #filterStatus{
     border-radius:5px;
 }
 footer {

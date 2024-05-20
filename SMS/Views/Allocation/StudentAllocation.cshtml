@@ -52,6 +52,14 @@
 
 
     <div class="panel-body card-body">
+        <div class="form-group filter">
+            <label for="studentStatusFilter" >Filter by Student Status:</label>
+            <select id="filterStatus">
+                <option value="all">All</option>
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+            </select>
+        </div>
 
         <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
 
@@ -64,7 +72,7 @@
                         <th style="background-color: #cbf5ee; text-align: center;">Subjects</th>
 
 
-                       
+
                     </tr>
                 </thead>
             </table>
@@ -87,11 +95,13 @@
 
     <script>
     //load the initail data
-        $(document).ready(function () {
-    // Call initializeDataTable function when the DOM is ready
-            initializeDataTable();
+        //$(document).ready(function () {
+        //    initializeDataTable();
 
-        });
+        //    $('#studentStatusFilter').change(function () {
+        //        datatable.ajax.reload();
+        //    });
+        //});
 
 
 
@@ -202,7 +212,7 @@
         }
 
         //load table data
-        function initializeDataTable() {
+        function initializeDataTable(status = 'all') {
             // Check if the DataTable instance already exists
             if ($.fn.DataTable.isDataTable("#studentlist")) {
                 // Destroy the existing DataTable instance before reinitializing
@@ -214,6 +224,9 @@
                     "url": "/Allocation/GetAllStudentAllocation",
                     "type": "GET",
                     "datatype": "json",
+                    "data": {
+                        status: status
+                    },
                     "dataSrc": function (json) {
                         if (json.success) {
                             return json.data;
@@ -235,10 +248,8 @@
                         "data": null,
                         "title": "Teacher Information",
                         "render": function (data, type, row) {
-                            // Group teachers
                             var teachers = [];
                             data.StudentAllocations.forEach(function (allocation) {
-                                // Check if teacher is already in teachers array
                                 if (!teachers.find(t => t.TeacherRegNo === allocation.TeacherRegNo)) {
                                     teachers.push({
                                         TeacherRegNo: allocation.TeacherRegNo,
@@ -246,7 +257,6 @@
                                     });
                                 }
                             });
-                            // Render teacher information with left alignment and space between teachers
                             var teacherInfo = teachers.map(function (teacher) {
                                 return "<div style='margin-top:10px;'><div style='text-align: left; margin-bottom: 20px;'>" + teacher.TeacherRegNo + ' - ' + teacher.TeacherName + "</div></div>";
                             }).join('');
@@ -257,36 +267,41 @@
                         "data": null,
                         "title": "Subjects",
                         "render": function (data, type, row) {
-                            // Render subjects with edit and delete buttons for each subject
                             var subjectButtons = data.StudentAllocations.map(function (allocation) {
                                 return `
-                                    <div class="subject-item">
-                                        <span>${allocation.SubjectCode} - ${allocation.Name}</span>
-                                        <div class="subject-buttons">
-                                            <a class='btn' onclick='Delete(${allocation.StudentAllocationID})'>
-                                                <i class='bi bi-trash' style='color:red;'></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                `;
+                            <div class="subject-item">
+                                <span>${allocation.SubjectCode} - ${allocation.Name}</span>
+                                <div class="subject-buttons">
+                                    <a class='btn' onclick='Delete(${allocation.StudentAllocationID})'>
+                                        <i class='bi bi-trash' style='color:red;'></i>
+                                    </a>
+                                </div>
+                            </div>
+                        `;
                             }).join('');
                             return subjectButtons;
                         }
                     }
-                ]
-,
-
-
+                ],
                 "columnDefs": [
-                    { "width": "30%", "targets": 0 }, // Adjust width of Student Registration NO column
-                    { "width": "30%", "targets": 1 }, // Adjust width of Student Name column
-                    { "width": "40%", "targets": 2 }, // Adjust width of Teacher Information column
-                      // Adjust width of Subjects column
+                    { "width": "30%", "targets": 0 },
+                    { "width": "30%", "targets": 1 },
+                    { "width": "40%", "targets": 2 }
                 ],
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25]
             });
         }
+
+        $(document).ready(function () {
+            initializeDataTable();
+
+            $('#filterStatus').on('change', function () {
+                var status = $(this).val();
+                initializeDataTable(status);
+            });
+        });
+
 
 
         function LoadEditPage(allocationID) {
