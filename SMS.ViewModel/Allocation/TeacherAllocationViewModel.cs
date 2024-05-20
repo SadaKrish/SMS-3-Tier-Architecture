@@ -10,6 +10,8 @@ namespace SMS.ViewModel.Allocation
     {
         public string TeacherRegNo { get; set; }
         public string TeacherName { get; set; }
+        public string SubjectCode { get; set; }
+        public string Name { get; set; }
         public IEnumerable<SubjectAllocationViewModel> Subjects { get; set; }
     }
 }

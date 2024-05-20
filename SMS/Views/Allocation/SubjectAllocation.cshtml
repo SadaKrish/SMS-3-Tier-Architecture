@@ -21,8 +21,8 @@
     }
 
     .panel-body {
-        padding: 10px; /* Adjust padding as needed */
-        margin-bottom: 20px; /* Adjust margin as needed */
+        padding: 10px;
+        margin-bottom: 20px; 
     }
    
     .subject-item {
@@ -43,12 +43,16 @@
         max-width: 800px; 
         margin: 0 auto; 
     }
+    .subsearch {
+        float: right;
+        right: 0;
+    }
 </style>
 <div class="card panel-default">
     <div class="panel-heading">
         <h2 class="card-header">Subject Allocation</h2>
     </div>
-    <div class="search-container">
+    <div class="search-container subsearch">
         <select id="columnSelect">
             <option value="0">Teacher Information</option>
             <option value="1">Subject Information</option>
@@ -262,7 +266,12 @@ $(document).ready(function () {
                    // { "width": "300px", "targets": 1 } // Adjust width of the second column (Teacher Name)
                 ],
                 "pageLength": 5,
-                "lengthMenu": [5, 10, 15, 20, 25]
+                "lengthMenu": [5, 10, 15, 20, 25],
+                "searching": false
+            });
+            $('#customSearchBox').on('keyup', function () {
+                var column = $('#columnSelect').val();
+                datatable.column(column).search(this.value).draw();
             });
         }
 

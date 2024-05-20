@@ -25,7 +25,7 @@
         <select id="columnSelect">
             <option value="0">Student Reg No</option>
             <option value="1">First Name</option>
-            <option value="4">Dispaly Name</option>
+            <option value="4">Display Name</option>
         </select>
         <input type="text" id="customSearchBox" placeholder="Search...">
     </div>
@@ -272,7 +272,8 @@
                     }
                 ],
                 "pageLength": 5,
-                "lengthMenu": [5, 10, 15, 20, 25]
+                "lengthMenu": [5, 10, 15, 20, 25],
+                "searching":false
             });
             $('#customSearchBox').on('keyup', function () {
                 var column = $('#columnSelect').val();

@@ -13,20 +13,33 @@
     div .panel-body {
         margin-bottom: 25px;
     }
+    .search-container {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+        .search-container select,
+        .search-container input {
+            margin-right: 10px;
+            padding: 5px;
+            font-size: 12px;
+        }
 </style>
 <div class="card panel-default">
     <div class="panel-heading">
         <h2 class="card-header">Teacher</h2>
     </div>
-    <div class="search-container">
-        <select id="columnSelect">
-            <option value="0">Teacher Reg No</option>
-            <option value="1">First Name</option>
-            <option value="4">Dispaly Name</option>
-        </select>
-        <input type="text" id="customSearchBox" placeholder="Search...">
-    </div>
+    
     <div class="panel-body card-body">
+        <div class="search-container">
+            <select id="columnSelect">
+                <option value="0">Teacher Reg No</option>
+                <option value="1">First Name</option>
+                <option value="4">Display Name</option>
+            </select>
+            <input type="text" id="customSearchBox" placeholder="Search...">
+        </div>
         <div class="filter">
             <label for="statusFilter">Filter by Status:</label>
             <select id="statusFilter">
@@ -253,7 +266,8 @@
                     }
                 ],
                 "pageLength": 5,
-                "lengthMenu": [5, 10, 15, 20, 25]
+                "lengthMenu": [5, 10, 15, 20, 25],
+                "searching": false
             });
             $('#customSearchBox').on('keyup', function () {
                 var column = $('#columnSelect').val();
@@ -358,32 +372,7 @@
     });
 }
 
-        // Define the getTeacherDisplayName function with a callback
-        //function getTeacherDisplayName(id, callback) {
-        //    // Make an AJAX call to fetch the display name based on the teacher ID
-        //    $.ajax({
-        //        type: 'GET',
-        //        url: '/Teacher/GetTeacherDisplayName/' + id,
-        //        success: function (response) {
-        //            if (response.success) {
-        //                callback(response.displayName);
-        //            } else {
-        //                console.error('Error: ' + response.message);
-        //                callback('Unknown Teacher');
-        //            }
-        //        },
-        //        error: function (xhr, status, error) {
-        //            console.error('Error fetching teacher display name: ' + error);
-        //            callback('Unknown Teacher');
-        //        }
-        //    });
-        //}
-
-        //// Example usage of getTeacherDisplayName with a callback
-        //getTeacherDisplayName(id, function (displayName) {
-        //    // Do something with the displayName here
-        //    console.log('Teacher Display Name:', displayName);
-        //});
+       
 
 
 

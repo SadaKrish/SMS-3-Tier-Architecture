@@ -150,6 +150,7 @@ namespace SMS.Controllers
 
 
 
+
         /// <summary>
         /// Add and edit the student allocation
         /// </summary>
@@ -260,6 +261,14 @@ namespace SMS.Controllers
         {
             string msg;
             var result = _allocationBL.DeleteStudentAllocation(id, out msg);
+            return Json(new { success = result, message = msg });
+        }
+
+        [HttpPost]
+        public ActionResult DeleteWholeStudentAllocation(string id)
+        {
+            string msg;
+            var result = _allocationBL.DeleteWholeStudentAllocation(id, out msg);
             return Json(new { success = result, message = msg });
         }
     }

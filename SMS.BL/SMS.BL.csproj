@@ -52,7 +52,9 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Student\StudentBL.cs" />
+    <Compile Include="Subject\Interface\ISubjectRepository.cs" />
     <Compile Include="Subject\SubjectBL.cs" />
+    <Compile Include="Subject\SubjectRepository.cs" />
     <Compile Include="Teacher\TeacherBL.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +75,8 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Student\Interface\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

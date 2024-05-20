@@ -12,33 +12,32 @@
     }
 
     .card {
-        margin: 20px auto; /* Adjust margin as needed */
-        max-width: 1000px; /* Adjust max-width as needed */
-        padding: 10px; /* Adjust padding as needed */
+        margin: 20px auto; 
+        max-width: 1000px; 
+        padding: 10px; 
     }
 
     .panel-heading {
-        padding: 10px; /* Adjust padding as needed */
+        padding: 10px; 
     }
 
     .panel-body {
-        padding: 10px; /* Adjust padding as needed */
-        margin-bottom: 20px; /* Adjust margin as needed */
+        padding: 10px; 
+        margin-bottom: 20px; 
     }
-    .subject-item {
+  
+    .subject-item-container {
         display: flex;
         align-items: center;
-        margin-bottom: 5px;
     }
 
-    .subject-buttons {
-        margin-left: auto;
+    .subject-item {
+        flex: 1;
     }
 
-        .subject-buttons .btn {
-            margin-left: 5px;
-            background-color: #cbf5ee;
-        }
+    .btn-delete-subject {
+        margin-left: 10px; 
+    }
 
     #studentlist_wrapper {
         max-width: 1200px; 
@@ -61,7 +60,7 @@
             <input type="text" id="customSearchBox" placeholder="Search...">
         </div>
         <div class="form-group filter">
-            <label for="studentStatusFilter">Filter by Student Status:</label>
+           
             <select id="filterStatus">
                 <option value="all">All</option>
                 <option value="enabled">Enabled</option>
@@ -77,7 +76,7 @@
                     <tr>
                         <th style="background-color: #cbf5ee; text-align: center;">Student Information</th>
                         <th style="background-color: #cbf5ee; text-align: center;">Teacher Information</th>
-                        <th style="background-color: #cbf5ee; text-align: center;">Subjects</th>
+                        
 
 
 
@@ -172,29 +171,7 @@
             Swal.fire('Error!', 'An error occurred while adding the allocation', 'error');
         }
 
-        //load edit page
-        @*function LoadEditPage(Id) {
-            // Hide student list, button, and panel body
-            $("#studentlist").hide();
-            $("#button").hide();
-            $('.panel-body').hide();
-            $("#back-to-list").show(); // Show the "Back to List" button
-            $(".filter").hide();
-            datatable.ajax.reload();
-
-            // Make an AJAX call to retrieve the edit form for the specified student ID
-            $.ajax({
-                type: "GET",
-                url: "@Url.Action("AddOrEditStudent", "Allocation")/" + Id,
-                cache: false,
-                success: function (data) {
-                    $("#createoredit").html(data); // Populate the create/edit form
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('Error loading edit form');
-                }
-            });
-        }*@
+        
 
 
 
@@ -242,55 +219,45 @@
                         "data": null,
                         "title": "Student Information",
                         "render": function (data, type, row) {
-                            return data.StudentRegNo + ' - ' + data.DisplayName;
+                            var studentInfo = data.StudentRegNo + ' - ' + data.DisplayName+'</br>';
+                            //studentInfo += "<button class='btn btn-delete-allocation' onclick='deleteAllocation(" + data.StudentRegNo + ")'><i class='bi bi-trash' style='color:red;'></button>";
+                            return studentInfo;
                         }
                     },
                     {
                         "data": null,
-                        "title": "Teacher Information",
+                        "title": "Teacher & Subject Information",
                         "render": function (data, type, row) {
-                            var teachers = [];
-                            data.StudentAllocations.forEach(function (allocation) {
-                                if (!teachers.find(t => t.TeacherRegNo === allocation.TeacherRegNo)) {
-                                    teachers.push({
-                                        TeacherRegNo: allocation.TeacherRegNo,
-                                        TeacherName: allocation.TeacherName
-                                    });
+                            var teacherSubjectInfo = '';
+                            data.TeacherAllocations.forEach(function (teacherAllocation, index) {
+                                teacherSubjectInfo += "<div style='margin-top:10px;'>";
+                                teacherSubjectInfo += "<div style='text-align: left;'>" + teacherAllocation.TeacherRegNo + ' - ' + teacherAllocation.TeacherName + "</div>";
+                                teacherAllocation.Subjects.forEach(function (subject) {
+                                    teacherSubjectInfo += "<div class='subject-item-container'>";
+                                    teacherSubjectInfo += "<div class='subject-item'>" + subject.SubjectCode + ' - ' + subject.Name + "</div>";
+                                    teacherSubjectInfo += "<button class='btn btn-delete-subject' onclick='Delete(" + subject.StudentAllocationID + ")'><i class='bi bi-trash' style='color:red;'></i></button>";
+                                    teacherSubjectInfo += "</div>";
+                                });
+                                teacherSubjectInfo += "</div>";
+                                if (index < data.TeacherAllocations.length - 1) {
+                                    teacherSubjectInfo += "<hr style='border-top: 1px solid #000; margin-top: 10px; margin-bottom: 10px;'>";
                                 }
                             });
-                            var teacherInfo = teachers.map(function (teacher) {
-                                return "<div style='margin-top:10px;'><div style='text-align: left; margin-bottom: 20px;'>" + teacher.TeacherRegNo + ' - ' + teacher.TeacherName + "</div></div>";
-                            }).join('');
-                            return teacherInfo;
-                        }
-                    },
-                    {
-                        "data": null,
-                        "title": "Subjects",
-                        "render": function (data, type, row) {
-                            var subjectButtons = data.StudentAllocations.map(function (allocation) {
-                                return `
-                            <div class="subject-item">
-                                <span>${allocation.SubjectCode} - ${allocation.Name}</span>
-                                <div class="subject-buttons">
-                                    <a class='btn' onclick='Delete(${allocation.StudentAllocationID})'>
-                                        <i class='bi bi-trash' style='color:red;'></i>
-                                    </a>
-                                </div>
-                            </div>
-                        `;
-                            }).join('');
-                            return subjectButtons;
+                            return teacherSubjectInfo;
                         }
                     }
-                ],
+
+                ]
+
+,
                 "columnDefs": [
                     { "width": "30%", "targets": 0 },
-                    { "width": "30%", "targets": 1 },
-                    { "width": "40%", "targets": 2 }
+                    { "width": "60%", "targets": 1 }
+                  
                 ],
                 "pageLength": 5,
-                "lengthMenu": [5, 10, 15, 20, 25]
+                "lengthMenu": [5, 10, 15, 20, 25],
+                "searching":false
             });
             $('#customSearchBox').on('keyup', function () {
                 var column = $('#columnSelect').val();
@@ -371,7 +338,43 @@
 
 
 
-
+        function deleteAllocation(allocationID) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: '/Allocation/DeleteWholeStudentAllocation/' + allocationID,
+                        success: function (data) {
+                            if (data.success) {
+                                $("#studentlist").DataTable().ajax.reload();
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: data.message,
+                                    icon: 'success'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Warning!',
+                                    text: data.message,
+                                    icon: 'warning'
+                                });
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            Swal.fire('Error!', 'An error occurred while deleting the allocation', 'error');
+                        }
+                    });
+                }
+            });
+        }
 
 
 

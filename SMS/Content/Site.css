@@ -35,9 +35,10 @@ textarea {
     color: black;
 }*/
 /*filter style*/
-.filter {
+.filter{
     right:0;
     float:right;
+    margin-top:10px;
 }
 #columnSelect, #customSearchBox {
     margin-top: 10px;
@@ -59,7 +60,19 @@ footer {
     color: white;
     
 }
+.search-container {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
 
+ .search-container select,
+.search-container input {
+        margin-right: 10px;
+        padding: 5px;
+        font-size: 12px;
+
+ }
 #createoredit {
     position:absolute;
 left:30%;

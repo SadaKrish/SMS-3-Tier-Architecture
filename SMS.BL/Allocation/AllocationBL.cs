@@ -185,15 +185,18 @@ namespace SMS.BL.Allocation
                 {
                     StudentRegNo = group.Key.StudentRegNo,
                     DisplayName = group.Key.DisplayName,
-                    StudentAllocations = group.Select(item => new StudentAllocationViewModel
-                    {
-                        StudentAllocationID = item.StudentAllocationID,
-                        SubjectCode = item.Teacher_Subject_Allocation.Subject.SubjectCode,
-                        Name = item.Teacher_Subject_Allocation.Subject.Name,
-                        TeacherRegNo = item.Teacher_Subject_Allocation.Teacher.TeacherRegNo,
-                        TeacherName = item.Teacher_Subject_Allocation.Teacher.DisplayName,
-                        IsEnableStudent = item.Student.IsEnable
-                    }).ToList()
+                    TeacherAllocations = group.GroupBy(g => new { g.Teacher_Subject_Allocation.Teacher.TeacherRegNo, g.Teacher_Subject_Allocation.Teacher.DisplayName })
+                        .Select(subGroup => new TeacherAllocationViewModel
+                        {
+                            TeacherRegNo = subGroup.Key.TeacherRegNo, 
+                            TeacherName = subGroup.Key.DisplayName,
+                            Subjects = subGroup.Select(item => new SubjectAllocationViewModel
+                            {
+                                StudentAllocationID = item.StudentAllocationID,
+                                SubjectCode = item.Teacher_Subject_Allocation.Subject.SubjectCode,
+                                Name = item.Teacher_Subject_Allocation.Subject.Name
+                            }).ToList()
+                        }).ToList()
                 });
 
             return groupedData;
@@ -202,32 +205,8 @@ namespace SMS.BL.Allocation
 
 
 
-        //public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation()
-        //{
-        //    var allStudentAllocations = Student_Subject_Teacher_Allocation
-        //                                    .Include("Student")
-        //                                    .Include("Teacher_Subject_Allocation.Teacher")
-        //                                    .Include("Teacher_Subject_Allocation.Subject")
-        //                                    .ToList();
 
-        //    var groupedData = allStudentAllocations
-        //        .GroupBy(item => new { item.Student.StudentRegNo, item.Student.DisplayName })
-        //        .Select(group => new StudentAllocationGroupedViewModel
-        //        {
-        //            StudentRegNo = group.Key.StudentRegNo,
-        //            DisplayName = group.Key.DisplayName,
-        //            StudentAllocations = group.Select(item => new StudentAllocationViewModel
-        //            {
-        //                StudentAllocationID = item.StudentAllocationID,
-        //                SubjectCode = item.Teacher_Subject_Allocation.Subject.SubjectCode,
-        //                Name = item.Teacher_Subject_Allocation.Subject.Name,
-        //                TeacherRegNo = item.Teacher_Subject_Allocation.Teacher.TeacherRegNo,
-        //                TeacherName = item.Teacher_Subject_Allocation.Teacher.DisplayName
-        //            }).ToList()
-        //        });
 
-        //    return groupedData;
-        //}
 
 
 
@@ -275,26 +254,6 @@ namespace SMS.BL.Allocation
                     msg = "This Allocation Already Exists.";
                     return false;
                 }
-
-                //if (isExistingStudentAllocation)
-                //{
-
-
-                //    if (editStudenttAllocation == null)
-                //    {
-                //        msg = "Unable to find the subject allocation for edit";
-                //        return false;
-                //    }
-
-                //    editStudenttAllocation.SubjectAllocationID = studentAllocation.SubjectAllocationID;
-
-                //    SaveChanges();
-                //    msg = "Allocation Details Updated Successfully!";
-                //    return true;
-
-                //}
-
-
                 var newStudentAllocation = new SMS.Data.Student_Subject_Teacher_Allocation();
                 newStudentAllocation.StudentID = studentAllocation.StudentID;
                 newStudentAllocation.SubjectAllocationID = studentAllocation.SubjectAllocationID;
@@ -348,5 +307,48 @@ namespace SMS.BL.Allocation
                 return false;
             }
         }
+
+        public bool DeleteWholeStudentAllocation(string studentRegNo, out string msg)
+        {
+            msg = "";
+            try
+            {
+                // Find the student with the given registration number
+                var student = Students.SingleOrDefault(s => s.StudentRegNo == studentRegNo);
+                if (student == null)
+                {
+                    msg = "Student not found with the given registration number!";
+                    return false;
+                }
+
+                // Find all allocations for the given student
+                var studentAllocations = Student_Subject_Teacher_Allocation.Where(t => t.StudentID == student.StudentID).ToList();
+
+                if (studentAllocations.Any())
+                {
+                    // Remove all allocations for the student
+                    foreach (var allocation in studentAllocations)
+                    {
+                        Student_Subject_Teacher_Allocation.Remove(allocation);
+                    }
+
+                    SaveChanges();
+                    msg = "All allocations for the student have been deleted successfully!";
+                    return true;
+                }
+                else
+                {
+                    msg = "No allocations found for the given student!";
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                msg = ex.Message;
+                return false;
+            }
+        }
+
+
     }
 }
