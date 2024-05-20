@@ -33,10 +33,11 @@
                     @Html.LabelFor(model => model.StudentID, "Select Student", new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
-                    @Html.DropDownListFor(model => model.StudentID, ViewBag.StudentList as SelectList, "Select Student", new { @class = "form-select dropdown", id = "studentDropdown", name = "StudentID" })
+                    @Html.DropDownListFor(model => model.StudentID, ViewBag.StudentList as IEnumerable<SelectListItem>, "Select Student", new { @class = "form-select dropdown", id = "studentDropdown", name = "StudentID" })
                     @Html.ValidationMessageFor(model => model.StudentID, "", new { @class = "text-danger" })
                 </div>
             </div>
+
 
             <div class="row form-group d-flex">
                 <div class="col-md-4">

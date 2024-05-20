@@ -49,9 +49,21 @@ namespace SMS.Controllers
         // GET: TeacherSubjectAllocation/AddOrEdit
         public ActionResult AddOrEdit(long id = 0)
         {
+            var teacherList = _allocationBL.Teachers.Where(s => s.IsEnable).Select(s => new SelectListItem
+            {
+                Value = s.TeacherID.ToString(),
+                Text = s.TeacherRegNo + " - " + s.DisplayName // Concatenate SubjectCode and Name
+            });
             // Populate dropdown lists for teachers and subjects
-            ViewBag.TeacherList = new SelectList(_allocationBL.Teachers.Where(t => t.IsEnable), "TeacherID", "DisplayName");
-            ViewBag.SubjectList = new SelectList(_allocationBL.Subjects.Where(s => s.IsEnable), "SubjectID", "Name");
+            ViewBag.TeacherList = new SelectList(teacherList, "Value", "Text");
+            // Populate the subject list for the dropdown
+            var subjectList = _allocationBL.Subjects.Where(s => s.IsEnable).Select(s => new SelectListItem
+            {
+                Value = s.SubjectID.ToString(),
+                Text = s.SubjectCode + " - " + s.Name // Concatenate SubjectCode and Name
+            });
+
+            ViewBag.SubjectList = new SelectList(subjectList, "Value", "Text");
 
             if (id == 0) // Add new allocation
             {
@@ -159,14 +171,30 @@ namespace SMS.Controllers
         public ActionResult AddOrEditStudent()
         {
             // Populate the student list for the dropdown
-            ViewBag.StudentList = new SelectList(_allocationBL.Students.Where(s => s.IsEnable), "StudentID", "DisplayName");
+            var studentList = _allocationBL.Students.Where(s => s.IsEnable).Select(s => new SelectListItem
+            {
+                Value = s.StudentID.ToString(),
+                Text = s.StudentRegNo + " - " + s.DisplayName
+            });
 
-            // Populate the subject list for the dropdown
+            // Populate dropdown list for teachers
+            var teacherList = _allocationBL.Teachers.Where(t => t.IsEnable).Select(t => new SelectListItem
+            {
+                Value = t.TeacherID.ToString(),
+                Text = t.TeacherRegNo + " - " + t.DisplayName
+            });
+
+            // Populate dropdown list for subjects
             var subjectList = _allocationBL.Teacher_Subject_Allocation
-                .Select(ts => ts.Subject)
+                .Select(ts => new {
+                    SubjectID = ts.SubjectID,
+                    Name = ts.Subject.SubjectCode + " - " + ts.Subject.Name
+                })
                 .Distinct()
                 .ToList();
 
+            ViewBag.StudentList = studentList;
+            ViewBag.TeacherList = teacherList;
             ViewBag.SubjectList = new SelectList(subjectList, "SubjectID", "Name");
 
             // Return the partial view for adding a new allocation
