@@ -40,18 +40,26 @@
    }
    
     #studentlist_wrapper {
-        max-width: 800px; /* Adjust the maximum width as needed */
-        margin: 0 auto; /* Center the table horizontally */
+        max-width: 800px; 
+        margin: 0 auto; 
     }
 </style>
 <div class="card panel-default">
     <div class="panel-heading">
         <h2 class="card-header">Subject Allocation</h2>
     </div>
+    <div class="search-container">
+        <select id="columnSelect">
+            <option value="0">Teacher Information</option>
+            <option value="1">Subject Information</option>
+
+        </select>
+        <input type="text" id="customSearchBox" placeholder="Search...">
+    </div>
 
 
     <div class="panel-body card-body">
-       
+
         <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee; margin-left:20px;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
 
         <div class="table-responsive">
@@ -60,8 +68,8 @@
                     <tr>
                         <th style="background-color: #cbf5ee; text-align: center;">Teacher Details</th>
                         <th style="background-color: #cbf5ee; text-align: center;">Subject Details</th>
-                      
-                     </tr>
+
+                    </tr>
                 </thead>
             </table>
         </div>

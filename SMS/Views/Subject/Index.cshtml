@@ -18,7 +18,14 @@
     <div class="panel-heading">
         <h2 class="card-header">Subject</h2>
     </div>
-   
+    <div class="search-container">
+        <select id="columnSelect">
+            <option value="0">Subject Code</option>
+            <option value="1">Name</option>
+            
+        </select>
+        <input type="text" id="customSearchBox" placeholder="Search...">
+    </div>
 
     <div class="panel-body card-body">
         <div class="filter">
@@ -81,8 +88,9 @@
                 datatable.ajax.url(url).load();
             });
         });
+        
 
-
+      
 
         //Load create page
       function LoadCreatePage() {
@@ -229,6 +237,10 @@
                 ],
                 "pageLength": 5,
                 "lengthMenu":[5,10,15,20,25]
+            });
+            $('#customSearchBox').on('keyup', function () {
+                var column = $('#columnSelect').val();
+                datatable.column(column).search(this.value).draw();
             });
         }
 

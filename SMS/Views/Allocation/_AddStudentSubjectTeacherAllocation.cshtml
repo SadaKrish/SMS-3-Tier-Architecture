@@ -23,8 +23,9 @@
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(model => model.StudentAllocationID)
+    @Html.Hidden("SubjectAllocationID", Model.SubjectAllocationID) <!-- Hidden field for SubjectAllocationID -->
 
-    <div class="container d-flex justify-content-center align-items-center w-100 " style="min-height: calc(80vh - 80px); margin-bottom: 30px;">
+    <div class="container d-flex justify-content-center align-items-center w-100" style="min-height: calc(80vh - 80px); margin-bottom: 30px;">
         <div class="card p-4" style="max-width: 500px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px;">
 
             <div class="row form-group d-flex">
@@ -33,11 +34,9 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.DropDownListFor(model => model.StudentID, ViewBag.StudentList as SelectList, "Select Student", new { @class = "form-select dropdown", id = "studentDropdown", name = "StudentID" })
-                    @* Ensure the name attribute is correctly set to "StudentID" *@
                     @Html.ValidationMessageFor(model => model.StudentID, "", new { @class = "text-danger" })
                 </div>
             </div>
-
 
             <div class="row form-group d-flex">
                 <div class="col-md-4">
@@ -45,7 +44,6 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.DropDownListFor(model => model.SubjectAllocationID, ViewBag.SubjectList as SelectList, "Select Subject", new { @class = "form-select", id = "subjectDropdown" })
-
                     @Html.ValidationMessageFor(model => model.SubjectAllocationID, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -70,36 +68,41 @@
     </div>
 }
 
-
 <script>
-   $(document).ready(function () {
-    $('.required').append('<span style="color: red">*</span>');
+    $(document).ready(function () {
+        $('.required').append('<span style="color: red">*</span>');
 
-    $('#subjectDropdown').change(function () {
-        var subjectID = $(this).val();
-        if (subjectID) {
-            $.ajax({
-                url: '@Url.Action("GetTeachersBySubjectID", "Allocation")',
-                type: 'GET',
-                dataType: 'json',
-                data: { subjectID: subjectID },
-                success: function (data) {
-                    $('#teacherDropdown').empty(); // Clear the existing options
-                    $('#teacherDropdown').append($('<option>').text('Select Teacher').attr('value', ''));
-                    $.each(data, function (index, teacher) {
-                        $('#teacherDropdown').append($('<option>').text(teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
-                    });
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error retrieving teachers:", error);
-                    // Optionally display an error message to the user
-                    $('#teacherDropdown').empty().append($('<option>').text('Error retrieving teachers').attr('value', ''));
-                }
-            });
-        } else {
-            $('#teacherDropdown').empty(); // Clear the teachers dropdown if no subject is selected
-        }
+        $('#subjectDropdown').change(function () {
+            var subjectID = $(this).val();
+            if (subjectID) {
+                $.ajax({
+                    url: '@Url.Action("GetTeachersBySubjectID", "Allocation")',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { subjectID: subjectID },
+                    success: function (data) {
+                        console.log("Teachers data:", data); 
+                        $('#teacherDropdown').empty(); 
+                        $('#teacherDropdown').append($('<option>').text('Select Teacher').attr('value', ''));
+                        $.each(data, function (index, teacher) {
+                            $('#teacherDropdown').append($('<option>').text(teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error retrieving teachers:", error);
+                        // Optionally display an error message to the user
+                        $('#teacherDropdown').empty().append($('<option>').text('Error retrieving teachers').attr('value', ''));
+                    }
+                });
+            } else {
+                $('#teacherDropdown').empty(); 
+            }
+        });
+
+        $('#teacherDropdown').change(function () {
+            var selectedSubjectAllocationID = $(this).val();
+            $('input[name="SubjectAllocationID"]').val(selectedSubjectAllocationID);
+            console.log("Selected SubjectAllocationID:", selectedSubjectAllocationID);
+        });
     });
-});
-
 </script>

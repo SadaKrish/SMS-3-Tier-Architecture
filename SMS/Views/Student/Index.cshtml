@@ -21,7 +21,14 @@
     <div class="panel-heading">
         <h2 class="card-header">Student</h2>
     </div>
-
+    <div class="search-container">
+        <select id="columnSelect">
+            <option value="0">Student Reg No</option>
+            <option value="1">First Name</option>
+            <option value="4">Dispaly Name</option>
+        </select>
+        <input type="text" id="customSearchBox" placeholder="Search...">
+    </div>
     <div class="panel-body card-body">
         <div class="filter">
             <label for="statusFilter">Filter by Status:</label>
@@ -35,7 +42,7 @@
             <option value="teacherRegNo">Teacher Registration Number</option>
             <option value="firstName">First Name</option>
             <option value="lastName">Last Name</option>-->
-            <!-- Add more options as needed -->
+        <!-- Add more options as needed -->
         <!--</select>
         <input type="text" id="searchInput" placeholder="Enter search keyword...">
         <button id="searchButton">Search</button>
@@ -83,9 +90,10 @@
     <script>
     //load the initail data
         $(document).ready(function () {
+           
             // Call initializeDataTable function when the DOM is ready
             initializeDataTable();
-
+           
             $('#statusFilter').on('change', function () {
                 var filterValue = $(this).val(); // Get the selected filter value
 
@@ -100,8 +108,14 @@
                 // Reload the datatable with the updated data
                 datatable.ajax.url(url).load();
             });
+           
+        });
+        $(document).ready(function () {
+            var table = $('#studentlis').DataTable();
+            table.settings().searching(false).draw();
         });
 
+       
         //Load create page
       function LoadCreatePage() {
         //* /Hide student list and load create new form*/
@@ -194,7 +208,7 @@
             $('.filter').show();
             datatable.ajax.reload();
         }
-
+        
         //load table data
         function initializeDataTable() {
             datatable = $("#studentlist").DataTable({
@@ -260,7 +274,17 @@
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25]
             });
+            $('#customSearchBox').on('keyup', function () {
+                var column = $('#columnSelect').val();
+                datatable.column(column).search(this.value).draw();
+            });
         }
+
+        //$(document).ready(function () {
+        //    $('#studentlist').DataTable({
+        //        searching: false // Disable the search bar
+        //    });
+        //});
 
         function getStatusFilterValue(statusFilter) {
             if (statusFilter === "enabled") {

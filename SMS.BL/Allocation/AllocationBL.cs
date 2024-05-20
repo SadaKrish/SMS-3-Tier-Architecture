@@ -263,19 +263,12 @@ namespace SMS.BL.Allocation
 
             bool isExistingStudentAllocation = Student_Subject_Teacher_Allocation.Any(s => s.StudentAllocationID == studentAllocation.StudentAllocationID);
 
-            var editStudenttAllocation = Student_Subject_Teacher_Allocation.SingleOrDefault(s => s.StudentAllocationID == studentAllocation.StudentAllocationID);
-
             bool isStudentAllocated = Student_Subject_Teacher_Allocation.Any(s => s.SubjectAllocationID == studentAllocation.SubjectAllocationID && s.StudentID == studentAllocation.StudentID);
 
 
 
             try
             {
-                //if (studentAllocation.SubjectAllocationID == 0)
-                //{
-                //    msg = "Please Fill All Details";
-                //    return false;
-                //}
 
                 if (isStudentAllocated)
                 {
@@ -283,23 +276,23 @@ namespace SMS.BL.Allocation
                     return false;
                 }
 
-                if (isExistingStudentAllocation)
-                {
+                //if (isExistingStudentAllocation)
+                //{
 
 
-                    if (editStudenttAllocation == null)
-                    {
-                        msg = "Unable to find the subject allocation for edit";
-                        return false;
-                    }
+                //    if (editStudenttAllocation == null)
+                //    {
+                //        msg = "Unable to find the subject allocation for edit";
+                //        return false;
+                //    }
 
-                    editStudenttAllocation.SubjectAllocationID = studentAllocation.SubjectAllocationID;
+                //    editStudenttAllocation.SubjectAllocationID = studentAllocation.SubjectAllocationID;
 
-                    SaveChanges();
-                    msg = "Allocation Details Updated Successfully!";
-                    return true;
+                //    SaveChanges();
+                //    msg = "Allocation Details Updated Successfully!";
+                //    return true;
 
-                }
+                //}
 
 
                 var newStudentAllocation = new SMS.Data.Student_Subject_Teacher_Allocation();

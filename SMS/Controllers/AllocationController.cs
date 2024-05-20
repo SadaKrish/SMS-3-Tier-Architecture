@@ -214,29 +214,20 @@ namespace SMS.Controllers
         /// </summary>
         /// <param name="subjectID"></param>
         /// <returns></returns>
-        public ActionResult GetTeachersBySubjectID(int subjectID)
+        [HttpGet]
+        public JsonResult GetTeachersBySubjectID(int subjectID)
         {
-            try
-            {
-                var teachers = _allocationBL.Teacher_Subject_Allocation
-                                    .Where(ts => ts.SubjectID == subjectID)
-                                    .Select(ts => new
-                                    {
-                                        TeacherID = ts.TeacherID,
-                                        DisplayName = ts.Teacher.DisplayName
-                                    })
-                                    .Distinct()
-                                    .ToList();
+            var teachers = _allocationBL.Teacher_Subject_Allocation
+                                  .Where(tsa => tsa.SubjectID == subjectID)
+                                  .Select(tsa => new
+                                  {
+                                      tsa.Teacher.DisplayName,
+                                      tsa.SubjectAllocationID
+                                  }).ToList();
 
-                return Json(teachers, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception for debugging purposes
-                Console.WriteLine("An error occurred while retrieving teachers: " + ex.Message);
-                throw; // Rethrow the exception to indicate a server error
-            }
+            return Json(teachers, JsonRequestBehavior.AllowGet);
         }
+
 
         /// <summary>
         /// retrieve the SubjectALlocationID based on the sujectid and the teacherid

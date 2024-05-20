@@ -39,6 +39,14 @@ textarea {
     right:0;
     float:right;
 }
+#columnSelect, #customSearchBox {
+    margin-top: 10px;
+    border-radius: 5px;
+    margin-left:10px;
+}
+#customSearchBox {
+    width:80px;
+}
 #statusFilter, #filterStatus{
     border-radius:5px;
 }

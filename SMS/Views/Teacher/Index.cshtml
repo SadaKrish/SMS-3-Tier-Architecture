@@ -18,7 +18,14 @@
     <div class="panel-heading">
         <h2 class="card-header">Teacher</h2>
     </div>
-
+    <div class="search-container">
+        <select id="columnSelect">
+            <option value="0">Teacher Reg No</option>
+            <option value="1">First Name</option>
+            <option value="4">Dispaly Name</option>
+        </select>
+        <input type="text" id="customSearchBox" placeholder="Search...">
+    </div>
     <div class="panel-body card-body">
         <div class="filter">
             <label for="statusFilter">Filter by Status:</label>
@@ -34,7 +41,7 @@
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
                 <thead style="text-align:center;">
                     <tr>
-                        
+
                         <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.TeacherList.First().TeacherRegNo)</th>
                         <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.TeacherList.First().FirstName)</th>
                         <th style="background-color: #cbf5ee; text-align: center;">@Html.DisplayNameFor(model => model.TeacherList.First().MiddleName)</th>
@@ -247,6 +254,10 @@
                 ],
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25]
+            });
+            $('#customSearchBox').on('keyup', function () {
+                var column = $('#columnSelect').val();
+                datatable.column(column).search(this.value).draw();
             });
         }
 
