@@ -100,9 +100,9 @@
                 // Modify the AJAX URL based on the selected filter value
                 var url;
                 if (filterValue === 'all') {
-                    url = '/Student/GetStudent';
+                    url = '/Student/GetStudents';
                 } else {
-                    url = '/Student/GetStudent?isEnable=' + (filterValue === 'enabled');
+                    url = '/Student/GetStudents?isEnable=' + (filterValue === 'enabled');
                 }
 
                 // Reload the datatable with the updated data
@@ -110,10 +110,7 @@
             });
            
         });
-        $(document).ready(function () {
-            var table = $('#studentlis').DataTable();
-            table.settings().searching(false).draw();
-        });
+        
 
        
         //Load create page
@@ -213,7 +210,7 @@
         function initializeDataTable() {
             datatable = $("#studentlist").DataTable({
                 "ajax": {
-                    "url": "/Student/GetStudent",
+                    "url": "/Student/GetStudents",
                     "type": "GET",
                     "datatype": "json"
                 },
@@ -275,10 +272,7 @@
                 "lengthMenu": [5, 10, 15, 20, 25]
                 
             });
-            $('#customSearchBox').on('keyup', function () {
-                var column = $('#columnSelect').val();
-                datatable.column(column).search(this.value).draw();
-            });
+            
         }
 
         //$(document).ready(function () {

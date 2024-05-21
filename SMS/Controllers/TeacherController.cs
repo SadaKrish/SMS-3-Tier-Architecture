@@ -2,7 +2,10 @@
 /// 
 /// </summary>
 /// <author>Sadakshini</author>
+using SMS.BL.Student;
+using SMS.BL.Student.Interface;
 using SMS.BL.Teacher;
+using SMS.BL.Teacher.Interface;
 using SMS.Data;
 using SMS.Models.Subject;
 using SMS.Models.Teacher;
@@ -18,29 +21,37 @@ namespace SMS.Controllers
     
     public class TeacherController : Controller
     {
-        private readonly TeacherBL _teacherBL = new TeacherBL();
+        //private readonly TeacherBL _teacherBL = new TeacherBL();
+        private readonly ITeacherRepository _teacherRepository;
+
+        public TeacherController()
+        {
+            _teacherRepository = new TeacherRepository();
+        }
         // GET: Teacher
         public ActionResult Index()
         {
             var result = new TeacherViewModel();
-            result.TeacherList = _teacherBL.GetAllTeacher();
+            result.TeacherList = _teacherRepository.GetAllTeacher();
             return View(result);
         }
 
-        public ActionResult GetTeacher(bool? isEnable = null)
+        /// <summary>
+        /// Get Teacher details
+        /// </summary>
+        /// <param name="isEnable"></param>
+        /// <returns></returns>
+        public ActionResult GetTeachers(bool? isEnable = null)
         {
-            _teacherBL.Configuration.ProxyCreationEnabled = false;
-
-            // Get all subjects or filter based on the isEnable parameter
-            IQueryable<Teacher> query = _teacherBL.Teachers;
-            if (isEnable.HasValue)
-            {
-                query = query.Where(s => s.IsEnable == isEnable.Value);
-            }
-
-            var teacherlist = query.ToList();
-            return Json(new { data = teacherlist }, JsonRequestBehavior.AllowGet);
+            var teachers = _teacherRepository.GetTeachers(isEnable);
+            return Json(new { data = teachers }, JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// Add and edit existing teacher details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
 
         [HttpGet]
         public ActionResult AddOrEdit(int id = 0)
@@ -51,7 +62,7 @@ namespace SMS.Controllers
             }
             else
             {
-                var teacher = _teacherBL.GetTeacherByID(id);
+                var teacher = _teacherRepository.GetTeacherByID(id);
                 if (teacher == null)
                 {
                     return HttpNotFound();
@@ -68,113 +79,68 @@ namespace SMS.Controllers
             {
                 string message;
 
-                // Check if the registration no already exists
-                var existingTeacherRegNo = _teacherBL.Teachers.Any(s => s.TeacherID != teacher.TeacherID && s.TeacherRegNo == teacher.TeacherRegNo);
-                if (existingTeacherRegNo)
+                // Check if the subject code already exists
+                if (_teacherRepository.TeacherRegNoExists(teacher.TeacherID,teacher.TeacherRegNo))
                 {
-                    return Json(new { success = false, message = "Registration No already exists" });
+                    return Json(new { success = false, message = "Teacher Reg No already exists" });
                 }
 
-                // Check if the display name already exists
-                var existingTeacherDisplayName = _teacherBL.Teachers.Any(s => s.TeacherID != teacher.TeacherID && s.DisplayName == teacher.DisplayName);
-                if (existingTeacherDisplayName)
+                // Check if the subject name already exists
+                if (_teacherRepository.TeacherDisplayNameExists(teacher.TeacherID, teacher.DisplayName))
                 {
-                    return Json(new { success = false, message = "Display name already exists" });
+                    return Json(new { success = false, message = "Display Name already exists" });
                 }
 
-                // Save or update the teacher
-                if (teacher.TeacherID == 0)
+                if (_teacherRepository.SaveTeacher(teacher, out message))
                 {
-                    if (_teacherBL.SaveTeacher(teacher, out message))
-                    {
-                        return Json(new { success = true, message = message });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = message });
-                    }
+                    return Json(new { success = true, message = message });
                 }
                 else
                 {
-                    if (_teacherBL.SaveTeacher(teacher, out message))
-                    {
-                        return Json(new { success = true, message = message });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = message });
-                    }
+                    return Json(new { success = false, message = message });
                 }
             }
             else
             {
                 // If model state is not valid, return validation errors
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return Json(new { success = false, message = string.Join(",", errors) });
+                return Json(new { success = false, message = string.Join("<br>", errors) });
             }
         }
 
 
-
+        /// <summary>
+        /// Delete the teacher details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
-            Teacher teacher = _teacherBL.Teachers.Include("Teacher_Subject_Allocation").FirstOrDefault(x => x.TeacherID == id);
-
-            if (teacher == null)
-            {
-                return HttpNotFound();
-            }
-
-            // Check if the student is referenced in any related entities
-            if (teacher.Teacher_Subject_Allocation.Any())
-            {
-                return Json(new { success = false, message = "Cannot delete "+teacher.DisplayName+" because it is referenced in other entities" }, JsonRequestBehavior.AllowGet);
-            }
-
-            _teacherBL.Teachers.Remove(teacher);
-            _teacherBL.SaveChanges();
-
-            return Json(new { success = true, message = "Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            string msg;
+            var result = _teacherRepository.DeleteTeacher(id, out msg);
+            return Json(new { success = result, message = msg });
         }
 
+        /// <summary>
+        /// cahnging the ststau of the teacher
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult ToggleEnable(int id)
         {
-            Teacher teacher = _teacherBL.Teachers.Include("Teacher_Subject_Allocation").FirstOrDefault(x => x.TeacherID == id);
+            string message;
+            bool success = _teacherRepository.ToggleTeacherEnable(id, out message);
 
-            if (teacher == null)
+            if (!success)
             {
-                return HttpNotFound(); // or return some appropriate error response
+                return Json(new { success = false, message = message });
             }
-
-            bool currentStatus = teacher.IsEnable;
-
-
-            if (currentStatus && teacher.Teacher_Subject_Allocation.Any())
-            {
-                return Json(new { success = false, message = "Cannot change status because " + teacher.DisplayName + " is referenced in other entities" });
-            }
-
-            // Toggle the enable status
-            teacher.IsEnable = !currentStatus;
-            _teacherBL.SaveChanges();
-
-            string message = currentStatus ? "Disabled Successfully" : "Enabled Successfully";
 
             return Json(new { success = true, message = message }, JsonRequestBehavior.AllowGet);
         }
-        public ActionResult GetTeacherDisplayName(long teacherID)
-        {
-            var teacher = _teacherBL.GetTeacherByID(teacherID);
-            if (teacher != null)
-            {
-                return Json(new { success = true, displayName = teacher.DisplayName }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return Json(new { success = false,message="Teacher not found"}, JsonRequestBehavior.AllowGet);
-            }
-        }
+        
+       
     }
 }

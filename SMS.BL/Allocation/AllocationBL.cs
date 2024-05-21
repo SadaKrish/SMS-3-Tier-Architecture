@@ -1,4 +1,8 @@
-﻿using SMS.BL.Subject;
+﻿/// <summary>
+/// 
+/// </summary>
+/// <author>Sadakshini</author>
+using SMS.BL.Subject;
 using SMS.Data;
 using SMS.Models.Student_Allocation;
 using SMS.Models.Subject;
@@ -160,6 +164,12 @@ namespace SMS.BL.Allocation
             }
         }
 
+        /// <summary>
+        /// Serach allocation in Subject allocation
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <param name="searchCategory"></param>
+        /// <returns></returns>
         public IEnumerable<SubjectAllocationDetailViewModel> SearchSubjectAllocations(string searchText, string searchCategory)
         {
             var students = GetAllSubjectAllocations();
@@ -188,6 +198,7 @@ namespace SMS.BL.Allocation
         //**********************************Student ALlocation******************************>
         /// <summary>
         /// get the students and alocated subject details in grouping
+        /// grouped by Student details and teacher details
         /// </summary>
         /// <returns></returns>
 
@@ -228,15 +239,6 @@ namespace SMS.BL.Allocation
 
             return groupedData;
         }
-
-
-
-
-
-
-
-
-
 
         /// <summary>
         /// /Get the studentallocation by ID
@@ -337,6 +339,12 @@ namespace SMS.BL.Allocation
             }
         }
 
+        /// <summary>
+        /// delete whole allocation of a particular student
+        /// </summary>
+        /// <param name="studentRegNo"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public bool DeleteWholeStudentAllocation(string studentRegNo, out string msg)
         {
             msg = "";
@@ -378,6 +386,12 @@ namespace SMS.BL.Allocation
             }
         }
 
+        /// <summary>
+        /// Search student allocation
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <param name="searchCategory"></param>
+        /// <returns></returns>
         public IEnumerable<StudentAllocationGroupedViewModel> SearchStudentAllocations(string searchText, string searchCategory)
         {
             var students = GetAllStudentAllocation();

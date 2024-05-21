@@ -1,4 +1,7 @@
-﻿
+﻿/// <summary>
+/// 
+/// </summary>
+/// <author>Sadakshini</author>
 using SMS.BL.Allocation;
 using SMS.Data;
 using SMS.Models.Student_Allocation;
@@ -45,14 +48,18 @@ namespace SMS.Controllers
                 return Json(new { success = false, message = "No Data Found" }, JsonRequestBehavior.AllowGet);
             }
         }
-
+        /// <summary>
+        /// Add method for subject allocation
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: TeacherSubjectAllocation/AddOrEdit
         public ActionResult AddOrEdit(long id = 0)
         {
             var teacherList = _allocationBL.Teachers.Where(s => s.IsEnable).Select(s => new SelectListItem
             {
                 Value = s.TeacherID.ToString(),
-                Text = s.TeacherRegNo + " - " + s.DisplayName // Concatenate SubjectCode and Name
+                Text = s.TeacherRegNo + " - " + s.DisplayName
             });
             // Populate dropdown lists for teachers and subjects
             ViewBag.TeacherList = new SelectList(teacherList, "Value", "Text");
@@ -60,14 +67,14 @@ namespace SMS.Controllers
             var subjectList = _allocationBL.Subjects.Where(s => s.IsEnable).Select(s => new SelectListItem
             {
                 Value = s.SubjectID.ToString(),
-                Text = s.SubjectCode + " - " + s.Name // Concatenate SubjectCode and Name
+                Text = s.SubjectCode + " - " + s.Name 
             });
 
             ViewBag.SubjectList = new SelectList(subjectList, "Value", "Text");
 
             if (id == 0) // Add new allocation
             {
-                return PartialView("_AddTeacherSubjectAllocation", new Teacher_Subject_AllocationBO()); // Change to Teacher_Subject_AllocationBO
+                return PartialView("_AddTeacherSubjectAllocation", new Teacher_Subject_AllocationBO()); 
             }
             else // Edit existing allocation
             {
@@ -116,6 +123,11 @@ namespace SMS.Controllers
             return PartialView("_AddTeacherSubjectAllocation", subjectAllocation);
         }
 
+        /// <summary>
+        ///Delete the subject allocation 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult DeleteSubjectAllocation(long id)
         {
@@ -147,6 +159,11 @@ namespace SMS.Controllers
             // result.Teacher_Subject_AllocationList = _allocationBL.GetAllSubjectAllocation();
             return View(result);
         }
+        /// <summary>
+        /// retrieve the studnet details along with student's status
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult GetAllStudentAllocation(string status = "all")
         {
@@ -306,6 +323,11 @@ namespace SMS.Controllers
             return Json(new { success = result, message = msg });
         }
 
+        /// <summary>
+        /// Delete a complete allocation of a student
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult DeleteWholeStudentAllocation(string id)
         {
@@ -314,6 +336,12 @@ namespace SMS.Controllers
             return Json(new { success = result, message = msg });
         }
 
+        /// <summary>
+        /// Search in Student Allocation page
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <param name="searchCategory"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult SearchStudentAllocations(string searchText, string searchCategory)
         {

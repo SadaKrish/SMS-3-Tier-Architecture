@@ -50,25 +50,25 @@
         margin-bottom: 10px;
     }
 
-        .controls-container .filter,
-        .controls-container .search-container {
-            display: flex;
-            align-items: center;
-        }
+   .controls-container .filter,
+ .controls-container .search-container {
+     display: flex;
+     align-items: center;
+ }
 
-        .controls-container .filter {
-            margin-left: auto;
-            margin-right: 20px;
-        }
+ .controls-container .filter {
+     margin-left: auto;
+     margin-right: 20px;
+ }
 
-        .controls-container .search-container {
-            margin-left: auto;
-        }
+ .controls-container .search-container {
+     margin-left: auto;
+ }
 
-        .controls-container select,
-        .controls-container input {
-            margin-left: 10px;
-        }
+ .controls-container select,
+ .controls-container input {
+     margin-left: 10px;
+ }  
 </style>
 <div class="card panel-default">
     <div class="panel-heading">
@@ -152,7 +152,7 @@
                     "data": null,
                     "title": "Student Information",
                     "render": function (data, type, row) {
-                        var statusText = data.IsEnabled ? "<span style='color: green;'>Active</span>" : "<span style='color: red;'>Inactive</span>";
+                        var statusText = data.IsEnable ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
                         return data.StudentRegNo + ' - ' + data.DisplayName + ' ' + statusText;
                     }
                 },

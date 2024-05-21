@@ -8,7 +8,7 @@
         margin-bottom: 10px;
     }
 
-    .control-label, .form-control {
+    .control-label, .form-control,form-select {
         font-size: 12px;
     }
 </style>
@@ -159,41 +159,7 @@
         });
     });
 
-    $(document).ready(function () {
-        $('#stuentRegNo').blur(function () {
-            var teacherRegNo = $(this).val();
-            $.ajax({
-                url: '@Url.Action("CheckStudentRegNo", "Student")', // Replace with your action method
-                type: 'GET',
-                data: { studentRegNo: studentRegNo },
-                success: function (result) {
-                    if (result) {
-                        $('#regNoAvailability').text('Student Reg No already exists.');
-                    } else {
-                        $('#regNoAvailability').text('');
-                    }
-                }
-            });
-        });
-
-
-
-        $('#displayName').blur(function () {
-            var displayName = $(this).val();
-            $.ajax({
-                url: '@Url.Action("CheckDisplayName", "Student")', // Replace with your action method
-                type: 'GET',
-                data: { displayName: displayName },
-                success: function (result) {
-                    if (result) {
-                        $('#displayNameAvailability').text('Display Name already exists.');
-                    } else {
-                        $('#displayNameAvailability').text('');
-                    }
-                }
-            });
-        });
-    });
+    
 
 
 

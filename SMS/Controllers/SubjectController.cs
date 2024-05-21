@@ -12,17 +12,26 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using SMS.BL.Subject.Interface;
+using SMS.BL.Allocation;
 
 namespace SMS.Controllers
 {
     public class SubjectController : Controller
     {
-        private readonly SubjectBL _subjectBL = new SubjectBL();
+        //private readonly SubjectBL _subjectBL = new SubjectBL();
+        private readonly ISubjectRepository _subjectRepository;
+
+        public SubjectController() 
+        {
+            _subjectRepository = new SubjectRepository();
+        }
         // GET: Subject
         public ActionResult Index()
         {
             var result = new SubjectViewModel();
-            result.SubjectList = _subjectBL.GetAllSubject();
+            // result.SubjectList = _subjectBL.GetAllSubject();
+            result.SubjectList = _subjectRepository.GetAllSubject();
             return View(result);
         }
         /// <summary>
@@ -32,17 +41,8 @@ namespace SMS.Controllers
         /// <returns></returns>
         public ActionResult GetSubject(bool? isEnable = null)
         {
-            _subjectBL.Configuration.ProxyCreationEnabled = false;
-
-            // Get all subjects or filter based on the isEnable parameter
-            IQueryable<Subject> query = _subjectBL.Subjects;
-            if (isEnable.HasValue)
-            {
-                query = query.Where(s => s.IsEnable == isEnable.Value);
-            }
-
-            var sublist = query.ToList();
-            return Json(new { data = sublist }, JsonRequestBehavior.AllowGet);
+            var subjects = _subjectRepository.GetSubjects(isEnable);
+            return Json(new { data = subjects }, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
         /// Add Subject and edit existing subject
@@ -59,7 +59,7 @@ namespace SMS.Controllers
             }
             else
             {
-                var subject = _subjectBL.GetSubjectByID(id);
+                var subject = _subjectRepository.GetSubjectByID(id); // Assume this method exists in your BL to fetch a subject by ID
                 if (subject == null)
                 {
                     return HttpNotFound();
@@ -77,41 +77,24 @@ namespace SMS.Controllers
                 string message;
 
                 // Check if the subject code already exists
-                var existingSubjectCode = _subjectBL.Subjects.Any(s => s.SubjectID != subject.SubjectID && s.SubjectCode == subject.SubjectCode);
-                if (existingSubjectCode)
+                if (_subjectRepository.SubjectCodeExists(subject.SubjectID, subject.SubjectCode))
                 {
                     return Json(new { success = false, message = "SubjectCode already exists" });
                 }
 
                 // Check if the subject name already exists
-                var existingSubjectName = _subjectBL.Subjects.Any(s => s.SubjectID != subject.SubjectID && s.Name == subject.Name);
-                if (existingSubjectName)
+                if (_subjectRepository.SubjectNameExists(subject.SubjectID, subject.Name))
                 {
                     return Json(new { success = false, message = "SubjectName already exists" });
                 }
 
-                // Save or update the subject
-                if (subject.SubjectID == 0)
+                if (_subjectRepository.SaveSubject(subject, out message))
                 {
-                    if (_subjectBL.SaveSubject(subject, out message))
-                    {
-                        return Json(new { success = true, message = message });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = message });
-                    }
+                    return Json(new { success = true, message = message });
                 }
                 else
                 {
-                    if (_subjectBL.SaveSubject(subject, out message))
-                    {
-                        return Json(new { success = true, message = message });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = message });
-                    }
+                    return Json(new { success = false, message = message });
                 }
             }
             else
@@ -122,6 +105,7 @@ namespace SMS.Controllers
             }
         }
 
+
         /// <summary>
         /// Delete method
         /// </summary>
@@ -129,28 +113,14 @@ namespace SMS.Controllers
         /// <returns></returns>
 
         [HttpPost]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(long id)
         {
-            Subject subject = _subjectBL.Subjects.Include("Teacher_Subject_Allocation").FirstOrDefault(x => x.SubjectID == id);
-
-            if (subject == null)
-            {
-                return HttpNotFound();
-            }
-
-            // Check if the student is referenced in any related entities
-            if (subject.Teacher_Subject_Allocation.Any())
-            {
-                return Json(new { success = false, message = "Cannot delete "+subject.Name+" because it is referenced in other entities" }, JsonRequestBehavior.AllowGet);
-            }
-
-            _subjectBL.Subjects.Remove(subject);
-            _subjectBL.SaveChanges();
-
-            return Json(new { success = true, message = "Deleted Successfully" }, JsonRequestBehavior.AllowGet);
+            string msg;
+            var result = _subjectRepository.DeleteSubject(id, out msg);
+            return Json(new { success = result, message = msg });
         }
 
-        
+
         /// <summary>
         /// STatus button enable disable
         /// </summary>
@@ -159,28 +129,16 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult ToggleEnable(int id)
         {
-            Subject subject = _subjectBL.Subjects.Include("Teacher_Subject_Allocation").FirstOrDefault(x => x.SubjectID == id);
+            string message;
+            bool success = _subjectRepository.ToggleSubjectEnable(id, out message);
 
-            if (subject == null)
+            if (!success)
             {
-                return HttpNotFound();
+                return Json(new { success = false, message = message });
             }
-
-            bool currentStatus = subject.IsEnable;
-
-            // If the current status is enabled, check if the teacher is referenced in any related entities
-            if (currentStatus && subject.Teacher_Subject_Allocation.Any())
-            {
-                return Json(new { success = false, message = "Cannot change status because " + subject.Name + " is referenced in other entities" });
-            }
-
-            // Toggle the enable status
-            subject.IsEnable = !currentStatus;
-            _subjectBL.SaveChanges();
-
-            string message = currentStatus ? "Disabled Successfully" : "Enabled Successfully";
 
             return Json(new { success = true, message = message }, JsonRequestBehavior.AllowGet);
         }
+
     }
 }

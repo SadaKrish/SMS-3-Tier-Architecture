@@ -100,9 +100,9 @@
                 // Modify the AJAX URL based on the selected filter value
                 var url;
                 if (filterValue === 'all') {
-                    url = '/Teacher/GetTeacher';
+                    url = '/Teacher/GetTeachers';
                 } else {
-                    url = '/Teacher/GetTeacher?isEnable=' + (filterValue === 'enabled');
+                    url = '/Teacher/GetTeachers?isEnable=' + (filterValue === 'enabled');
                 }
 
                 // Reload the datatable with the updated data
@@ -207,7 +207,7 @@
         function initializeDataTable() {
             datatable = $("#studentlist").DataTable({
                 "ajax": {
-                    "url": "/Teacher/GetTeacher",
+                    "url": "/Teacher/GetTeachers",
                     "type": "GET",
                     "datatype": "json"
                 },

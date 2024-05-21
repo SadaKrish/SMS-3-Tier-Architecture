@@ -3,8 +3,12 @@
 /// </summary>
 /// <author>Sadakshini</author>
 using SMS.BL.Student;
+using SMS.BL.Student.Interface;
+using SMS.BL.Subject;
+using SMS.BL.Subject.Interface;
 using SMS.Data;
 using SMS.Models.Student;
+using SMS.Models.Subject;
 using SMS.ViewModel.Student;
 using System;
 using System.Collections.Generic;
@@ -17,12 +21,17 @@ namespace SMS.Controllers
     public class StudentController : Controller
     {
         // GET: Student
-        private readonly StudentBL _studentBL = new StudentBL();
-        // GET: Teacher
+        //private readonly StudentBL _studentBL = new StudentBL();
+        private readonly IStudentRepository _studentRepository;
+
+        public StudentController()
+        {
+            _studentRepository = new StudentRepository();
+        }
         public ActionResult Index()
         {
             var result = new StudentViewModel();
-            result.StudentList = _studentBL.GetAllStudent();
+            result.StudentList = _studentRepository.GetAllStudent();
             return View(result);
         }
         /// <summary>
@@ -30,19 +39,10 @@ namespace SMS.Controllers
         /// </summary>
         /// <param name="isEnable"></param>
         /// <returns></returns>
-        public ActionResult GetStudent(bool? isEnable = null)
+        public ActionResult GetStudents(bool? isEnable = null)
         {
-            _studentBL.Configuration.ProxyCreationEnabled = false;
-
-            // Get all subjects or filter based on the isEnable parameter
-            IQueryable<Student> query = _studentBL.Students;
-            if (isEnable.HasValue)
-            {
-                query = query.Where(s => s.IsEnable == isEnable.Value);
-            }
-
-            var studentlist = query.ToList();
-            return Json(new { data = studentlist }, JsonRequestBehavior.AllowGet);
+            var students = _studentRepository.GetStudents(isEnable);
+            return Json(new { data = students }, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
         /// Add and edit
@@ -58,7 +58,7 @@ namespace SMS.Controllers
             }
             else
             {
-                var student = _studentBL.GetStudentByID(id);
+                var student = _studentRepository.GetStudentByID(id);
                 if (student == null)
                 {
                     return HttpNotFound();
@@ -75,42 +75,35 @@ namespace SMS.Controllers
             {
                 string message;
 
+                // Retrieve the existing student to compare values
+                var existingStudent = _studentRepository.GetStudentByID(student.StudentID);
+
                 // Check if the registration no already exists
-                var existingStudentRegNo = _studentBL.Students.Any(s => s.StudentID != student.StudentID && s.StudentRegNo == student.StudentRegNo);
-                if (existingStudentRegNo)
+                if (existingStudent == null || existingStudent.StudentRegNo != student.StudentRegNo)
                 {
-                    return Json(new { success = false, message = "Registration No already exists" });
+                    if (_studentRepository.StudentRegNoExists(student.StudentID,student.StudentRegNo))
+                    {
+                        return Json(new { success = false, message = "Registration No already exists" });
+                    }
                 }
 
                 // Check if the display name already exists
-                var existingStudentDisplayName = _studentBL.Students.Any(s => s.StudentID != student.StudentID && s.DisplayName == student.DisplayName);
-                if (existingStudentDisplayName)
+                if (existingStudent == null || existingStudent.DisplayName != student.DisplayName)
                 {
-                    return Json(new { success = false, message = "Display name already exists" });
+                    if (_studentRepository.StudentDisplayNameExists(student.StudentID, student.DisplayName))
+                    {
+                        return Json(new { success = false, message = "Display name already exists" });
+                    }
                 }
 
-                // Save or update the teacher
-                if (student.StudentID == 0)
+                // Save or update the student
+                if (_studentRepository.SaveStudent(student, out message))
                 {
-                    if (_studentBL.SaveStudent(student, out message))
-                    {
-                        return Json(new { success = true, message = message });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = message });
-                    }
+                    return Json(new { success = true, message = message });
                 }
                 else
                 {
-                    if (_studentBL.SaveStudent(student, out message))
-                    {
-                        return Json(new { success = true, message = message });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = message });
-                    }
+                    return Json(new { success = false, message = message });
                 }
             }
             else
@@ -122,6 +115,9 @@ namespace SMS.Controllers
         }
 
 
+
+
+
         /// <summary>
         /// Delete Student
         /// </summary>
@@ -130,25 +126,19 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
-            Student student = _studentBL.Students.Include("Student_Subject_Teacher_Allocation").FirstOrDefault(x => x.StudentID == id);
+            string message;
+            bool requiresConfirmation;
 
-            if (student == null)
+            var success = _studentRepository.DeleteStudent(id, out message, out requiresConfirmation);
+
+            if (success)
             {
-                return HttpNotFound();
+                return Json(new { success = true, message = message }, JsonRequestBehavior.AllowGet);
             }
-
-            // Check if the student is referenced in any related entities
-            if (student.Student_Subject_Teacher_Allocation.Any())
+            else
             {
-                // Student is following a subject, return a response indicating that confirmation is required
-                return Json(new { success = false, requiresConfirmation = true, message = student.DisplayName+" is following a course." }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, requiresConfirmation = requiresConfirmation, message = message }, JsonRequestBehavior.AllowGet);
             }
-
-            // If the student is not following any subjects, proceed with deletion
-            _studentBL.Students.Remove(student);
-            _studentBL.SaveChanges();
-
-            return Json(new { success = true, message = "Deleted Successfully" }, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
         /// Is Enable button toggle
@@ -158,52 +148,19 @@ namespace SMS.Controllers
         [HttpPost]
         public ActionResult ToggleEnable(int id)
         {
-            // Retrieve the student along with related allocations
-            Student student = _studentBL.Students
-                .Include("Student_Subject_Teacher_Allocation")
-                .FirstOrDefault(x => x.StudentID == id);
-
-            // Check if the student exists
-            if (student == null)
-            {
-                return HttpNotFound(); // or return some appropriate error response
-            }
-
-            // Get the current status of the student
-            bool currentStatus = student.IsEnable;
-
-            // Initialize the message variable
             string message;
+            var success = _studentRepository.ToggleStudentEnable(id, out message);
 
-            // If the current status is enabled and the student is referenced in other entities
-            if (currentStatus && student.Student_Subject_Teacher_Allocation.Any())
+            if (success)
             {
-                message = $"Warning: {student.DisplayName} is referenced in other entities. Status changed successfully.";
+                return Json(new { success = true, message = message }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                message = currentStatus ? "Disabled Successfully" : "Enabled Successfully";
-            }
-
-            // Toggle the enable status
-            student.IsEnable = !currentStatus;
-            _studentBL.SaveChanges();
-
-            // Return the response with success and message
-            return Json(new { success = true, message = message }, JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult GetStudentDisplayName(long studentID)
-        {
-            var teacher = _studentBL.GetStudentByID(studentID);
-            if (teacher != null)
-            {
-                return Json(new { success = true, displayName = teacher.DisplayName }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return Json(new { success = false, message = "Teacher not found" }, JsonRequestBehavior.AllowGet);
+                return HttpNotFound();
             }
         }
+
+
     }
 }
