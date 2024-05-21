@@ -84,10 +84,11 @@
         <div class="controls-container">
             <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
             <div class="form-group filter">
+                <label for="statusFilter">Student Status:</label>
                 <select id="filterStatus">
                     <option value="all">All</option>
-                    <option value="enabled">Enabled</option>
-                    <option value="disabled">Disabled</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">InActive</option>
                 </select>
             </div>
             <div class="search-container">
@@ -151,7 +152,8 @@
                     "data": null,
                     "title": "Student Information",
                     "render": function (data, type, row) {
-                        return data.StudentRegNo + ' - ' + data.DisplayName;
+                        var statusText = data.IsEnabled ? "<span style='color: green;'>Active</span>" : "<span style='color: red;'>Inactive</span>";
+                        return data.StudentRegNo + ' - ' + data.DisplayName + ' ' + statusText;
                     }
                 },
                 {
@@ -334,9 +336,8 @@
                         "data": null,
                         "title": "Student Information",
                         "render": function (data, type, row) {
-                            var studentInfo = data.StudentRegNo + ' - ' + data.DisplayName+'</br>';
-                            //studentInfo += "<button class='btn btn-delete-allocation' onclick='deleteAllocation(" + data.StudentRegNo + ")'><i class='bi bi-trash' style='color:red;'></button>";
-                            return studentInfo;
+                            var statusText = data.IsEnable ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Inactive</span>";
+                            return data.StudentRegNo + ' - ' + data.DisplayName + ' ' + statusText;
                         }
                     },
                     {

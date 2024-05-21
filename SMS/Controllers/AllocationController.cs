@@ -123,6 +123,19 @@ namespace SMS.Controllers
             var result = _allocationBL.DeleteSubjectAllocation(id, out msg);
             return Json(new { success = result, message = msg });
         }
+        [HttpPost]
+        public ActionResult SearchSubjectAllocations(string searchText, string searchCategory)
+        {
+            try
+            {
+                var searchResults = _allocationBL.SearchSubjectAllocations(searchText, searchCategory);
+                return Json(new { success = true, data = searchResults });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
         /// <summary>
         /// Student ALlocation page
@@ -138,11 +151,11 @@ namespace SMS.Controllers
         public ActionResult GetAllStudentAllocation(string status = "all")
         {
             bool? isEnabled = null;
-            if (status.ToLower() == "enabled")
+            if (status.ToLower() == "active")
             {
                 isEnabled = true;
             }
-            else if (status.ToLower() == "disabled")
+            else if (status.ToLower() == "inactive")
             {
                 isEnabled = false;
             }
@@ -250,6 +263,7 @@ namespace SMS.Controllers
                                   .Where(tsa => tsa.SubjectID == subjectID)
                                   .Select(tsa => new
                                   {
+                                      tsa.Teacher.TeacherRegNo,
                                       tsa.Teacher.DisplayName,
                                       tsa.SubjectAllocationID
                                   }).ToList();

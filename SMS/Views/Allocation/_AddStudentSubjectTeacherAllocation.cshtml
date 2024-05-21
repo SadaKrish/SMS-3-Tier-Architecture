@@ -86,7 +86,7 @@
                         $('#teacherDropdown').empty(); 
                         $('#teacherDropdown').append($('<option>').text('Select Teacher').attr('value', ''));
                         $.each(data, function (index, teacher) {
-                            $('#teacherDropdown').append($('<option>').text(teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
+                            $('#teacherDropdown').append($('<option>').text(teacher.TeacherRegNo+'-'+teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
                         });
                     },
                     error: function (xhr, status, error) {

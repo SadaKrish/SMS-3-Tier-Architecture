@@ -43,28 +43,53 @@
         max-width: 800px; 
         margin: 0 auto; 
     }
-    .subsearch {
-        float: right;
-        right: 0;
+    .controls-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
     }
+
+        .controls-container .filter,
+        .controls-container .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .controls-container .filter {
+            margin-left: auto;
+            margin-right: 20px;
+        }
+
+        .controls-container .search-container {
+            margin-left: auto;
+        }
+
+        .controls-container select,
+        .controls-container input {
+            margin-left: 10px;
+        }
 </style>
 <div class="card panel-default">
     <div class="panel-heading">
         <h2 class="card-header">Subject Allocation</h2>
     </div>
-    <div class="search-container subsearch">
-        <select id="columnSelect">
-            <option value="0">Teacher Information</option>
-            <option value="1">Subject Information</option>
-
-        </select>
-        <input type="text" id="customSearchBox" placeholder="Search...">
-    </div>
-
-
     <div class="panel-body card-body">
 
-        <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee; margin-left:20px;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
+        <div class="controls-container">
+            <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
+            
+            <div class="search-container">
+                <select id="searchCategory">
+                    <option value="TeacherRegNo">Teacher Reg No</option>
+                    <option value="SubjectCode">Subject Code</option>
+                    <option value="TeacherName">Teacher Name</option>
+                    <option value="SubjectName">Subject Name</option>
+                </select>
+                <input type="text" id="customSearchBox" placeholder="Search...">
+            </div>
+
+        </div>
 
         <div class="table-responsive">
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
@@ -100,6 +125,83 @@
         });
 
 
+              $(document).ready(function () {
+    function initializeDataTable(data = []) {
+        // Check if the DataTable instance already exists
+        if ($.fn.DataTable.isDataTable("#studentlist")) {
+            $("#studentlist").DataTable().destroy();
+        }
+
+        $("#studentlist").DataTable({
+            "data": data,
+            "columns": [
+                {
+                    "data": null,
+                    "title": "Teacher Details",
+                    "render": function (data, type, row) {
+                        return row.TeacherRegNo + ' - ' + row.DisplayName;
+                    }
+                },
+                {
+                    "data": "Subjects",
+                    "title": "Subject Details",
+                    "render": function (data, type, row) {
+                        var subjectButtons = data.map(function (subject) {
+                            return `
+                    <div class="subject-item">
+                        <span>${subject.SubjectCode} - ${subject.Name}</span>
+                        <div class="subject-buttons">
+                            <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'>
+                                <i class='bi bi-trash' style='color:red;'></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                        }).join('');
+
+                        return subjectButtons;
+                    }
+                }
+            ]
+            ,
+            "columnDefs": [
+                // { "width": "300px", "targets": 1 } // Adjust width of the second column (Teacher Name)
+            ],
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 15, 20, 25],
+            "searching":false
+        });
+    }
+
+    function searchAllocations() {
+        var searchText = $('#customSearchBox').val().trim();
+        var searchCategory = $('#searchCategory').val();
+
+        $.ajax({
+            url: '@Url.Action("SearchSubjectAllocations", "Allocation")',
+            type: 'POST',
+            data: { searchText: searchText, searchCategory: searchCategory },
+            success: function (response) {
+                if (response.success) {
+                    // Reinitialize the DataTable with the new data
+                    initializeDataTable(response.data);
+                } else {
+                    console.error('Search failed:', response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    // Initial DataTable load
+    initializeDataTable();
+
+    // Event handlers for search input and button
+    $('#customSearchBox').on('keyup', searchAllocations);
+    $('#searchButton').on('click', searchAllocations);
+});
         //Load create page
       function LoadCreatePage() {
         //* /Hide student list and load create new form*/
@@ -267,7 +369,7 @@ $(document).ready(function () {
                 ],
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25],
-                "searching": false
+                "searching":false
             });
             $('#customSearchBox').on('keyup', function () {
                 var column = $('#columnSelect').val();

@@ -160,13 +160,38 @@ namespace SMS.BL.Allocation
             }
         }
 
+        public IEnumerable<SubjectAllocationDetailViewModel> SearchSubjectAllocations(string searchText, string searchCategory)
+        {
+            var students = GetAllSubjectAllocations();
+
+            
+            if (searchCategory == "TeacherRegNo")
+            {
+                students = students.Where(a => a.TeacherRegNo.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            else if (searchCategory == "TeacherName")
+            {
+                students = students.Where(a => a.DisplayName.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+           
+            else if (searchCategory == "SubjectCode")
+            {
+                students = students.Where(a => a.Subjects.Any(t => t.SubjectCode.ToUpper().Contains(searchText.ToUpper()))).ToList();
+            }
+            else if (searchCategory == "SubjectName")
+            {
+                students = students.Where(a => a.Subjects.Any(t => t.Name.ToUpper().Contains(searchText.ToUpper()))).ToList();
+            }
+
+            return students;
+        }
         //**********************************Student ALlocation******************************>
         /// <summary>
         /// get the students and alocated subject details in grouping
         /// </summary>
         /// <returns></returns>
 
-        public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation(bool? status=null)
+        public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation(bool? status = null)
         {
             IQueryable<Student_Subject_Teacher_Allocation> query = Student_Subject_Teacher_Allocation
                 .Include("Student")
@@ -181,15 +206,16 @@ namespace SMS.BL.Allocation
             var allStudentAllocations = query.ToList();
 
             var groupedData = allStudentAllocations
-                .GroupBy(item => new { item.Student.StudentRegNo, item.Student.DisplayName })
+                .GroupBy(item => new { item.Student.StudentRegNo, item.Student.DisplayName, item.Student.IsEnable })
                 .Select(group => new StudentAllocationGroupedViewModel
                 {
                     StudentRegNo = group.Key.StudentRegNo,
                     DisplayName = group.Key.DisplayName,
+                    IsEnable = group.Key.IsEnable, // Set the IsEnable property
                     TeacherAllocations = group.GroupBy(g => new { g.Teacher_Subject_Allocation.Teacher.TeacherRegNo, g.Teacher_Subject_Allocation.Teacher.DisplayName })
                         .Select(subGroup => new TeacherAllocationViewModel
                         {
-                            TeacherRegNo = subGroup.Key.TeacherRegNo, 
+                            TeacherRegNo = subGroup.Key.TeacherRegNo,
                             TeacherName = subGroup.Key.DisplayName,
                             Subjects = subGroup.Select(item => new SubjectAllocationViewModel
                             {
@@ -202,6 +228,7 @@ namespace SMS.BL.Allocation
 
             return groupedData;
         }
+
 
 
 
@@ -244,6 +271,7 @@ namespace SMS.BL.Allocation
             bool isExistingStudentAllocation = Student_Subject_Teacher_Allocation.Any(s => s.StudentAllocationID == studentAllocation.StudentAllocationID);
 
             bool isStudentAllocated = Student_Subject_Teacher_Allocation.Any(s => s.SubjectAllocationID == studentAllocation.SubjectAllocationID && s.StudentID == studentAllocation.StudentID);
+           // bool isSubjectAllocated=Student.
 
 
 

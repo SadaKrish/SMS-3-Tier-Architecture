@@ -11,6 +11,7 @@ namespace SMS.ViewModel.Allocation
         public string StudentRegNo { get; set; }
         public string DisplayName { get; set; }
         
+        public bool IsEnable { get; set; }
         public IEnumerable<TeacherAllocationViewModel> TeacherAllocations { get; set; }
         
     }
