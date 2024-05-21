@@ -35,15 +35,11 @@ textarea {
     color: black;
 }*/
 /*filter style*/
-.filter{
-    right:0;
-    float:right;
-    margin-top:10px;
-}
-#columnSelect, #customSearchBox {
+
+#searchCategory, #customSearchBox, #filterStatus {
     margin-top: 10px;
     border-radius: 5px;
-    margin-left:10px;
+    font-size:14px;
 }
 #customSearchBox {
     width:80px;
@@ -60,19 +56,7 @@ footer {
     color: white;
     
 }
-.search-container {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-}
 
- .search-container select,
-.search-container input {
-        margin-right: 10px;
-        padding: 5px;
-        font-size: 12px;
-
- }
 #createoredit {
     position:absolute;
 left:30%;

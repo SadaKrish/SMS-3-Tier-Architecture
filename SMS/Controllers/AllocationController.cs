@@ -299,5 +299,21 @@ namespace SMS.Controllers
             var result = _allocationBL.DeleteWholeStudentAllocation(id, out msg);
             return Json(new { success = result, message = msg });
         }
+
+        [HttpPost]
+        public ActionResult SearchStudentAllocations(string searchText, string searchCategory)
+        {
+            try
+            {
+                var searchResults = _allocationBL.SearchStudentAllocations(searchText, searchCategory);
+                return Json(new { success = true, data = searchResults });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
     }
 }

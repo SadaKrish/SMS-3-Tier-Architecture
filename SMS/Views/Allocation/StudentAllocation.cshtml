@@ -43,32 +43,66 @@
         max-width: 1200px; 
         margin: 0 auto; 
     }
+    .controls-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+        .controls-container .filter,
+        .controls-container .search-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .controls-container .filter {
+            margin-left: auto;
+            margin-right: 20px;
+        }
+
+        .controls-container .search-container {
+            margin-left: auto;
+        }
+
+        .controls-container select,
+        .controls-container input {
+            margin-left: 10px;
+        }
 </style>
 <div class="card panel-default">
     <div class="panel-heading">
         <h2 class="card-header">Student Allocation</h2>
     </div>
-
+    
 
     <div class="panel-body card-body">
-        <div class="search-container">
-            <select id="columnSelect">
-                <option value="0">Student Information</option>
-                <option value="1">Teacher Information</option>
-                <option value="2">Subjects</option>
-            </select>
-            <input type="text" id="customSearchBox" placeholder="Search...">
-        </div>
-        <div class="form-group filter">
-           
-            <select id="filterStatus">
-                <option value="all">All</option>
-                <option value="enabled">Enabled</option>
-                <option value="disabled">Disabled</option>
-            </select>
-        </div>
 
-        <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
+
+
+        
+        <div class="controls-container">
+            <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Allocation</a>
+            <div class="form-group filter">
+                <select id="filterStatus">
+                    <option value="all">All</option>
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                </select>
+            </div>
+            <div class="search-container">
+                <select id="searchCategory">
+                    <option value="StudentRegNo">Student Reg No</option>
+                    <option value="TeacherRegNo">Teacher Reg No</option>
+                    <option value="SubjectCode">Subject Code</option>
+                    <option value="StudentName">Student Name</option>
+                    <option value="TeacherName">Teacher Name</option>
+                    <option value="SubjectName">Subject Name</option>
+                </select>
+                <input type="text" id="customSearchBox" placeholder="Search...">
+            </div>
+
+        </div>
 
         <div class="table-responsive">
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
@@ -76,7 +110,7 @@
                     <tr>
                         <th style="background-color: #cbf5ee; text-align: center;">Student Information</th>
                         <th style="background-color: #cbf5ee; text-align: center;">Teacher Information</th>
-                        
+
 
 
 
@@ -101,7 +135,88 @@
     <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-   
+
+
+      $(document).ready(function () {
+    function initializeDataTable(data = []) {
+        // Check if the DataTable instance already exists
+        if ($.fn.DataTable.isDataTable("#studentlist")) {
+            $("#studentlist").DataTable().destroy();
+        }
+
+        $("#studentlist").DataTable({
+            "data": data,
+            "columns": [
+                {
+                    "data": null,
+                    "title": "Student Information",
+                    "render": function (data, type, row) {
+                        return data.StudentRegNo + ' - ' + data.DisplayName;
+                    }
+                },
+                {
+                    "data": null,
+                    "title": "Teacher & Subject Information",
+                    "render": function (data, type, row) {
+                        var teacherSubjectInfo = '';
+                        row.TeacherAllocations.forEach(function (teacherAllocation, index) {
+                            teacherSubjectInfo += "<div style='margin-top:10px;'>";
+                            teacherSubjectInfo += "<div style='text-align: left;'><strong>Teacher: </strong>" + teacherAllocation.TeacherRegNo + ' - ' + teacherAllocation.TeacherName + "</div>";
+                            teacherAllocation.Subjects.forEach(function (subject) {
+                                teacherSubjectInfo += "<div class='subject-item-container'>";
+                                teacherSubjectInfo += "<div class='subject-item'>" + subject.SubjectCode + ' - ' + subject.Name + "</div>";
+                                teacherSubjectInfo += "<button class='btn btn-delete-subject' onclick='Delete(" + subject.StudentAllocationID + ")'><i class='bi bi-trash' style='color:red;'></i></button>";
+                                teacherSubjectInfo += "</div>";
+                            });
+                            teacherSubjectInfo += "</div>";
+                            if (index < row.TeacherAllocations.length - 1) {
+                                teacherSubjectInfo += "<hr style='border-top: 1px solid #000; margin-top: 10px; margin-bottom: 10px;'>";
+                            }
+                        });
+                        return teacherSubjectInfo;
+                    }
+                }
+            ],
+            "columnDefs": [
+                { "width": "30%", "targets": 0 },
+                { "width": "60%", "targets": 1 }
+            ],
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 15, 20, 25],
+            "searching":false
+        });
+    }
+
+    function searchAllocations() {
+        var searchText = $('#customSearchBox').val().trim();
+        var searchCategory = $('#searchCategory').val();
+
+        $.ajax({
+            url: '@Url.Action("SearchStudentAllocations", "Allocation")',
+            type: 'POST',
+            data: { searchText: searchText, searchCategory: searchCategory },
+            success: function (response) {
+                if (response.success) {
+                    // Reinitialize the DataTable with the new data
+                    initializeDataTable(response.data);
+                } else {
+                    console.error('Search failed:', response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    // Initial DataTable load
+    initializeDataTable();
+
+    // Event handlers for search input and button
+    $('#customSearchBox').on('keyup', searchAllocations);
+    $('#searchButton').on('click', searchAllocations);
+});
+
 
 
 
@@ -171,7 +286,7 @@
             Swal.fire('Error!', 'An error occurred while adding the allocation', 'error');
         }
 
-        
+
 
 
 
@@ -193,7 +308,7 @@
         function initializeDataTable(status = 'all') {
             // Check if the DataTable instance already exists
             if ($.fn.DataTable.isDataTable("#studentlist")) {
-               
+
                 $("#studentlist").DataTable().destroy();
             }
 
@@ -231,7 +346,8 @@
                             var teacherSubjectInfo = '';
                             data.TeacherAllocations.forEach(function (teacherAllocation, index) {
                                 teacherSubjectInfo += "<div style='margin-top:10px;'>";
-                                teacherSubjectInfo += "<div style='text-align: left;'>" + teacherAllocation.TeacherRegNo + ' - ' + teacherAllocation.TeacherName + "</div>";
+                                teacherSubjectInfo += "<div style='text-align: left;'><strong>Teacher: </strong>" + teacherAllocation.TeacherRegNo + ' - ' + teacherAllocation.TeacherName + "</div>";
+
                                 teacherAllocation.Subjects.forEach(function (subject) {
                                     teacherSubjectInfo += "<div class='subject-item-container'>";
                                     teacherSubjectInfo += "<div class='subject-item'>" + subject.SubjectCode + ' - ' + subject.Name + "</div>";
@@ -253,16 +369,13 @@
                 "columnDefs": [
                     { "width": "30%", "targets": 0 },
                     { "width": "60%", "targets": 1 }
-                  
+
                 ],
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25],
                 "searching":false
             });
-            $('#customSearchBox').on('keyup', function () {
-                var column = $('#columnSelect').val();
-                datatable.column(column).search(this.value).draw();
-            });
+
         }
 
         $(document).ready(function () {
@@ -348,6 +461,7 @@
                 cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
+
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "POST",

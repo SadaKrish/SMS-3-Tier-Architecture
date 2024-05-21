@@ -8,6 +8,7 @@ using SMS.ViewModel.Allocation;
 using SMS.ViewModel.Subject;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Migrations.Sql;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -165,7 +166,7 @@ namespace SMS.BL.Allocation
         /// </summary>
         /// <returns></returns>
 
-        public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation(bool? status)
+        public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation(bool? status=null)
         {
             IQueryable<Student_Subject_Teacher_Allocation> query = Student_Subject_Teacher_Allocation
                 .Include("Student")
@@ -348,6 +349,41 @@ namespace SMS.BL.Allocation
                 return false;
             }
         }
+
+        public IEnumerable<StudentAllocationGroupedViewModel> SearchStudentAllocations(string searchText, string searchCategory)
+        {
+            var students = GetAllStudentAllocation();
+
+            // Perform the search logic based on the selected category
+            if (searchCategory == "StudentRegNo")
+            {
+                students = students.Where(a => a.StudentRegNo.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            else if (searchCategory == "TeacherRegNo")
+            {
+                students = students.Where(a => a.TeacherAllocations.Any(t => t.TeacherRegNo.ToUpper().Contains(searchText.ToUpper()))).ToList();
+            }
+            else if (searchCategory == "SubjectCode")
+            {
+                students = students.Where(a => a.TeacherAllocations.Any(t => t.Subjects.Any(s => s.SubjectCode.ToUpper().Contains(searchText.ToUpper())))).ToList();
+            }
+            else if (searchCategory == "StudentName")
+            {
+                students = students.Where(a => a.DisplayName.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            else if (searchCategory == "TeacherName")
+            {
+                students = students.Where(a => a.TeacherAllocations.Any(t => t.TeacherName.ToUpper().Contains(searchText.ToUpper()))).ToList();
+            }
+            else if (searchCategory == "SubjectName")
+            {
+                students = students.Where(a => a.TeacherAllocations.Any(t => t.Subjects.Any(s => s.Name.ToUpper().Contains(searchText.ToUpper())))).ToList();
+            }
+
+            return students;
+        }
+
+
 
 
     }

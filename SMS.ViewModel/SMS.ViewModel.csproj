@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Allocation\AllocationViewModel.cs" />
     <Compile Include="Allocation\StudentAllocationGroupedViewModel.cs" />
+    <Compile Include="Allocation\StudentAllocationSearchViewModel.cs" />
     <Compile Include="Allocation\StudentAllocationViewModel.cs" />
     <Compile Include="Allocation\SubjectAllocationDetailViewModel.cs" />
     <Compile Include="Allocation\SubjectAllocationViewModel.cs" />
