@@ -44,7 +44,7 @@
                     @Html.LabelFor(model => model.SubjectAllocationID, "Select Subject", new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
-                    @Html.DropDownListFor(model => model.SubjectAllocationID, ViewBag.SubjectList as SelectList, "Select Subject", new { @class = "form-select", id = "subjectDropdown" })
+                    @Html.DropDownListFor(model => model.SubjectAllocationID, ViewBag.SubjectList as IEnumerable<SelectListItem>, "Select Subject", new { @class = "form-select", id = "subjectDropdown" })
                     @Html.ValidationMessageFor(model => model.SubjectAllocationID, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -82,11 +82,11 @@
                     dataType: 'json',
                     data: { subjectID: subjectID },
                     success: function (data) {
-                        console.log("Teachers data:", data); 
-                        $('#teacherDropdown').empty(); 
+                        console.log("Teachers data:", data);
+                        $('#teacherDropdown').empty();
                         $('#teacherDropdown').append($('<option>').text('Select Teacher').attr('value', ''));
                         $.each(data, function (index, teacher) {
-                            $('#teacherDropdown').append($('<option>').text(teacher.TeacherRegNo+'-'+teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
+                            $('#teacherDropdown').append($('<option>').text(teacher.TeacherRegNo + '-' + teacher.DisplayName).attr('value', teacher.SubjectAllocationID));
                         });
                     },
                     error: function (xhr, status, error) {
@@ -96,7 +96,7 @@
                     }
                 });
             } else {
-                $('#teacherDropdown').empty(); 
+                $('#teacherDropdown').empty();
             }
         });
 

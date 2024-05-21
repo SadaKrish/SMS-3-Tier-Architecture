@@ -3,6 +3,7 @@
 /// </summary>
 /// <author>Sadakshini</author>
 using SMS.BL.Allocation;
+using SMS.BL.Allocation.Interface;
 using SMS.Data;
 using SMS.Models.Student_Allocation;
 using SMS.Models.Teacher_Subject_Allocation;
@@ -18,7 +19,12 @@ namespace SMS.Controllers
 {
     public class AllocationController : Controller
     {
-        private readonly AllocationBL _allocationBL = new AllocationBL();
+        //private readonly AllocationBL _allocationBL = new AllocationBL();
+        private readonly IAllocationRepository _allocationRepository;
+        public AllocationController()
+        {
+            _allocationRepository = new AllocationRepository();
+        }
         // GET: Allocation
         /// <summary>
         /// index page for subject allocaton
@@ -37,7 +43,7 @@ namespace SMS.Controllers
         /// <returns></returns>
         public ActionResult GetAllSubjectAllocation()
         {
-            var allAllocatedSubject = _allocationBL.GetAllSubjectAllocations();
+            var allAllocatedSubject = _allocationRepository.GetAllSubjectAllocations();
 
             if (allAllocatedSubject.Any())
             {
@@ -56,29 +62,16 @@ namespace SMS.Controllers
         // GET: TeacherSubjectAllocation/AddOrEdit
         public ActionResult AddOrEdit(long id = 0)
         {
-            var teacherList = _allocationBL.Teachers.Where(s => s.IsEnable).Select(s => new SelectListItem
-            {
-                Value = s.TeacherID.ToString(),
-                Text = s.TeacherRegNo + " - " + s.DisplayName
-            });
-            // Populate dropdown lists for teachers and subjects
-            ViewBag.TeacherList = new SelectList(teacherList, "Value", "Text");
-            // Populate the subject list for the dropdown
-            var subjectList = _allocationBL.Subjects.Where(s => s.IsEnable).Select(s => new SelectListItem
-            {
-                Value = s.SubjectID.ToString(),
-                Text = s.SubjectCode + " - " + s.Name 
-            });
+            ViewBag.TeacherList = new SelectList(_allocationRepository.GetEnabledTeachersList(), "Value", "Text");
+            ViewBag.SubjectList = new SelectList(_allocationRepository.GetEnabledSubjectList(), "Value", "Text");
 
-            ViewBag.SubjectList = new SelectList(subjectList, "Value", "Text");
-
-            if (id == 0) // Add new allocation
+            if (id == 0)
             {
-                return PartialView("_AddTeacherSubjectAllocation", new Teacher_Subject_AllocationBO()); 
+                return PartialView("_AddTeacherSubjectAllocation", new Teacher_Subject_AllocationBO());
             }
-            else // Edit existing allocation
+            else
             {
-                var subjectAllocation = _allocationBL.GetSubjectAllocationById(id); // Fetch allocation using BL method
+                var subjectAllocation = _allocationRepository.GetSubjectAllocationById(id);
                 if (subjectAllocation == null)
                 {
                     return HttpNotFound();
@@ -100,12 +93,12 @@ namespace SMS.Controllers
                     bool success;
                     if (subjectAllocation.SubjectAllocationID == 0) // Add new allocation
                     {
-                        success = _allocationBL.SaveSubjectAllocation(subjectAllocation, out message); 
+                        success = _allocationRepository.SaveSubjectAllocation(subjectAllocation, out message); 
                     }
                     else // Edit existing allocation
                     {
                         // Update the existing allocation
-                        success = _allocationBL.SaveSubjectAllocation(subjectAllocation, out message); 
+                        success = _allocationRepository.SaveSubjectAllocation(subjectAllocation, out message); 
                     }
 
                     
@@ -118,8 +111,8 @@ namespace SMS.Controllers
             }
 
             // If model state is not valid, re-populate ViewBag and return to the view
-            ViewBag.TeacherList = new SelectList(_allocationBL.Teachers, "TeacherID", "DisplayName", subjectAllocation.TeacherID);
-            ViewBag.SubjectList = new SelectList(_allocationBL.Subjects, "SubjectID", "Name", subjectAllocation.SubjectID);
+            ViewBag.TeacherList = new SelectList(_allocationRepository.GetEnabledTeachersList(), "TeacherID", "DisplayName", subjectAllocation.TeacherID);
+            ViewBag.SubjectList = new SelectList(_allocationRepository.GetEnabledSubjectList(), "SubjectID", "Name", subjectAllocation.SubjectID);
             return PartialView("_AddTeacherSubjectAllocation", subjectAllocation);
         }
 
@@ -132,7 +125,7 @@ namespace SMS.Controllers
         public ActionResult DeleteSubjectAllocation(long id)
         {
             string msg;
-            var result = _allocationBL.DeleteSubjectAllocation(id, out msg);
+            var result = _allocationRepository.DeleteSubjectAllocation(id, out msg);
             return Json(new { success = result, message = msg });
         }
         [HttpPost]
@@ -140,7 +133,7 @@ namespace SMS.Controllers
         {
             try
             {
-                var searchResults = _allocationBL.SearchSubjectAllocations(searchText, searchCategory);
+                var searchResults = _allocationRepository.SearchSubjectAllocations(searchText, searchCategory);
                 return Json(new { success = true, data = searchResults });
             }
             catch (Exception ex)
@@ -177,7 +170,7 @@ namespace SMS.Controllers
                 isEnabled = false;
             }
 
-            var allAllocatedStudent = _allocationBL.GetAllStudentAllocation(isEnabled);
+            var allAllocatedStudent = _allocationRepository.GetAllStudentAllocation(isEnabled);
 
             if (allAllocatedStudent != null && allAllocatedStudent.Any())
             {
@@ -200,34 +193,10 @@ namespace SMS.Controllers
         /// <returns></returns>
         public ActionResult AddOrEditStudent()
         {
-            // Populate the student list for the dropdown
-            var studentList = _allocationBL.Students.Where(s => s.IsEnable).Select(s => new SelectListItem
-            {
-                Value = s.StudentID.ToString(),
-                Text = s.StudentRegNo + " - " + s.DisplayName
-            });
+            ViewBag.StudentList = _allocationRepository.GetStudentList();
+            ViewBag.TeacherList = _allocationRepository.GetTeacherList();
+            ViewBag.SubjectList = _allocationRepository.GetAllSubjectsFromAllocation();
 
-            // Populate dropdown list for teachers
-            var teacherList = _allocationBL.Teachers.Where(t => t.IsEnable).Select(t => new SelectListItem
-            {
-                Value = t.TeacherID.ToString(),
-                Text = t.TeacherRegNo + " - " + t.DisplayName
-            });
-
-            // Populate dropdown list for subjects
-            var subjectList = _allocationBL.Teacher_Subject_Allocation
-                .Select(ts => new {
-                    SubjectID = ts.SubjectID,
-                    Name = ts.Subject.SubjectCode + " - " + ts.Subject.Name
-                })
-                .Distinct()
-                .ToList();
-
-            ViewBag.StudentList = studentList;
-            ViewBag.TeacherList = teacherList;
-            ViewBag.SubjectList = new SelectList(subjectList, "SubjectID", "Name");
-
-            // Return the partial view for adding a new allocation
             return PartialView("_AddStudentSubjectTeacherAllocation", new Student_Subject_Teacher_AllocationBO());
         }
 
@@ -243,7 +212,7 @@ namespace SMS.Controllers
                     bool success;
 
                     // Save the new allocation
-                    success = _allocationBL.SaveStudentAllocation(allocation, out message);
+                    success = _allocationRepository.SaveStudentAllocation(allocation, out message);
 
                     return Json(new { success, message });
                 }
@@ -254,18 +223,15 @@ namespace SMS.Controllers
             }
 
             // Repopulate the dropdown lists if the model state is not valid
-            ViewBag.StudentList = new SelectList(_allocationBL.Students.Where(s => s.IsEnable), "StudentID", "DisplayName", allocation.StudentID);
-
-            var subjectList = _allocationBL.Teacher_Subject_Allocation
-                .Select(ts => ts.Subject)
-                .Distinct()
-                .ToList();
-
-            ViewBag.SubjectList = new SelectList(subjectList, "SubjectID", "Name", allocation.SubjectAllocationID);
+            ViewBag.StudentList = _allocationRepository.GetStudentList();
+            ViewBag.TeacherList = _allocationRepository.GetTeacherList();
+            ViewBag.SubjectList = _allocationRepository.GetAllSubjectsFromAllocation();
 
             // Return the partial view with the current model state
             return PartialView("_AddStudentSubjectTeacherAllocation", allocation);
         }
+
+
 
 
         /// <summary>
@@ -276,15 +242,7 @@ namespace SMS.Controllers
         [HttpGet]
         public JsonResult GetTeachersBySubjectID(int subjectID)
         {
-            var teachers = _allocationBL.Teacher_Subject_Allocation
-                                  .Where(tsa => tsa.SubjectID == subjectID)
-                                  .Select(tsa => new
-                                  {
-                                      tsa.Teacher.TeacherRegNo,
-                                      tsa.Teacher.DisplayName,
-                                      tsa.SubjectAllocationID
-                                  }).ToList();
-
+            var teachers = _allocationRepository.GetTeachersBySubjectID(subjectID);
             return Json(teachers, JsonRequestBehavior.AllowGet);
         }
 
@@ -295,31 +253,31 @@ namespace SMS.Controllers
         /// <param name="subjectID"></param>
         /// <param name="teacherID"></param>
         /// <returns></returns>
-        public JsonResult GetAllocationID(long subjectID, long teacherID)
-        {
-            try
-            {
-                // Assuming Teacher_Subject_Allocation has a mapping between subjects and teachers
-                var allocationID = _allocationBL.Teacher_Subject_Allocation
-                    .Where(allocation => allocation.SubjectID == subjectID && allocation.TeacherID == teacherID)
-                    .Select(allocation => allocation.SubjectAllocationID)
-                    .FirstOrDefault();
+        //public JsonResult GetAllocationID(long subjectID, long teacherID)
+        //{
+        //    try
+        //    {
+        //        // Assuming Teacher_Subject_Allocation has a mapping between subjects and teachers
+        //        var allocationID = _allocationRepository.Teacher_Subject_Allocation
+        //            .Where(allocation => allocation.SubjectID == subjectID && allocation.TeacherID == teacherID)
+        //            .Select(allocation => allocation.SubjectAllocationID)
+        //            .FirstOrDefault();
 
-                return Json(allocationID, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception for debugging purposes
-                Console.WriteLine("An error occurred while retrieving allocation ID: " + ex.Message);
-                return Json(null); // Return null or handle the error as needed
-            }
-        }
+        //        return Json(allocationID, JsonRequestBehavior.AllowGet);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Log the exception for debugging purposes
+        //        Console.WriteLine("An error occurred while retrieving allocation ID: " + ex.Message);
+        //        return Json(null); // Return null or handle the error as needed
+        //    }
+        //}
 
         [HttpPost]
         public ActionResult DeleteStudentAllocation(long id)
         {
             string msg;
-            var result = _allocationBL.DeleteStudentAllocation(id, out msg);
+            var result = _allocationRepository.DeleteStudentAllocation(id, out msg);
             return Json(new { success = result, message = msg });
         }
 
@@ -328,13 +286,13 @@ namespace SMS.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPost]
-        public ActionResult DeleteWholeStudentAllocation(string id)
-        {
-            string msg;
-            var result = _allocationBL.DeleteWholeStudentAllocation(id, out msg);
-            return Json(new { success = result, message = msg });
-        }
+        //[HttpPost]
+        //public ActionResult DeleteWholeStudentAllocation(string id)
+        //{
+        //    string msg;
+        //    var result = _allocationRepository.DeleteWholeStudentAllocation(id, out msg);
+        //    return Json(new { success = result, message = msg });
+        //}
 
         /// <summary>
         /// Search in Student Allocation page
@@ -347,7 +305,7 @@ namespace SMS.Controllers
         {
             try
             {
-                var searchResults = _allocationBL.SearchStudentAllocations(searchText, searchCategory);
+                var searchResults = _allocationRepository.SearchStudentAllocations(searchText, searchCategory);
                 return Json(new { success = true, data = searchResults });
             }
             catch (Exception ex)
