@@ -24,6 +24,10 @@ namespace SMS.BL.Teacher
             _dbEntities = dbEntities;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<TeacherBO> GetAllTeacher()
         {
             var allTeachers = _dbEntities.Teachers.Select(t => new TeacherBO()
@@ -45,6 +49,11 @@ namespace SMS.BL.Teacher
             return allTeachers;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isEnable"></param>
+        /// <returns></returns>
         public IEnumerable<TeacherBO> GetTeachers(bool? isEnable = null)
         {
             var query = _dbEntities.Teachers.AsQueryable();
@@ -72,6 +81,12 @@ namespace SMS.BL.Teacher
                 IsEnable = s.IsEnable
             }).ToList();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="teacherID"></param>
+        /// <returns></returns>
         public TeacherBO GetTeacherByID(long teacherID)
         {
             var result = _dbEntities.Teachers.Select(t => new TeacherBO()
@@ -93,6 +108,12 @@ namespace SMS.BL.Teacher
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <param name="regNo"></param>
+        /// <returns></returns>
         public bool TeacherRegNoExists(long teacherId, string regNo)
         {
             return _dbEntities.Teachers.Any(s => s.TeacherID != teacherId && s.TeacherRegNo == regNo);
@@ -102,6 +123,12 @@ namespace SMS.BL.Teacher
             return _dbEntities.Teachers.Any(s => s.TeacherID != teacherId && s.DisplayName == displayName);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="teacher"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
 
         public bool SaveTeacher(TeacherBO teacher, out string msg)
         {

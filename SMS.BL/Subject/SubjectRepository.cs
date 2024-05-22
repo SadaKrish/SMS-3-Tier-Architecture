@@ -22,6 +22,11 @@ namespace SMS.BL.Subject
         {
             _dbEntities = dbEntities;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<SubjectBO> GetAllSubject()
         {
 
@@ -36,6 +41,12 @@ namespace SMS.BL.Subject
 
             return allSubjects;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="isEnable"></param>
+        /// <returns></returns>
         public IEnumerable<SubjectBO> GetSubjects(bool? isEnable = null)
         {
             var query = _dbEntities.Subjects.AsQueryable();
@@ -56,6 +67,13 @@ namespace SMS.BL.Subject
             }).ToList();
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public bool DeleteSubject(long id, out string msg)
         {
             msg = "";
