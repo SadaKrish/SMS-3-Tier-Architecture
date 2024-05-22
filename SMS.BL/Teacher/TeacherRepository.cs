@@ -136,6 +136,7 @@ namespace SMS.BL.Teacher
                         editTeacher.DOB = teacher.DOB;
                         editTeacher.Address = teacher.Address;
                         editTeacher.ContactNo = teacher.ContactNo;
+                        _dbEntities.SaveChanges();
                         msg = "Teacher details updated successfully, but IsEnable cannot be changed as the teacher is referenced.";
                         return true;
                     }

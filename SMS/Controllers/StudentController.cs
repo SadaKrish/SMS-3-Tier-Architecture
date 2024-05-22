@@ -161,6 +161,18 @@ namespace SMS.Controllers
             }
         }
 
-
+        [HttpPost]
+        public ActionResult SearchStudents(string searchText, string searchCategory)
+        {
+            try
+            {
+                var searchResults = _studentRepository.SearchStudents(searchText, searchCategory);
+                return Json(new { success = true, data = searchResults });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

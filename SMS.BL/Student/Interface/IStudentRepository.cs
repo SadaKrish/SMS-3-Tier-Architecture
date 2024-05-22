@@ -17,7 +17,7 @@ namespace SMS.BL.Student.Interface
         bool SaveStudent(StudentBO student, out string msg);
         bool IsStudentReferenced(long studentId);
         bool DeleteStudent(long id, out string msg, out bool requiresConfirmation);
-
         bool ToggleStudentEnable(int studentId, out string message);
+        IEnumerable<StudentBO> SearchStudents(string searchText, string searchCategory);
     }
 }

@@ -1,8 +1,6 @@
 ﻿using SMS.BL.Student.Interface;
-using SMS.BL.Subject;
 using SMS.Data;
 using SMS.Models.Student;
-using SMS.Models.Subject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,6 +139,9 @@ namespace SMS.BL.Student
                 existingStudent.Address = student.Address;
                 existingStudent.ContactNo = student.ContactNo;
                 existingStudent.IsEnable = student.IsEnable;
+                _dbEntities.SaveChanges();
+                msg = "Student details updated successfully";
+                return true;
             }
             else
             {
@@ -172,11 +173,14 @@ namespace SMS.BL.Student
                     IsEnable = student.IsEnable
                 };
                 _dbEntities.Students.Add(newStudent);
+                _dbEntities.SaveChanges();
+                msg = "Student details saved successfully";
+                return true;
             }
 
-            _dbEntities.SaveChanges();
-            msg = "Student details saved successfully";
-            return true;
+            //_dbEntities.SaveChanges();
+            //msg = "Student details saved successfully";
+            //return true;
         }
     
 
@@ -246,6 +250,34 @@ namespace SMS.BL.Student
             return true;
         }
 
+        public IEnumerable<StudentBO> SearchStudents(string searchText, string searchCategory)
+        {
+            var students = GetAllStudent();
 
+            // Perform the search logic based on the selected category
+            if (searchCategory == "StudentRegNo")
+            {
+                students = students.Where(a => a.StudentRegNo.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            else if (searchCategory == "DisplayName")
+            {
+                students = students.Where(a => a.DisplayName.ToUpper().Contains(searchText.ToUpper())).ToList(); ;
+            }
+            else if (searchCategory == "FirstName")
+            {
+                students = students.Where(a => a.FirstName.ToUpper().Contains(searchText.ToUpper())).ToList(); ;
+            }
+            else if (searchCategory == "LastName")
+            {
+                students = students.Where(a => a.LastName.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            else if (searchCategory == "Address")
+            {
+                students = students.Where(a => a.Address.ToUpper().Contains(searchText.ToUpper())).ToList(); ;
+            }
+            
+
+            return students;
+        }
     }
 }
