@@ -148,7 +148,7 @@ namespace SMS.Controllers
         /// <returns></returns>
         public ActionResult StudentAllocation()
         {
-            var result = new AllocationViewModel();
+            var result = new StudentAllocationGroupedViewModel();
             // result.Teacher_Subject_AllocationList = _allocationBL.GetAllSubjectAllocation();
             return View(result);
         }
