@@ -1,4 +1,8 @@
-﻿using SMS.BL.Allocation.Interface;
+﻿/// <summary>
+/// 
+/// </summary>
+/// <author>Sadakshini</author>
+using SMS.BL.Allocation.Interface;
 using SMS.Data;
 using SMS.Models.Student_Allocation;
 using SMS.Models.Teacher_Subject_Allocation;
@@ -26,6 +30,10 @@ namespace SMS.BL.Allocation
             _dbEntities = dbEntities;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<SubjectAllocationDetailViewModel> GetAllSubjectAllocations()
         {
             var allSubjectAllocations = _dbEntities.Teacher_Subject_Allocation

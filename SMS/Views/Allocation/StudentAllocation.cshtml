@@ -313,7 +313,6 @@
 
                 $("#studentlist").DataTable().destroy();
             }
-
             var datatable = $("#studentlist").DataTable({
                 "ajax": {
                     "url": "/Allocation/GetAllStudentAllocation",
@@ -326,7 +325,6 @@
                         if (json.success) {
                             return json.data;
                         } else {
-                            Swal.fire('Error', json.message, 'error');
                             return [];
                         }
                     }
