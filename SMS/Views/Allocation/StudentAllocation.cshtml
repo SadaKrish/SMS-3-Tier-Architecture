@@ -4,71 +4,17 @@
     ViewBag.Title = "StudentAllocation";
 }
 <link href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+<link href="~/Content/AllocationStyle.css" rel="stylesheet" />
 <style>
 
-    .table {
-        font-size: 12px;
-        text-align: center;
-    }
 
-    .card {
-        margin: 20px auto; 
-        max-width: 1000px; 
-        padding: 10px; 
-    }
-
-    .panel-heading {
-        padding: 10px; 
-    }
-
-    .panel-body {
-        padding: 10px; 
-        margin-bottom: 20px; 
-    }
-  
-    .subject-item-container {
-        display: flex;
-        align-items: center;
-    }
-
-    .subject-item {
-        flex: 1;
-    }
-
-    .btn-delete-subject {
-        margin-left: 10px; 
-    }
+    
 
     #studentlist_wrapper {
         max-width: 1200px; 
         margin: 0 auto; 
     }
-    .controls-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-
-   .controls-container .filter,
- .controls-container .search-container {
-     display: flex;
-     align-items: center;
- }
-
- .controls-container .filter {
-     margin-left: auto;
-     margin-right: 20px;
- }
-
- .controls-container .search-container {
-     margin-left: auto;
- }
-
- .controls-container select,
- .controls-container input {
-     margin-left: 10px;
- }  
+     
 </style>
 <div class="card panel-default">
     <div class="panel-heading">
@@ -273,9 +219,6 @@
                         // Reload the data table
                         var datatable = $("#studentlist").DataTable();
                         datatable.ajax.reload();
-
-
-
                     }
                 });
             } else {
@@ -287,11 +230,6 @@
             console.error(error);
             Swal.fire('Error!', 'An error occurred while adding the allocation', 'error');
         }
-
-
-
-
-
 
 
         //back button actions
@@ -310,7 +248,6 @@
         function initializeDataTable(status = 'all') {
             // Check if the DataTable instance already exists
             if ($.fn.DataTable.isDataTable("#studentlist")) {
-
                 $("#studentlist").DataTable().destroy();
             }
             var datatable = $("#studentlist").DataTable({

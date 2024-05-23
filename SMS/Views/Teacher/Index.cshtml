@@ -3,48 +3,14 @@
     ViewBag.Title = "Index";
 }
 <link href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-<style>
-
-    .table {
-        font-size: 12px;
-        text-align: center;
-    }
-
-    div .panel-body {
-        margin-bottom: 25px;
-    }
-    .search-container {
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-    }
-
-        .search-container select,
-        .search-container input {
-            margin-right: 10px;
-            padding: 5px;
-            font-size: 12px;
-        }
-
-    .filter {
-        right: 0;
-        float: right;
-    }
-</style>
+<link href="~/Content/ModuleStyleSheet.css" rel="stylesheet" />
 <div class="card panel-default">
     <div class="panel-heading">
         <h2 class="card-header">Teacher</h2>
     </div>
     
     <div class="panel-body card-body">
-        @*<div class="search-container">
-            <select id="columnSelect">
-                <option value="0">Teacher Reg No</option>
-                <option value="1">First Name</option>
-                <option value="4">Display Name</option>
-            </select>
-            <input type="text" id="customSearchBox" placeholder="Search...">
-        </div>*@
+       
         <div class="filter">
             <label for="statusFilter">Filter by Status:</label>
             <select id="statusFilter">

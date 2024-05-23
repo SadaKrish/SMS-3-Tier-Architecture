@@ -1,0 +1,13 @@
+﻿.table {
+    font-size: 12px;
+    text-align: center;
+}
+
+div .panel-body {
+    margin-bottom: 25px;
+}
+
+.filter {
+    right: 0;
+    float: right;
+}
