@@ -13,11 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.BL", "..\SMS.BL\SMS.BL.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMS.Data", "..\SMS.Data\SMS.Data.csproj", "{A9EB7A29-F6AF-4EEB-A074-8A950CDF5078}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{42ABB9D1-28EC-44BA-973F-39E5F002D390}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\220520241932.sql = ..\..\..\220520241932.sql
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

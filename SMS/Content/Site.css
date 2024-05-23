@@ -3,7 +3,7 @@
     margin-top: 15px;
     padding-left: 15px;
     padding-right: 15px;
-    height:800px;
+    height: 800px;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
@@ -19,16 +19,18 @@ select,
 textarea {
     max-width: 280px;
 }
+
 .navbar {
     background-color: #658cc2;
 }
+
 .card-header {
     background-color: #cbf5ee;
     color: black;
     /*text-shadow:-1px 1px 0 black;*/
 }
+
 .form {
-   
 }
 /*.btn{
     background-color: #cbf5ee;
@@ -39,25 +41,27 @@ textarea {
 #searchCategory, #customSearchBox, #filterStatus {
     margin-top: 10px;
     border-radius: 5px;
-    font-size:14px;
+    font-size: 14px;
 }
+
 #customSearchBox {
-    width:80px;
+    width: 80px;
 }
-#statusFilter, #filterStatus{
-    border-radius:5px;
+
+#statusFilter, #filterStatus {
+    border-radius: 5px;
 }
+
 footer {
-    position:fixed;
+    position: fixed;
     bottom: 0;
     text-align: center;
     background-color: #658cc2;
     width: 100%;
     color: white;
-    
 }
 
 #createoredit {
-    position:absolute;
-left:30%;
+    position: absolute;
+    left: 30%;
 }

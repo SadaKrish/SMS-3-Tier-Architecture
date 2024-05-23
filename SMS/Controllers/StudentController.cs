@@ -81,7 +81,7 @@ namespace SMS.Controllers
                 // Check if the registration no already exists
                 if (existingStudent == null || existingStudent.StudentRegNo != student.StudentRegNo)
                 {
-                    if (_studentRepository.StudentRegNoExists(student.StudentID,student.StudentRegNo))
+                    if (_studentRepository.StudentRegNoExists(student.StudentID, student.StudentRegNo))
                     {
                         return Json(new { success = false, message = "Registration No already exists" });
                     }
@@ -113,6 +113,7 @@ namespace SMS.Controllers
                 return Json(new { success = false, message = string.Join(",", errors) });
             }
         }
+
 
 
 

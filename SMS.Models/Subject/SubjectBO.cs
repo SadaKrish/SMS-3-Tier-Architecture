@@ -17,7 +17,7 @@ namespace SMS.Models.Subject
         public string Name { get; set; }
         [DisplayName("Status")]
         public bool IsEnable { get; set; }
-
+        public bool IsAllocated{ get; set; }
         public string DisplayIsEnable
         {
             get

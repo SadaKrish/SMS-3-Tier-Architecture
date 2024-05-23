@@ -24,7 +24,7 @@ namespace SMS.BL.Subject
         }
 
         /// <summary>
-        /// 
+        /// Get all the teacher details 
         /// </summary>
         /// <returns></returns>
         public IEnumerable<SubjectBO> GetAllSubject()
@@ -35,7 +35,8 @@ namespace SMS.BL.Subject
                 SubjectID = s.SubjectID,
                 SubjectCode = s.SubjectCode,
                 Name = s.Name,
-                IsEnable = s.IsEnable
+                IsEnable = s.IsEnable,
+                IsAllocated=_dbEntities.Teacher_Subject_Allocation.Any(a=>a.SubjectID==s.SubjectID)
 
             }).OrderBy(t => t.SubjectID).ToList();
 
@@ -43,7 +44,7 @@ namespace SMS.BL.Subject
         }
 
         /// <summary>
-        /// 
+        /// Get Teacher details based on status
         /// </summary>
         /// <param name="isEnable"></param>
         /// <returns></returns>
@@ -63,53 +64,19 @@ namespace SMS.BL.Subject
                 SubjectID = s.SubjectID,
                 SubjectCode = s.SubjectCode,
                 Name = s.Name,
-                IsEnable = s.IsEnable
+                IsEnable = s.IsEnable,
+                IsAllocated = _dbEntities.Teacher_Subject_Allocation.Any(a => a.SubjectID == s.SubjectID)
             }).ToList();
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="msg"></param>
-        /// <returns></returns>
-        public bool DeleteSubject(long id, out string msg)
-        {
-            msg = "";
-            var subject = _dbEntities.Subjects.SingleOrDefault(t => t.SubjectID == id);
-            try
-            {
-                if (subject != null)
-                {
-                    if (subject.Teacher_Subject_Allocation.Any())
-                    {
-                        msg = "Cannot delete subject because it is referenced in other entities";
-                        return false;
-                    }
-
-                    //if (subject.SubjectCode.Any())
-                    //{
-                    //    msg = "This subject cannot be deleted";
-                    //    return false;
-                    //}
-
-                    _dbEntities.Subjects.Remove(subject);
-                    _dbEntities.SaveChanges();
-                    msg = "Successfully Removed";
-                    return true;
-                }
-                msg = "Already Removed";
-                return false;
-            }
-            catch (Exception exc)
-            {
-                msg = exc.Message;
-                return false;
-            }
-        }
-
        
+
+       /// <summary>
+       /// Get subject by its ID
+       /// </summary>
+       /// <param name="subjectID"></param>
+       /// <returns></returns>
         public SubjectBO GetSubjectByID(long subjectID)
         {
             var result = _dbEntities.Subjects.Select(s => new SubjectBO()
@@ -155,17 +122,14 @@ namespace SMS.BL.Subject
                         return false;
                     }
 
-                    if (editSubject.IsEnable && subjectInUse)
-                    {
-                        // If IsEnable is true and referenced, only allow changing SubjectCode and Name
-                        editSubject.SubjectCode = subject.SubjectCode;
-                        editSubject.Name = subject.Name;
-                        _dbEntities.SaveChanges();
-                        msg = "Subject updated successfully! IsEnable cannot be changed as the subject is referenced.";
-                        return true;
-                    }
-                    else
-                    {
+                    //if (editSubject.IsEnable && subjectInUse)
+                    //{
+                        
+                    //    msg = "Subject updated successfully!Status cannot be changed as the subject is in use.";
+                    //    return true;
+                    //}
+                    //else
+                    //{
                         // If IsEnable is false or not referenced, allow changing all properties
                         editSubject.SubjectCode = subject.SubjectCode;
                         editSubject.Name = subject.Name;
@@ -173,7 +137,7 @@ namespace SMS.BL.Subject
                         _dbEntities.SaveChanges();
                         msg = "Subject updated successfully!";
                         return true;
-                    }
+                    //}
                 }
                 else
                 {
@@ -194,6 +158,52 @@ namespace SMS.BL.Subject
                 return false;
             }
         }
+        /// <summary>
+        /// Delete subject by its ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public bool DeleteSubject(long id, out string msg)
+        {
+            msg = "";
+            var subject = _dbEntities.Subjects.SingleOrDefault(t => t.SubjectID == id);
+            try
+            {
+                if (subject != null)
+                {
+                    if (subject.Teacher_Subject_Allocation.Any())
+                    {
+                        msg = $"The {subject.Name} is taking by a teacher.";
+                        return false;
+                    }
+
+                    //if (subject.SubjectCode.Any())
+                    //{
+                    //    msg = "This subject cannot be deleted";
+                    //    return false;
+                    //}
+
+                    _dbEntities.Subjects.Remove(subject);
+                    _dbEntities.SaveChanges();
+                    msg = $"The Subject {subject.Name} is removed successfully.";
+                    return true;
+                }
+                msg = "Already Removed";
+                return false;
+            }
+            catch (Exception exc)
+            {
+                msg = exc.Message;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Check whether the subject is taught by a teacher or not
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <returns></returns>
         public bool IsSubjectReferenced(int subjectId)
         {
             // Check if the subject is referenced in any teacher-subject allocations

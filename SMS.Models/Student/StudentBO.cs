@@ -17,9 +17,11 @@ namespace SMS.Models.Student
         public string FirstName { get; set; }
         [DisplayName("Middle Name")]
         public string MiddleName { get; set; }
-        [Required(ErrorMessage = "Display Name is required"), DisplayName("Last Name")]
+        [Required(ErrorMessage = "Display Name is required")]
+        [DisplayName("Last Name")]
         public string LastName { get; set; }
-        [Required(ErrorMessage = "Display Name is required"), DisplayName("Display Name")]
+        [Required(ErrorMessage = "Display Name is required")]
+        [DisplayName("Display Name")]
         public string DisplayName { get; set; }
         [Required(ErrorMessage = "Email is required")]
         public string Email { get; set; }

@@ -11,6 +11,7 @@
     .control-label, .form-control,.form-select {
         font-size: 12px;
     }
+
 </style>
 <div class="container d-flex justify-content-center align-items-center w-100 m-2" style="min-height: calc(100vh - 100px); margin-bottom: 50px;">
     <div class="card p-4 fr-div" style="max-width: 500px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px;">
@@ -27,14 +28,14 @@
             @Html.AntiForgeryToken()
 
             @Html.HiddenFor(model => model.StudentID)
-
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="row form-group d-flex">
                 <div class="col-md-4">
                     @Html.LabelFor(model => model.StudentRegNo, new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
                     @Html.EditorFor(model => model.StudentRegNo, new { htmlAttributes = new { @class = "form-control", id = "teacherRegNo" } })
-                    @Html.ValidationMessageFor(model => model.StudentRegNo, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.StudentRegNo, "", new { @class = "field-validation-error" })
                     <span id="regNoAvailability" class="text-danger"></span>
                 </div>
             </div>

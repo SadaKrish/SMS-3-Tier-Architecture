@@ -171,14 +171,14 @@ namespace SMS.Controllers
             }
 
             var allAllocatedStudent = _allocationRepository.GetAllStudentAllocation(isEnabled);
-
+            
             if (allAllocatedStudent != null && allAllocatedStudent.Any())
             {
                 return Json(new { success = true, data = allAllocatedStudent }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                return Json(new { success = false, message = "No Data Found" }, JsonRequestBehavior.AllowGet);
+                return Json(new { success =false, message = "No Data Found" }, JsonRequestBehavior.AllowGet);
             }
         }
 

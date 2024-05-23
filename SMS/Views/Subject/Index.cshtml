@@ -222,23 +222,26 @@
                          if (data) {
                              checkbox += 'checked ';
                          }
-                         checkbox += 'onclick="ToggleEnable(' + row.SubjectID + ', this.checked)" />';
-
-                         // Append the checkbox to the filter select element
-                         // $('.filter').append('<option value="' + data + '">' + (data ? 'Enabled' : 'Disabled') + '</option>');
+                         checkbox += 'onclick="ToggleEnable(' + row.SubjectID + ', this.checked, \'' + row.Name.replace(/'/g, "\\'") + '\')" />';
 
                          return checkbox;
                      }
                  },
                  {
                      "data": "SubjectID",
-                     "render": function (data) {
-                         return "<a class='btn' style='background-color: #cbf5ee ;' onclick= LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee ;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>"
+                     "render": function (data, type, row) {
+                         // Check if the subject is allocated
+                         if (!row.IsAllocated) {
+                             console.log(row.IsAllocated);
+                             return "<a class='btn' style='background-color: #cbf5ee;' onclick=LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>";
+                         } else {
+                             return "<a class='btn' style='background-color: #cbf5ee;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>";
+                         }
                      },
                      "orderable": false,
                      "searchable": false
                  }
-                ],
+             ],
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25]
                 
@@ -294,10 +297,10 @@
 
 
     //enable button
-function ToggleEnable(id, isChecked) {
+function ToggleEnable(id, isChecked,name) {
     Swal.fire({
         title: 'Are you sure?',
-        text: 'Do you want to toggle the enable status of this subject ID '+id+'?',
+        text: 'Do you want to toggle the enable status of this subject '+name+'?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

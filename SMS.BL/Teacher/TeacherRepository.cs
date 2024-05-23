@@ -1,4 +1,5 @@
-﻿using SMS.BL.Teacher.Interface;
+﻿using SMS.BL.Student;
+using SMS.BL.Teacher.Interface;
 using SMS.Data;
 using SMS.Models.Student;
 using SMS.Models.Subject;
@@ -25,7 +26,7 @@ namespace SMS.BL.Teacher
         }
 
         /// <summary>
-        /// 
+        /// Retrieve all teacher details
         /// </summary>
         /// <returns></returns>
         public IEnumerable<TeacherBO> GetAllTeacher()
@@ -50,7 +51,7 @@ namespace SMS.BL.Teacher
         }
 
         /// <summary>
-        /// 
+        /// get teachers according to the status
         /// </summary>
         /// <param name="isEnable"></param>
         /// <returns></returns>
@@ -83,7 +84,7 @@ namespace SMS.BL.Teacher
         }
 
         /// <summary>
-        /// 
+        /// Get tecaher by a TeacherID
         /// </summary>
         /// <param name="teacherID"></param>
         /// <returns></returns>
@@ -109,7 +110,7 @@ namespace SMS.BL.Teacher
         }
 
         /// <summary>
-        /// 
+        /// Check teacher registration number esits or not
         /// </summary>
         /// <param name="teacherId"></param>
         /// <param name="regNo"></param>
@@ -118,13 +119,19 @@ namespace SMS.BL.Teacher
         {
             return _dbEntities.Teachers.Any(s => s.TeacherID != teacherId && s.TeacherRegNo == regNo);
         }
+        /// <summary>
+        /// Check teacher display name exists or not
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <param name="displayName"></param>
+        /// <returns></returns>
         public bool TeacherDisplayNameExists(long teacherId, string displayName)
         {
             return _dbEntities.Teachers.Any(s => s.TeacherID != teacherId && s.DisplayName == displayName);
         }
 
         /// <summary>
-        /// 
+        /// Save the teacher details
         /// </summary>
         /// <param name="teacher"></param>
         /// <param name="msg"></param>
@@ -224,7 +231,7 @@ namespace SMS.BL.Teacher
                 {
                     if (teacher.Teacher_Subject_Allocation.Any())
                     {
-                        msg = "Cannot delete teacher because it is referenced in other entities";
+                        msg = $"The teacher {teacher.DisplayName} is teaching a subject.";
                         return false;
                     }
 
@@ -236,7 +243,7 @@ namespace SMS.BL.Teacher
 
                     _dbEntities.Teachers.Remove(teacher);
                     _dbEntities.SaveChanges();
-                    msg = "Successfully Removed";
+                    msg = $"The teacher {teacher.DisplayName} is removed successfully.";
                     return true;
                 }
                 msg = "Already Removed";

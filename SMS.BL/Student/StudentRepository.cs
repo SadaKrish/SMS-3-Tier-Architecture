@@ -26,7 +26,7 @@ namespace SMS.BL.Student
 
         
 
-        private bool requiresConfirmation;
+       
         /// <summary>
         /// Get the studnet list
         /// </summary>
@@ -208,7 +208,7 @@ namespace SMS.BL.Student
 
                     _dbEntities.Students.Remove(student);
                     _dbEntities.SaveChanges();
-                    msg = "Successfully Removed";
+                    msg = $"The student {student.DisplayName} is removed successfully.";
                     return true;
                 }
                 msg = "Already Removed";
