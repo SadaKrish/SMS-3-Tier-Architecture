@@ -30,12 +30,6 @@ namespace SMS.BL.Teacher
         }
 
         /// <summary>
-        /// Retrieve all teacher details
-        /// </summary>
-        /// <returns></returns>
-      
-
-        /// <summary>
         /// get teachers according to the status
         /// </summary>
         /// <param name="isEnable"></param>
@@ -127,72 +121,79 @@ namespace SMS.BL.Teacher
         {
             msg = "";
 
-            bool existingTeacher = _dbEntities.Teachers.Any(s => s.TeacherID == teacher.TeacherID);
-
-            bool teacherteaches = _dbEntities.Teacher_Subject_Allocation.Any(a => a.TeacherID == teacher.TeacherID);
-
-            try
+            var existingTeacher = _dbEntities.Teachers.SingleOrDefault(s => s.TeacherID == teacher.TeacherID);
+            if (existingTeacher != null)
             {
-                if (existingTeacher)
+                // Editing existing student
+                if (existingTeacher.TeacherRegNo != teacher.TeacherRegNo && TeacherRegNoExists(teacher.TeacherID, teacher.TeacherRegNo))
                 {
-                    var editTeacher = _dbEntities.Teachers.SingleOrDefault(s => s.TeacherID == teacher.TeacherID);
+                    msg = "Registration No already exists";
+                    return false;
+                }
 
-                    if (editTeacher == null)
-                    {
-                        msg = "Unable to find the teacher for edit";
-                        return false;
-                    }
-                    else
-                    {
-                        if (teacherteaches)
-                        {
-                            msg = $"The teacher {teacher.DisplayName} is teaches subjects";
-                            return false;
-                        }
-                        // If IsEnable is false or not referenced, allow changing all properties
-                        editTeacher.TeacherRegNo = teacher.TeacherRegNo;
-                        editTeacher.FirstName = teacher.FirstName;
-                        editTeacher.MiddleName = teacher.MiddleName;
-                        editTeacher.LastName = teacher.LastName;
-                        editTeacher.DisplayName = teacher.DisplayName;
-                        editTeacher.Email = teacher.Email;
-                        editTeacher.Gender = teacher.Gender;
-                        editTeacher.DOB = teacher.DOB;
-                        editTeacher.Address = teacher.Address;
-                        editTeacher.ContactNo = teacher.ContactNo;
-                        editTeacher.IsEnable = teacher.IsEnable;
-                        msg = "Teacher details updated successfully.";
-                        _dbEntities.SaveChanges();
-                        return true;
-                    }
-                }
-                else
+                if (existingTeacher.DisplayName != teacher.DisplayName && TeacherDisplayNameExists(teacher.TeacherID, teacher.DisplayName))
                 {
-                    // If it's a new Teacher, add it directly without checks
-                    var newTeacher = new SMS.Data.Teacher();
-                    newTeacher.TeacherRegNo = teacher.TeacherRegNo;
-                    newTeacher.FirstName = teacher.FirstName;
-                    newTeacher.MiddleName = teacher.MiddleName;
-                    newTeacher.LastName = teacher.LastName;
-                    newTeacher.DisplayName = teacher.DisplayName;
-                    newTeacher.Email = teacher.Email;
-                    newTeacher.Gender = teacher.Gender;
-                    newTeacher.DOB = teacher.DOB;
-                    newTeacher.Address = teacher.Address;
-                    newTeacher.ContactNo = teacher.ContactNo;
-                    newTeacher.IsEnable = teacher.IsEnable;
-                    _dbEntities.Teachers.Add(newTeacher);
-                    _dbEntities.SaveChanges();
-                    msg = "Teacher added successfully!";
-                    return true;
+                    msg = "Display name already exists";
+                    return false;
                 }
+
+                // Update fields
+                existingTeacher.TeacherRegNo = teacher.TeacherRegNo;
+                existingTeacher.FirstName = teacher.FirstName;
+                existingTeacher.MiddleName = teacher.MiddleName;
+                existingTeacher.LastName = teacher.LastName;
+                existingTeacher.DisplayName = teacher.DisplayName;
+                existingTeacher.Email = teacher.Email;
+                existingTeacher.Gender = teacher.Gender;
+                existingTeacher.DOB = teacher.DOB;
+                existingTeacher.Address = teacher.Address;
+                existingTeacher.ContactNo = teacher.ContactNo;
+                existingTeacher.IsEnable = teacher.IsEnable;
+                _dbEntities.SaveChanges();
+                msg = "Teacher details updated successfully";
+                return true;
             }
-            catch (Exception error)
+            else
             {
-                msg = error.Message;
-                return false;
+                // Adding new student
+                if (TeacherRegNoExists(teacher.TeacherID, teacher.TeacherRegNo))
+                {
+                    msg = "Registration No already exists";
+                    return false;
+                }
+
+                if (TeacherDisplayNameExists(teacher.TeacherID, teacher.DisplayName))
+                {
+                    msg = "Display name already exists";
+                    return false;
+                }
+
+                var newTeacher = new SMS.Data.Teacher();
+
+                newTeacher.TeacherRegNo = teacher.TeacherRegNo;
+                newTeacher.FirstName = teacher.FirstName;
+                newTeacher.MiddleName = teacher.MiddleName;
+                newTeacher.LastName = teacher.LastName;
+                newTeacher.DisplayName = teacher.DisplayName;
+                newTeacher.Email = teacher.Email;
+                newTeacher.Gender = teacher.Gender;
+                newTeacher.DOB = teacher.DOB;
+                newTeacher.Address = teacher.Address;
+                newTeacher.ContactNo = teacher.ContactNo;
+                newTeacher.IsEnable = teacher.IsEnable;
+
+                _dbEntities.Teachers.Add(newTeacher);
+                _dbEntities.SaveChanges();
+                msg = "Teacher added successfully!";
+                return true;
+
             }
+
+            //_dbEntities.SaveChanges();
+            //msg = "Student details saved successfully";
+            //return true;
         }
+
 
         public bool DeleteTeacher(long id, out string msg)
         {
@@ -228,13 +229,16 @@ namespace SMS.BL.Teacher
                 return false;
             }
         }
-
+        /// <summary>
+        /// Check whether teacher is referenced
+        /// </summary>
+        /// <param name="teacherId"></param>
+        /// <returns></returns>
         public bool IsTeacherReferenced(int teacherId)
         {
             // Check if the subject is referenced in any teacher-subject allocations
             return _dbEntities.Teacher_Subject_Allocation.Any(tsa => tsa.TeacherID == teacherId);
         }
-
         public bool ToggleTeacherEnable(int teacherId, out string message)
         {
             var teacher = _dbEntities.Teachers
@@ -262,5 +266,36 @@ namespace SMS.BL.Teacher
             message = currentStatus ? "Disabled Successfully" : "Enabled Successfully";
             return true;
         }
+
+        public IEnumerable<TeacherBO> SearchTeachers(string searchText, string searchCategory)
+        {
+            var teachers = GetTeachers();
+
+            // Perform the search logic based on the selected category
+            if (searchCategory == "TeacherRegNo")
+            {
+                teachers = teachers.Where(a => a.TeacherRegNo.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            else if (searchCategory == "DisplayName")
+            {
+                teachers = teachers.Where(a => a.DisplayName.ToUpper().Contains(searchText.ToUpper())).ToList(); ;
+            }
+            else if (searchCategory == "FirstName")
+            {
+                teachers = teachers.Where(a => a.FirstName.ToUpper().Contains(searchText.ToUpper())).ToList(); ;
+            }
+            else if (searchCategory == "LastName")
+            {
+                teachers = teachers.Where(a => a.LastName.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            else if (searchCategory == "Address")
+            {
+                teachers = teachers.Where(a => a.Address.ToUpper().Contains(searchText.ToUpper())).ToList(); ;
+            }
+
+
+            return teachers;
+        }
     }
 }
+

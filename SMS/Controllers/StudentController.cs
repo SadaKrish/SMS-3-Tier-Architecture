@@ -9,7 +9,6 @@ using SMS.BL.Subject.Interface;
 using SMS.Data;
 using SMS.Models.Student;
 using SMS.Models.Subject;
-using SMS.Models.Teacher;
 using SMS.ViewModel.Student;
 using System;
 using System.Collections.Generic;
@@ -40,10 +39,34 @@ namespace SMS.Controllers
         /// </summary>
         /// <param name="isEnable"></param>
         /// <returns></returns>
-        public ActionResult GetStudents(bool? isEnable = null)
+        //public ActionResult GetStudents(bool? isEnable = null)
+        //{
+        //    var students = _studentRepository.GetStudents(isEnable);
+        //    return Json(new { data = students }, JsonRequestBehavior.AllowGet);
+        //}
+        [HttpGet]
+        public ActionResult GetStudents(string status = "all")
         {
-            var students = _studentRepository.GetStudents(isEnable);
-            return Json(new { data = students }, JsonRequestBehavior.AllowGet);
+            bool? isEnabled = null;
+            if (status.ToLower() == "active")
+            {
+                isEnabled = true;
+            }
+            else if (status.ToLower() == "inactive")
+            {
+                isEnabled = false;
+            }
+
+            var students = _studentRepository.GetStudents(isEnabled);
+
+            if (students != null &&students.Any())
+            {
+                return Json(new { success = true, data = students }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false, message = "No Data Found" }, JsonRequestBehavior.AllowGet);
+            }
         }
         /// <summary>
         /// Add and edit
@@ -76,18 +99,28 @@ namespace SMS.Controllers
             {
                 string message;
 
-                // Check if the subject code already exists
-                if (_studentRepository.StudentRegNoExists(student.StudentID, student.StudentRegNo))
+                // Retrieve the existing student to compare values
+                var existingStudent = _studentRepository.GetStudentByID(student.StudentID);
+
+                // Check if the registration no already exists
+                if (existingStudent == null || existingStudent.StudentRegNo != student.StudentRegNo)
                 {
-                    return Json(new { success = false, message = "Teacher Reg No already exists" });
+                    if (_studentRepository.StudentRegNoExists(student.StudentID, student.StudentRegNo))
+                    {
+                        return Json(new { success = false, message = "Registration No already exists" });
+                    }
                 }
 
-                // Check if the subject name already exists
-                if (_studentRepository.StudentDisplayNameExists(student.StudentID, student.DisplayName))
+                // Check if the display name already exists
+                if (existingStudent == null || existingStudent.DisplayName != student.DisplayName)
                 {
-                    return Json(new { success = false, message = "Display Name already exists" });
+                    if (_studentRepository.StudentDisplayNameExists(student.StudentID, student.DisplayName))
+                    {
+                        return Json(new { success = false, message = "Display name already exists" });
+                    }
                 }
 
+                // Save or update the student
                 if (_studentRepository.SaveStudent(student, out message))
                 {
                     return Json(new { success = true, message = message });
@@ -101,7 +134,7 @@ namespace SMS.Controllers
             {
                 // If model state is not valid, return validation errors
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return Json(new { success = false, message = string.Join("<br>", errors) });
+                return Json(new { success = false, message = string.Join(",", errors) });
             }
         }
 

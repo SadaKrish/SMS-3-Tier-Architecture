@@ -7,7 +7,30 @@ div .panel-body {
     margin-bottom: 25px;
 }
 
-.filter {
-    right: 0;
-    float: right;
+
+.controls-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
 }
+
+    .controls-container .filter,
+    .controls-container .search-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .controls-container .filter {
+        margin-left: auto;
+        margin-right: 20px;
+    }
+
+    .controls-container .search-container {
+        margin-left: auto;
+    }
+
+    .controls-container select,
+    .controls-container input {
+        margin-left: 10px;
+    }

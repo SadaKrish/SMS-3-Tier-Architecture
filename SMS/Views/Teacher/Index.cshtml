@@ -10,17 +10,28 @@
     </div>
     
     <div class="panel-body card-body">
-       
-        <div class="filter">
-            <label for="statusFilter">Filter by Status:</label>
-            <select id="statusFilter">
-                <option value="all">All</option>
-                <option value="enabled">Enabled</option>
-                <option value="disabled">Disabled</option>
-            </select>
-        </div>
-        <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Teacher</a>
 
+        <div class="controls-container">
+            <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Teacher</a>
+            <div class="form-group filter">
+                <label for="statusFilter">Status:</label>
+                <select id="filterStatus">
+                    <option value="all">All</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">InActive</option>
+                </select>
+            </div>
+            <div class="search-container">
+                <select id="searchCategory">
+                    <option value="TeacherRegNo">Teacher Reg No</option>
+                    <option value="FirstName">First name</option>
+                    <option value="LastName">Last Name</option>
+                    <option value="DisplayName">Display Name</option>
+                </select>
+                <input type="text" id="customSearchBox" placeholder="Search...">
+            </div>
+
+        </div>
         <div class="table-responsive">
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
                 <thead style="text-align:center;">
@@ -60,26 +71,109 @@
     <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-    //load the initail data
-        $(document).ready(function () {
-            // Call initializeDataTable function when the DOM is ready
-            initializeDataTable();
+                 $(document).ready(function () {
+    function initializeDataTable(data = []) {
+        // Check if the DataTable instance already exists
+        if ($.fn.DataTable.isDataTable("#studentlist")) {
+            $("#studentlist").DataTable().destroy();
+        }
 
-            $('#statusFilter').on('change', function () {
-                var filterValue = $(this).val(); // Get the selected filter value
+        $("#studentlist").DataTable({
+            "data": data,
+                "columns": [
+                    { "data": "TeacherRegNo" },
+                    { "data": "FirstName" },
+                    { "data": "MiddleName" },
+                    { "data": "LastName" },
+                    { "data": "DisplayName" },
+                    {
+                        "data": "Email",
+                        "render": function (data) {
+                            return "<a href='mailto:" + data + "'>" + data + "</a>";
+                        }
+                    },
+                    { "data": "Gender" },
+                    {
+                        "data": "DOB",
+                        "render": function (data) {
+                            // Format the date as "YYYY-MM-DD"
+                            var date = new Date(parseInt(data.substr(6)));
+                            return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                        }
+                    },
+                    { "data": "Address" },
+                    {
+                        "data": "ContactNo",
+                        "render": function (data) {
+                            return "<a href='tel:" + data + "'>" + data + "</a>";
+                        }
+                    },
 
-                // Modify the AJAX URL based on the selected filter value
-                var url;
-                if (filterValue === 'all') {
-                    url = '/Teacher/GetTeachers';
-                } else {
-                    url = '/Teacher/GetTeachers?isEnable=' + (filterValue === 'enabled');
-                }
+                    {
+                        "data": "IsEnable",
+                        "render": function (data, type, row) {
+                            // Render a checkbox based on the IsEnable value
+                            var checkbox = '<input type="checkbox" id="teacherCheckbox_' + row.TeacherID + '" ';
+                            if (data) {
+                                checkbox += 'checked ';
+                            }
+                            checkbox += 'onclick="ToggleEnable(' + row.TeacherID + ', this.checked, \'' + row.DisplayName.replace(/'/g, "\\'") + '\')" />';
 
-                // Reload the datatable with the updated data
-                datatable.ajax.url(url).load();
-            });
+                            return checkbox;
+                        }
+                    }
+                    ,
+                    {
+                        "data": "TeacherID",
+                        "render": function (data, type, row) {
+                            // Check if the subject is allocated
+                            if (!row.IsAllocated) {
+
+                                return "<a class='btn' style='background-color: #cbf5ee;' onclick=LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>";
+                            } else {
+                                return "<span class='badge bg-success'>Allocated</span>";
+                            }
+                        },
+                        "orderable": false,
+                        "searchable": false
+                    }
+                ],
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 15, 20, 25],
+            "searching":false
         });
+        
+    }
+
+    function searchAllocations() {
+        var searchText = $('#customSearchBox').val().trim();
+        var searchCategory = $('#searchCategory').val();
+
+        $.ajax({
+            url: '@Url.Action("SearchTeachers", "Teacher")',
+            type: 'POST',
+            data: { searchText: searchText, searchCategory: searchCategory },
+            success: function (response) {
+                if (response.success) {
+                    // Reinitialize the DataTable with the new data
+                    initializeDataTable(response.data);
+                } else {
+                    console.error('Search failed:', response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    // Initial DataTable load
+    initializeDataTable();
+
+    // Event handlers for search input and button
+    $('#customSearchBox').on('keyup', searchAllocations);
+    $('#searchButton').on('click', searchAllocations);
+});
 
         //Load create page
       function LoadCreatePage() {
@@ -150,7 +244,7 @@
                         $("#back-to-list").hide();
 
                         // Reload the data table
-                        datatable.ajax.reload();
+                        $("#studentlist").DataTable().ajax.reload();
                     }
                 });
             } else {
@@ -171,16 +265,31 @@
             $("#createoredit").empty();
             $('.panel-body').show();
             $('.filter').show();
+            var datatable = initializeDataTable();
             datatable.ajax.reload();
         }
 
         //load table data
-        function initializeDataTable() {
-            datatable = $("#studentlist").DataTable({
+        function initializeDataTable(status = 'all') {
+            // Check if the DataTable instance already exists
+            if ($.fn.DataTable.isDataTable("#studentlist")) {
+                $("#studentlist").DataTable().destroy();
+            }
+            var datatable = $("#studentlist").DataTable({
                 "ajax": {
                     "url": "/Teacher/GetTeachers",
                     "type": "GET",
-                    "datatype": "json"
+                    "datatype": "json",
+                    "data": {
+                        status: status
+                    },
+                    "dataSrc": function (json) {
+                        if (json.success) {
+                            return json.data;
+                        } else {
+                            return [];
+                        }
+                    }
                 },
                 "columns": [
                     { "data": "TeacherRegNo" },
@@ -223,7 +332,8 @@
 
                             return checkbox;
                         }
-                    },
+                    }
+                    ,
                     {
                         "data": "TeacherID",
                         "render": function (data, type, row) {
@@ -241,21 +351,19 @@
                 ],
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 15, 20, 25],
-                "searching":false
+                "searching": false
             });
-           
+            
         }
 
-        function getStatusFilterValue(statusFilter) {
-            if (statusFilter === "enabled") {
-                return true;
-            } else if (statusFilter === "disabled") {
-                return false;
-            }
-            // Return null for "all" option or if no filter is selected
-            return null;
-        }
+        $(document).ready(function () {
+            initializeDataTable();
 
+            $('#filterStatus').on('change', function () {
+                var status = $(this).val();
+                initializeDataTable(status);
+            });
+        });
         function Delete(id) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -272,8 +380,7 @@
                         url: '@Url.Action("Delete","Teacher")/' + id,
                         success: function (data) {
                             if (data.success) {
-                                datatable.ajax.reload();
-
+                                $("#studentlist").DataTable().ajax.reload();
                                 Swal.fire({
                                     title: 'Deleted!',
                                     text: data.message,
@@ -314,7 +421,7 @@
                 url: '@Url.Action("ToggleEnable", "Teacher")/' + id,
                 success: function(response) {
                     if (response.success) {
-                        datatable.ajax.reload(); // Reload the data table
+                        $("#studentlist").DataTable().ajax.reload();// Reload the data table
                         Swal.fire({
                             title: 'Success!',
                             text: response.message,
@@ -343,7 +450,7 @@
     });
 }
 
-       
+
 
 
 

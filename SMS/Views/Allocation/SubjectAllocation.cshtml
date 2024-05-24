@@ -303,12 +303,12 @@ $(document).ready(function () {
                                     </a>
                                 </div>
                             `;
-                                   var badge = subject.IsAllocated ? `<span class="badge bg-success">Allocated</span>` : '';
+                                   var badge = subject.IsAllocated ? `<span class="badge bg-success subject-buttons">Allocated</span>` : '';
                                     return `
                                 <div class="subject-item1 position-relative">
                                     <span>${subject.SubjectCode} - ${subject.Name}</span>
                                     ${deleteIcon}
-                                    
+                                    ${badge}
                                 </div>
                             `;
                             }).join('');

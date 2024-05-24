@@ -5,7 +5,6 @@
 using SMS.BL.Student.Interface;
 using SMS.Data;
 using SMS.Models.Student;
-using SMS.Models.Teacher;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -116,66 +115,79 @@ namespace SMS.BL.Student
         {
             msg = "";
 
-            bool existingStudent = _dbEntities.Students.Any(s => s.StudentID == student.StudentID);
-
-            try
+            var existingStudent = _dbEntities.Students.SingleOrDefault(s => s.StudentID == student.StudentID);
+            if (existingStudent != null)
             {
-                if (existingStudent)
+                // Editing existing student
+                if (existingStudent.StudentRegNo != student.StudentRegNo && StudentRegNoExists(student.StudentID,student.StudentRegNo))
                 {
-                    var editStudent = _dbEntities.Students.SingleOrDefault(s => s.StudentID == student.StudentID);
-
-                    if (editStudent == null)
-                    {
-                        msg = "Unable to find the student for edit";
-                        return false;
-                    }
-                    else
-                    {
-                        // If IsEnable is false or not referenced, allow changing all properties
-                        editStudent.StudentRegNo = student.StudentRegNo;
-                        editStudent.FirstName = student.FirstName;
-                        editStudent.MiddleName = student.MiddleName;
-                        editStudent.LastName = student.LastName;
-                        editStudent.DisplayName = student.DisplayName;
-                        editStudent.Email = student.Email;
-                        editStudent.Gender = student.Gender;
-                        editStudent.DOB = student.DOB;
-                        editStudent.Address = student.Address;
-                        editStudent.ContactNo = student.ContactNo;
-                        editStudent.IsEnable = student.IsEnable;
-                        msg = "Student details updated successfully.";
-                    }
-                }
-                else
-                {
-                    // If it's a new student, add it directly without checks
-                    var newStudent = new SMS.Data.Student();
-                    newStudent.StudentRegNo = student.StudentRegNo;
-                    newStudent.FirstName = student.FirstName;
-                    newStudent.MiddleName = student.MiddleName;
-                    newStudent.LastName = student.LastName;
-                    newStudent.DisplayName = student.DisplayName;
-                    newStudent.Email = student.Email;
-                    newStudent.Gender = student.Gender;
-                    newStudent.DOB = student.DOB;
-                    newStudent.Address = student.Address;
-                    newStudent.ContactNo = student.ContactNo;
-                    newStudent.IsEnable = student.IsEnable;
-
-                    _dbEntities.Students.Add(newStudent);
-                    msg = "Student added successfully!";
+                    msg = "Registration No already exists";
+                    return false;
                 }
 
-                _dbEntities.SaveChanges(); // Call SaveChanges() once after updating or adding a student
+                if (existingStudent.DisplayName != student.DisplayName && StudentDisplayNameExists(student.StudentID,student.DisplayName))
+                {
+                    msg = "Display name already exists";
+                    return false;
+                }
+
+                // Update fields
+                existingStudent.StudentRegNo = student.StudentRegNo;
+                existingStudent.FirstName = student.FirstName;
+                existingStudent.MiddleName = student.MiddleName;
+                existingStudent.LastName = student.LastName;
+                existingStudent.DisplayName = student.DisplayName;
+                existingStudent.Email = student.Email;
+                existingStudent.Gender = student.Gender;
+                existingStudent.DOB = student.DOB;
+                existingStudent.Address = student.Address;
+                existingStudent.ContactNo = student.ContactNo;
+                existingStudent.IsEnable = student.IsEnable;
+                _dbEntities.SaveChanges();
+                msg = "Student details updated successfully";
                 return true;
             }
-            catch (Exception error)
+            else
             {
-                msg = error.Message;
-                return false;
-            }
-        }
+                // Adding new student
+                if (StudentRegNoExists(student.StudentID,student.StudentRegNo))
+                {
+                    msg = "Registration No already exists";
+                    return false;
+                }
 
+                if (StudentDisplayNameExists(student.StudentID,student.DisplayName))
+                {
+                    msg = "Display name already exists";
+                    return false;
+                }
+
+                var newStudent = new SMS.Data.Student();
+
+                newStudent.StudentRegNo = student.StudentRegNo;
+                newStudent.FirstName = student.FirstName;
+                newStudent.MiddleName = student.MiddleName;
+                newStudent.LastName = student.LastName;
+                newStudent.DisplayName = student.DisplayName;
+                newStudent.Email = student.Email;
+                newStudent.Gender = student.Gender;
+                newStudent.DOB = student.DOB;
+                newStudent.Address = student.Address;
+                newStudent.ContactNo = student.ContactNo;
+                newStudent.IsEnable = student.IsEnable;
+
+                _dbEntities.Students.Add(newStudent);
+                _dbEntities.SaveChanges();
+                msg = "Student added successfully!";
+                return true;
+
+            }
+
+            //_dbEntities.SaveChanges();
+            //msg = "Student details saved successfully";
+            //return true;
+        }
+    
         /// <summary>
         /// Check if the student allocated with teacher and subject
         /// </summary>

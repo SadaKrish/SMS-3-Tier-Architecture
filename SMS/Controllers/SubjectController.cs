@@ -39,11 +39,22 @@ namespace SMS.Controllers
         /// </summary>
         /// <param name="isEnable"></param>
         /// <returns></returns>
-        public ActionResult GetSubject(bool? isEnable = null)
+        [HttpGet]
+        public ActionResult GetSubjects(string status = "all")
         {
-            var subjects = _subjectRepository.GetSubjects(isEnable);
+            bool? isEnabled = null;
+            if (status.ToLower() == "active")
+            {
+                isEnabled = true;
+            }
+            else if (status.ToLower() == "inactive")
+            {
+                isEnabled = false;
+            }
 
-            if (subjects.Any())
+            var subjects = _subjectRepository.GetSubjects(isEnabled);
+
+            if (subjects != null && subjects.Any())
             {
                 return Json(new { success = true, data = subjects }, JsonRequestBehavior.AllowGet);
             }
@@ -135,17 +146,17 @@ namespace SMS.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult ToggleEnable(int id)
+        public ActionResult SearchSubjects(string searchText, string searchCategory)
         {
-            string message;
-            bool success = _subjectRepository.ToggleSubjectEnable(id, out message);
-
-            if (!success)
+            try
             {
-                return Json(new { success = false, message = message });
+                var searchResults = _subjectRepository.SearchSubjects(searchText, searchCategory);
+                return Json(new { success = true, data = searchResults });
             }
-
-            return Json(new { success = true, message = message }, JsonRequestBehavior.AllowGet);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
     }

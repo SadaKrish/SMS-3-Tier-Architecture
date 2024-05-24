@@ -62,5 +62,12 @@ namespace SMS.BL.Teacher.Interface
         /// <param name="message"></param>
         /// <returns></returns>
         bool ToggleTeacherEnable(int teacherId, out string message);
+        /// <summary>
+        /// Serach in teacher list
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <param name="searchCategory"></param>
+        /// <returns></returns>
+        IEnumerable<TeacherBO> SearchTeachers(string searchText, string searchCategory);
     }
 }

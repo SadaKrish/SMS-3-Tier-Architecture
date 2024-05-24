@@ -1,4 +1,4 @@
-﻿<!--Author Details-->
+﻿﻿<!--Author Details-->
 @model  SMS.ViewModel.Subject.SubjectViewModel
 @{
     ViewBag.Title = "Index";
@@ -6,23 +6,33 @@
 <link href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
 <link href="~/Content/ModuleStyleSheet.css" rel="stylesheet" />
 
-<div class="card panel-default">  
+<div class="card panel-default">
     <div class="panel-heading">
         <h2 class="card-header">Subject</h2>
     </div>
-   
+
 
     <div class="panel-body card-body">
-        <div class="filter">
-            <label for="statusFilter">Filter by Status:</label>
-            <select id="statusFilter">
-                <option value="all">All</option>
-                <option value="enabled">Enabled</option>
-                <option value="disabled">Disabled</option>
-            </select>
-        </div>
-        <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Subject</a>
+        <div class="controls-container">
+            <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Subject</a>
+            <div class="form-group filter">
+                <label for="statusFilter">Status:</label>
+                <select id="filterStatus">
+                    <option value="all">All</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">InActive</option>
+                </select>
+            </div>
+            <div class="search-container">
+                <select id="searchCategory">
+                    <option value="SubjectCode">Subject Code</option>
+                    <option value="Name">Name</option>
+                  
+                </select>
+                <input type="text" id="customSearchBox" placeholder="Search...">
+            </div>
 
+        </div>
         <div class="table-responsive">
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
                 <thead style="text-align:center;">
@@ -53,29 +63,84 @@
     <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-    //load the initail data
-        $(document).ready(function () {
-    // Call initializeDataTable function when the DOM is ready
-            initializeDataTable();
-            // Add event listener to the filter select element
-            $('#statusFilter').on('change', function () {
-                var filterValue = $(this).val(); // Get the selected filter value
+     $(document).ready(function () {
+    function initializeDataTable(data = []) {
+        // Check if the DataTable instance already exists
+        if ($.fn.DataTable.isDataTable("#studentlist")) {
+            $("#studentlist").DataTable().destroy();
+        }
 
-                // Modify the AJAX URL based on the selected filter value
-                var url;
-                if (filterValue === 'all') {
-                    url = '/Subject/GetSubject';
-                } else {
-                    url = '/Subject/GetSubject?isEnable=' + (filterValue === 'enabled');
+        $("#studentlist").DataTable({
+            "data": data,
+            "columns": [
+                { "data": "SubjectCode" },
+                { "data": "Name" },
+                {
+                    "data": "IsEnable",
+                    "render": function (data, type, row) {
+                        // Render a checkbox based on the IsEnable value
+                        var checkbox = '<input type="checkbox" id="subjectCheckbox_' + row.SubjectID + '" ';
+                        if (data) {
+                            checkbox += 'checked ';
+                        }
+                        checkbox += 'onclick="ToggleEnable(' + row.SubjectID + ', this.checked, \'' + row.Name.replace(/'/g, "\\'") + '\')" />';
+
+                        return checkbox;
+                    }
+                },
+                {
+                    "data": "SubjectID",
+                    "render": function (data, type, row) {
+                        // Check if the subject is allocated
+                        if (!row.IsAllocated) {
+
+                            return "<a class='btn' style='background-color: #cbf5ee;' onclick=LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>";
+                        } else {
+                            return "<span class='badge bg-success'>Allocated</span>";
+                        }
+                    },
+                    "orderable": false,
+                    "searchable": false
                 }
-
-                // Reload the datatable with the updated data
-                datatable.ajax.url(url).load();
-            });
+            ],
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 15, 20, 25],
+            "searching":false
         });
-        
+    }
 
-      
+    function searchAllocations() {
+        var searchText = $('#customSearchBox').val().trim();
+        var searchCategory = $('#searchCategory').val();
+
+        $.ajax({
+            url: '@Url.Action("SearchSubjects", "Subject")',
+            type: 'POST',
+            data: { searchText: searchText, searchCategory: searchCategory },
+            success: function (response) {
+                if (response.success) {
+                    // Reinitialize the DataTable with the new data
+                    initializeDataTable(response.data);
+                } else {
+                    console.error('Search failed:', response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    // Initial DataTable load
+    initializeDataTable();
+
+    // Event handlers for search input and button
+    $('#customSearchBox').on('keyup', searchAllocations);
+    $('#searchButton').on('click', searchAllocations);
+});
+
+
+
 
         //Load create page
       function LoadCreatePage() {
@@ -83,7 +148,7 @@
           $("#studentlist").hide();
           $("#button").hide();
           $('.panel-body').hide();
-         
+
           $("#back-to-list").show();
           $(".filter").hide();
           $("createoredit").show();
@@ -125,11 +190,10 @@
                         // Hide the "Back to List" button
                         $("#back-to-list").hide();
 
-                        // Reload the data table
-                        datatable.ajax.reload();
+                        $("#studentlist").DataTable().ajax.reload();
 
 
-                        
+
                     }
                 });
             } else {
@@ -149,8 +213,6 @@
             $("#button").hide();
             $('.panel-body').hide();
             $("#back-to-list").show(); // Show the "Back to List" button
-            $(".filter").hide();
-            datatable.ajax.reload();
 
             // Make an AJAX call to retrieve the edit form for the specified student ID
             $.ajax({
@@ -182,60 +244,76 @@
 
         }
 
-        //load table data
-        function initializeDataTable() {
-            datatable= $("#studentlist").DataTable({
-             "ajax": {
-                 "url": "/Subject/GetSubject",
-                 "type": "GET",
-                 "datatype":"json"
-             },
-             "columns": [
-                 { "data": "SubjectCode" },
-                 { "data": "Name" },
+
+        function initializeDataTable(status = 'all') {
+            // Check if the DataTable instance already exists
+            if ($.fn.DataTable.isDataTable("#studentlist")) {
+                $("#studentlist").DataTable().destroy();
+            }
+            var datatable = $("#studentlist").DataTable({
+                "ajax": {
+                    "url": "/Subject/GetSubjects",
+                    "type": "GET",
+                    "datatype": "json",
+                    "data": {
+                        status: status
+                    },
+                    "dataSrc": function (json) {
+                        if (json.success) {
+                            return json.data;
+                        } else {
+                            return [];
+                        }
+                    }
+                },
+                "columns": [
+                    { "data": "SubjectCode" },
+                    { "data": "Name" },
 
 
-                 {
-                     "data": "IsEnable",
-                     "render": function (data, type, row) {
-                         // Render a checkbox based on the IsEnable value
-                         var checkbox = '<input type="checkbox" id="subjectCheckbox_' + row.SubjectID + '" ';
-                         if (data) {
-                             checkbox += 'checked ';
-                         }
-                         checkbox += 'onclick="ToggleEnable(' + row.SubjectID + ', this.checked, \'' + row.Name.replace(/'/g, "\\'") + '\')" />';
+                    {
+                        "data": "IsEnable",
+                        "render": function (data, type, row) {
+                            // Render a checkbox based on the IsEnable value
+                            var checkbox = '<input type="checkbox" id="subjectCheckbox_' + row.SubjectID + '" ';
+                            if (data) {
+                                checkbox += 'checked ';
+                            }
+                            checkbox += 'onclick="ToggleEnable(' + row.SubjectID + ', this.checked, \'' + row.Name.replace(/'/g, "\\'") + '\')" />';
 
-                         return checkbox;
-                     }
-                 },
-                 {
-                     "data": "SubjectID",
-                     "render": function (data, type, row) {
-                         // Check if the subject is allocated
-                         if (!row.IsAllocated) {
-                            
-                             return "<a class='btn' style='background-color: #cbf5ee;' onclick=LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>";
-                         } else {
-                             return "<span class='badge bg-success'>Allocated</span>";
-                         }
-                     },
-                     "orderable": false,
-                     "searchable": false
-                 }
-             ],
+                            return checkbox;
+                        }
+                    },
+                    {
+                        "data": "SubjectID",
+                        "render": function (data, type, row) {
+                            // Check if the subject is allocated
+                            if (!row.IsAllocated) {
+
+                                return "<a class='btn' style='background-color: #cbf5ee;' onclick=LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>";
+                            } else {
+                                return "<span class='badge bg-success'>Allocated</span>";
+                            }
+                        },
+                        "orderable": false,
+                        "searchable": false
+                    }
+                ],
                 "pageLength": 5,
-                "lengthMenu": [5, 10, 15, 20, 25]
-                
+                "lengthMenu": [5, 10, 15, 20, 25],
+                "searching": false
             });
-            $('#customSearchBox').on('keyup', function () {
-                var column = $('#columnSelect').val();
-                datatable.column(column).search(this.value).draw();
-            });
+
         }
 
+        $(document).ready(function () {
+            initializeDataTable();
 
-
-
+            $('#filterStatus').on('change', function () {
+                var status = $(this).val();
+                initializeDataTable(status);
+            });
+        });
 
 
         function Delete(id) {
@@ -254,7 +332,7 @@
                         url: '@Url.Action("Delete","Subject")/' + id,
                         success: function (data) {
                             if (data.success) {
-                                datatable.ajax.reload();
+                                $("#studentlist").DataTable().ajax.reload();
 
                                 Swal.fire({
                                     title: 'Deleted!',
@@ -278,10 +356,10 @@
 
 
     //enable button
-function ToggleEnable(id, isChecked,name) {
+  function ToggleEnable(id, isChecked,displayName) {
     Swal.fire({
         title: 'Are you sure?',
-        text: 'Do you want to toggle the enable status of this subject '+name+'?',
+        text: 'Do you want to toggle the enable status of this teacher ' +displayName + '?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -290,14 +368,13 @@ function ToggleEnable(id, isChecked,name) {
         cancelButtonText: 'No'
     }).then((result) => {
         if (result.isConfirmed) {
-            // Proceed with toggling the enable status of the student
+            // Proceed with toggling the enable status of the teacher
             $.ajax({
                 type: 'POST',
-                url: '@Url.Action("ToggleEnable", "Subject")/' + id,
-                success: function (response) {
+                url: '@Url.Action("ToggleEnable", "Teacher")/' + id,
+                success: function(response) {
                     if (response.success) {
-                        datatable.ajax.reload(); // Reload the data table
-
+                        $("#studentlist").DataTable().ajax.reload();// Reload the data table
                         Swal.fire({
                             title: 'Success!',
                             text: response.message,
@@ -312,7 +389,7 @@ function ToggleEnable(id, isChecked,name) {
                         });
                     }
                 },
-                error: function () {
+                error: function(xhr, status, error) {
                     Swal.fire({
                         title: 'Error!',
                         text: 'An error occurred while processing your request.',
@@ -321,7 +398,6 @@ function ToggleEnable(id, isChecked,name) {
                 }
             });
         } else {
-            // Revert the checkbox state if the user cancels the action
             $('#subjectCheckbox_' + id).prop('checked', !isChecked);
         }
     });
@@ -330,5 +406,3 @@ function ToggleEnable(id, isChecked,name) {
     </script>
 
 }
-
-

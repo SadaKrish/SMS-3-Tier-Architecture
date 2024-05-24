@@ -64,7 +64,7 @@ namespace SMS.BL.Subject.Interface
         /// <returns></returns>
 
         bool ToggleSubjectEnable(int subjectId, out string message);
-
+        IEnumerable<SubjectBO> SearchSubjects(string searchText, string searchCategory);
 
     }
 }

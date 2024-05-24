@@ -5,6 +5,7 @@
 using SMS.BL.Subject.Interface;
 using SMS.Data;
 using SMS.Models.Subject;
+using SMS.Models.Teacher;
 using SMS.ViewModel.Subject;
 using System;
 using System.Collections.Generic;
@@ -26,8 +27,6 @@ namespace SMS.BL.Subject
         {
             _dbEntities = dbEntities;
         }
-
-        
 
         /// <summary>
         /// Get Teacher details based on status
@@ -52,17 +51,14 @@ namespace SMS.BL.Subject
                 Name = s.Name,
                 IsEnable = s.IsEnable,
                 IsAllocated = _dbEntities.Teacher_Subject_Allocation.Any(a => a.SubjectID == s.SubjectID)
-            }).OrderBy(t => t.SubjectID).ToList();
+            }).ToList();
         }
 
-
-       
-
-       /// <summary>
-       /// Get subject by its ID
-       /// </summary>
-       /// <param name="subjectID"></param>
-       /// <returns></returns>
+        /// <summary>
+        /// Get subject by its ID
+        /// </summary>
+        /// <param name="subjectID"></param>
+        /// <returns></returns>
         public SubjectBO GetSubjectByID(long subjectID)
         {
             var result = _dbEntities.Subjects.Select(s => new SubjectBO()
@@ -76,8 +72,9 @@ namespace SMS.BL.Subject
 
             return result;
         }
+
         /// <summary>
-        /// check the existence of SUbject code
+        /// Check the existence of Subject code
         /// </summary>
         /// <param name="subjectId"></param>
         /// <param name="subjectCode"></param>
@@ -86,8 +83,9 @@ namespace SMS.BL.Subject
         {
             return _dbEntities.Subjects.Any(s => s.SubjectID != subjectId && s.SubjectCode == subjectCode);
         }
+
         /// <summary>
-        /// Check ther exsitence of subject name
+        /// Check the existence of subject name
         /// </summary>
         /// <param name="subjectId"></param>
         /// <param name="subjectName"></param>
@@ -96,7 +94,6 @@ namespace SMS.BL.Subject
         {
             return _dbEntities.Subjects.Any(s => s.SubjectID != subjectId && s.Name == subjectName);
         }
-
 
         /// <summary>
         /// Save the subject record
@@ -108,58 +105,58 @@ namespace SMS.BL.Subject
         {
             msg = "";
 
-            bool existingSubject = _dbEntities.Subjects.Any(s => s.SubjectID == subject.SubjectID);
-
-            bool subjectInUse = _dbEntities.Teacher_Subject_Allocation.Any(a => a.SubjectID == subject.SubjectID);
-
-            try
+            var existingSubject = _dbEntities.Subjects.SingleOrDefault(s => s.SubjectID == subject.SubjectID);
+            if (existingSubject != null)
             {
-                if (existingSubject)
+               
+                if (existingSubject.SubjectCode != subject.SubjectCode && SubjectCodeExists(subject.SubjectID, subject.SubjectCode))
                 {
-                    var editSubject = _dbEntities.Subjects.SingleOrDefault(s => s.SubjectID == subject.SubjectID);
-
-                    if (editSubject == null)
-                    {
-                        msg = "Unable to find the subject for edit";
-                        return false;
-                    }
-
-                    //if (editSubject.IsEnable && subjectInUse)
-                    //{
-                        
-                    //    msg = "Subject updated successfully!Status cannot be changed as the subject is in use.";
-                    //    return true;
-                    //}
-                    //else
-                    //{
-                        // If IsEnable is false or not referenced, allow changing all properties
-                        editSubject.SubjectCode = subject.SubjectCode;
-                        editSubject.Name = subject.Name;
-                        editSubject.IsEnable = subject.IsEnable;
-                        _dbEntities.SaveChanges();
-                        msg = "Subject updated successfully!";
-                        return true;
-                    //}
+                    msg = "Subject code already exists";
+                    return false;
                 }
-                else
+
+                if (existingSubject.Name != subject.Name && SubjectNameExists(subject.SubjectID, subject.Name))
                 {
-                    // If it's a new subject, add it directly without checks
-                    var newSubject = new SMS.Data.Subject();
-                    newSubject.SubjectCode = subject.SubjectCode;
-                    newSubject.Name = subject.Name;
-                    newSubject.IsEnable = subject.IsEnable;
-                    _dbEntities.Subjects.Add(newSubject);
-                    _dbEntities.SaveChanges();
-                    msg = "Subject added successfully!";
-                    return true;
+                    msg = "Subject name already exists";
+                    return false;
                 }
+
+                // Update fields
+                existingSubject.SubjectCode = subject.SubjectCode;
+                existingSubject.Name = subject.Name;
+                existingSubject.IsEnable = subject.IsEnable;
+                _dbEntities.SaveChanges();
+                msg = "Subject details updated successfully";
+                return true;
             }
-            catch (Exception error)
+            else
             {
-                msg = error.Message;
-                return false;
+                
+                if (SubjectCodeExists(subject.SubjectID, subject.SubjectCode))
+                {
+                    msg = "Subject code already exists";
+                    return false;
+                }
+
+                if (SubjectNameExists(subject.SubjectID, subject.Name))
+                {
+                    msg = "Subject name already exists";
+                    return false;
+                }
+
+                var newSubject = new SMS.Data.Subject();
+
+                newSubject.SubjectCode = subject.SubjectCode;
+                newSubject.Name = subject.Name;
+                newSubject.IsEnable = subject.IsEnable;
+                _dbEntities.Subjects.Add(newSubject);
+                _dbEntities.SaveChanges();
+                msg = "Subject added successfully!";
+                return true;
+
             }
         }
+
         /// <summary>
         /// Delete subject by its ID
         /// </summary>
@@ -176,15 +173,9 @@ namespace SMS.BL.Subject
                 {
                     if (subject.Teacher_Subject_Allocation.Any())
                     {
-                        msg = $"The {subject.Name} is taking by a teacher.";
+                        msg = $"The {subject.Name} is taken by a teacher.";
                         return false;
                     }
-
-                    //if (subject.SubjectCode.Any())
-                    //{
-                    //    msg = "This subject cannot be deleted";
-                    //    return false;
-                    //}
 
                     _dbEntities.Subjects.Remove(subject);
                     _dbEntities.SaveChanges();
@@ -211,6 +202,7 @@ namespace SMS.BL.Subject
             // Check if the subject is referenced in any teacher-subject allocations
             return _dbEntities.Teacher_Subject_Allocation.Any(tsa => tsa.SubjectID == subjectId);
         }
+
         public bool ToggleSubjectEnable(int subjectId, out string message)
         {
             var subject = _dbEntities.Subjects
@@ -227,7 +219,7 @@ namespace SMS.BL.Subject
             // If the current status is enabled, check if the subject is referenced in any related entities
             if (currentStatus && IsSubjectReferenced(subjectId))
             {
-                message = $"Cannot change status because {subject.Name} is allocated for teacher.";
+                message = $"Cannot change status because {subject.Name} is being taught by teacher.";
                 return false;
             }
 
@@ -237,6 +229,28 @@ namespace SMS.BL.Subject
 
             message = currentStatus ? "Disabled Successfully" : "Enabled Successfully";
             return true;
+        }
+
+        /// <summary>
+        /// Search subjects based on search text and category
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <param name="searchCategory"></param>
+        /// <returns></returns>
+        public IEnumerable<SubjectBO> SearchSubjects(string searchText, string searchCategory)
+        {
+            var subjects = GetSubjects();
+
+            // Perform the search logic based on the selected category
+            if (searchCategory == "SubjectCode")
+            {
+                subjects = subjects.Where(a => a.SubjectCode.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            else if (searchCategory == "Name")
+            {
+                subjects = subjects.Where(a => a.Name.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            return subjects;
         }
     }
 }

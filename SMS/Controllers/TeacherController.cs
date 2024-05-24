@@ -41,12 +41,23 @@ namespace SMS.Controllers
         /// </summary>
         /// <param name="isEnable"></param>
         /// <returns></returns>
-        
-        public ActionResult GetTeachers(bool? isEnable = null)
-        {
-            var teachers = _teacherRepository.GetTeachers(isEnable);
 
-            if (teachers.Any())
+        [HttpGet]
+        public ActionResult GetTeachers(string status = "all")
+        {
+            bool? isEnabled = null;
+            if (status.ToLower() == "active")
+            {
+                isEnabled = true;
+            }
+            else if (status.ToLower() == "inactive")
+            {
+                isEnabled = false;
+            }
+
+            var teachers = _teacherRepository.GetTeachers(isEnabled);
+
+            if (teachers != null && teachers.Any())
             {
                 return Json(new { success = true, data = teachers }, JsonRequestBehavior.AllowGet);
             }
@@ -149,7 +160,25 @@ namespace SMS.Controllers
 
             return Json(new { success = true, message = message }, JsonRequestBehavior.AllowGet);
         }
-        
-       
+        /// <summary>
+        /// Search studnets
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <param name="searchCategory"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SearchTeachers(string searchText, string searchCategory)
+        {
+            try
+            {
+                var searchResults = _teacherRepository.SearchTeachers(searchText, searchCategory);
+                return Json(new { success = true, data = searchResults });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
     }
 }
