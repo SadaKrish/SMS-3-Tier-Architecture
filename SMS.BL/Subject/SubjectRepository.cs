@@ -174,11 +174,11 @@ namespace SMS.BL.Subject
             {
                 if (subject != null)
                 {
-                    if (subject.Teacher_Subject_Allocation.Any())
-                    {
-                        msg = $"The {subject.Name} is taking by a teacher.";
-                        return false;
-                    }
+                    //if (subject.Teacher_Subject_Allocation.Any())
+                    //{
+                    //    msg = $"The {subject.Name} is taking by a teacher.";
+                    //    return false;
+                    //}
 
                     //if (subject.SubjectCode.Any())
                     //{

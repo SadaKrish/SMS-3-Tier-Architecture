@@ -5,6 +5,7 @@
 using SMS.BL.Student.Interface;
 using SMS.Data;
 using SMS.Models.Student;
+using SMS.Models.Teacher;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -115,78 +116,66 @@ namespace SMS.BL.Student
         {
             msg = "";
 
-            var existingStudent = _dbEntities.Students.SingleOrDefault(s => s.StudentID == student.StudentID);
-            if (existingStudent != null)
+            bool existingStudent = _dbEntities.Students.Any(s => s.StudentID == student.StudentID);
+
+            try
             {
-                // Editing existing student
-                if (existingStudent.StudentRegNo != student.StudentRegNo && StudentRegNoExists(student.StudentID,student.StudentRegNo))
+                if (existingStudent)
                 {
-                    msg = "Registration No already exists";
-                    return false;
+                    var editStudent = _dbEntities.Students.SingleOrDefault(s => s.StudentID == student.StudentID);
+
+                    if (editStudent == null)
+                    {
+                        msg = "Unable to find the student for edit";
+                        return false;
+                    }
+                    else
+                    {
+                        // If IsEnable is false or not referenced, allow changing all properties
+                        editStudent.StudentRegNo = student.StudentRegNo;
+                        editStudent.FirstName = student.FirstName;
+                        editStudent.MiddleName = student.MiddleName;
+                        editStudent.LastName = student.LastName;
+                        editStudent.DisplayName = student.DisplayName;
+                        editStudent.Email = student.Email;
+                        editStudent.Gender = student.Gender;
+                        editStudent.DOB = student.DOB;
+                        editStudent.Address = student.Address;
+                        editStudent.ContactNo = student.ContactNo;
+                        editStudent.IsEnable = student.IsEnable;
+                        msg = "Student details updated successfully.";
+                    }
+                }
+                else
+                {
+                    // If it's a new student, add it directly without checks
+                    var newStudent = new SMS.Data.Student();
+                    newStudent.StudentRegNo = student.StudentRegNo;
+                    newStudent.FirstName = student.FirstName;
+                    newStudent.MiddleName = student.MiddleName;
+                    newStudent.LastName = student.LastName;
+                    newStudent.DisplayName = student.DisplayName;
+                    newStudent.Email = student.Email;
+                    newStudent.Gender = student.Gender;
+                    newStudent.DOB = student.DOB;
+                    newStudent.Address = student.Address;
+                    newStudent.ContactNo = student.ContactNo;
+                    newStudent.IsEnable = student.IsEnable;
+
+                    _dbEntities.Students.Add(newStudent);
+                    msg = "Student added successfully!";
                 }
 
-                if (existingStudent.DisplayName != student.DisplayName && StudentDisplayNameExists(student.StudentID,student.DisplayName))
-                {
-                    msg = "Display name already exists";
-                    return false;
-                }
-
-                // Update fields
-                existingStudent.StudentRegNo = student.StudentRegNo;
-                existingStudent.FirstName = student.FirstName;
-                existingStudent.MiddleName = student.MiddleName;
-                existingStudent.LastName = student.LastName;
-                existingStudent.DisplayName = student.DisplayName;
-                existingStudent.Email = student.Email;
-                existingStudent.Gender = student.Gender;
-                existingStudent.DOB = student.DOB;
-                existingStudent.Address = student.Address;
-                existingStudent.ContactNo = student.ContactNo;
-                existingStudent.IsEnable = student.IsEnable;
-                _dbEntities.SaveChanges();
-                msg = "Student details updated successfully";
+                _dbEntities.SaveChanges(); // Call SaveChanges() once after updating or adding a student
                 return true;
             }
-            else
+            catch (Exception error)
             {
-                // Adding new student
-                if (StudentRegNoExists(student.StudentID,student.StudentRegNo))
-                {
-                    msg = "Registration No already exists";
-                    return false;
-                }
-
-                if (StudentDisplayNameExists(student.StudentID,student.DisplayName))
-                {
-                    msg = "Display name already exists";
-                    return false;
-                }
-
-                var newStudent = new SMS.Data.Student
-                {
-                    StudentRegNo = student.StudentRegNo,
-                    FirstName = student.FirstName,
-                    MiddleName = student.MiddleName,
-                    LastName = student.LastName,
-                    DisplayName = student.DisplayName,
-                    Email = student.Email,
-                    Gender = student.Gender,
-                    DOB = student.DOB,
-                    Address = student.Address,
-                    ContactNo = student.ContactNo,
-                    IsEnable = student.IsEnable
-                };
-                _dbEntities.Students.Add(newStudent);
-                _dbEntities.SaveChanges();
-                msg = "Student details saved successfully";
-                return true;
+                msg = error.Message;
+                return false;
             }
-
-            //_dbEntities.SaveChanges();
-            //msg = "Student details saved successfully";
-            //return true;
         }
-    
+
         /// <summary>
         /// Check if the student allocated with teacher and subject
         /// </summary>
@@ -206,19 +195,19 @@ namespace SMS.BL.Student
         public bool DeleteStudent(long id, out string msg, out bool requiresConfirmation)
         {
             msg = "";
-            requiresConfirmation = false;
+            //requiresConfirmation = false;
 
             var student = _dbEntities.Students.SingleOrDefault(s => s.StudentID == id);
             try
             {
                 if (student != null)
                 {
-                    if (IsStudentReferenced(id))
-                    {
-                        requiresConfirmation = true;
-                        msg = $"The student {student.DisplayName} is following a course.";
-                        return false;
-                    }
+                    //if (IsStudentReferenced(id))
+                    //{
+                    //    requiresConfirmation = true;
+                    //    msg = $"The student {student.DisplayName} is following a course.";
+                    //    return false;
+                    //}
 
                     _dbEntities.Students.Remove(student);
                     _dbEntities.SaveChanges();

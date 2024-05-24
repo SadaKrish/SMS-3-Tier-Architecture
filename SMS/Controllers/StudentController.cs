@@ -9,6 +9,7 @@ using SMS.BL.Subject.Interface;
 using SMS.Data;
 using SMS.Models.Student;
 using SMS.Models.Subject;
+using SMS.Models.Teacher;
 using SMS.ViewModel.Student;
 using System;
 using System.Collections.Generic;
@@ -75,28 +76,18 @@ namespace SMS.Controllers
             {
                 string message;
 
-                // Retrieve the existing student to compare values
-                var existingStudent = _studentRepository.GetStudentByID(student.StudentID);
-
-                // Check if the registration no already exists
-                if (existingStudent == null || existingStudent.StudentRegNo != student.StudentRegNo)
+                // Check if the subject code already exists
+                if (_studentRepository.StudentRegNoExists(student.StudentID, student.StudentRegNo))
                 {
-                    if (_studentRepository.StudentRegNoExists(student.StudentID, student.StudentRegNo))
-                    {
-                        return Json(new { success = false, message = "Registration No already exists" });
-                    }
+                    return Json(new { success = false, message = "Teacher Reg No already exists" });
                 }
 
-                // Check if the display name already exists
-                if (existingStudent == null || existingStudent.DisplayName != student.DisplayName)
+                // Check if the subject name already exists
+                if (_studentRepository.StudentDisplayNameExists(student.StudentID, student.DisplayName))
                 {
-                    if (_studentRepository.StudentDisplayNameExists(student.StudentID, student.DisplayName))
-                    {
-                        return Json(new { success = false, message = "Display name already exists" });
-                    }
+                    return Json(new { success = false, message = "Display Name already exists" });
                 }
 
-                // Save or update the student
                 if (_studentRepository.SaveStudent(student, out message))
                 {
                     return Json(new { success = true, message = message });
@@ -110,7 +101,7 @@ namespace SMS.Controllers
             {
                 // If model state is not valid, return validation errors
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return Json(new { success = false, message = string.Join(",", errors) });
+                return Json(new { success = false, message = string.Join("<br>", errors) });
             }
         }
 

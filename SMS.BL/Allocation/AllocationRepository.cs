@@ -169,11 +169,11 @@ namespace SMS.BL.Allocation
             {
                 if (allocation != null)
                 {
-                    if (allocation.Student_Subject_Teacher_Allocation.Any())
-                    {
-                        msg = "Cannot delete the allocation as it is assigned to a student";
-                        return false;
-                    }
+                    //if (allocation.Student_Subject_Teacher_Allocation.Any())
+                    //{
+                    //    msg = "Cannot delete the allocation as it is assigned to a student";
+                    //    return false;
+                    //}
                     _dbEntities.Teacher_Subject_Allocation.Remove(allocation);
                     _dbEntities.SaveChanges();
                     msg = "Allocation has been deleted successfully!";

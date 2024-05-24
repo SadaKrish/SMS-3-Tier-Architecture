@@ -89,21 +89,28 @@
                     "title": "Subject Details",
                     "render": function (data, type, row) {
                         var subjectButtons = data.map(function (subject) {
-                            return `
-                    <div class="subject-item1">
-                        <span>${subject.SubjectCode} - ${subject.Name}</span>
-                        <div class="subject-buttons">
-                            <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'>
-                                <i class='bi bi-trash' style='color:red;'></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
+                                      var deleteIcon = subject.IsAllocated ? '' : `
+                            <div class="subject-buttons">
+                                <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'>
+                                    <i class='bi bi-trash' style='color:red;'></i>
+                                </a>
+                            </div>
+                        `;
+                                        var badge = subject.IsAllocated ? `<span class="badge bg-success position-absolute top-0 start-100 translate-middle">Allocated</span>` : '';
+                                        return `
+                            <div class="subject-item1 position-relative">
+                                <span>${subject.SubjectCode} - ${subject.Name}</span>
+                                ${deleteIcon}
+                                ${badge}
+                            </div>
+                        `;
                         }).join('');
 
                         return subjectButtons;
                     }
                 }
+
+                
             ]
             ,
             "columnDefs": [
@@ -289,24 +296,29 @@ $(document).ready(function () {
                         "title": "Subject Details",
                         "render": function (data, type, row) {
                             var subjectButtons = data.map(function (subject) {
-                                var deleteIcon = subject.IsAllocated ? '' : `
-                                    <div class="subject-buttons">
-                                        <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'>
-                                            <i class='bi bi-trash' style='color:red;'></i>
-                                        </a>
-                                    </div>
-                                `;
-                                return `
-                                    <div class="subject-item1">
-                                        <span>${subject.SubjectCode} - ${subject.Name}</span>
-                                        ${deleteIcon}
-                                    </div>
-                                `;
+                                 var deleteIcon = subject.IsAllocated ? '' : `
+                                <div class="subject-buttons">
+                                    <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'>
+                                        <i class='bi bi-trash' style='color:red;'></i>
+                                    </a>
+                                </div>
+                            `;
+                                   var badge = subject.IsAllocated ? `<span class="badge bg-success">Allocated</span>` : '';
+                                    return `
+                                <div class="subject-item1 position-relative">
+                                    <span>${subject.SubjectCode} - ${subject.Name}</span>
+                                    ${deleteIcon}
+                                    
+                                </div>
+                            `;
                             }).join('');
 
                             return subjectButtons;
                         }
                     }
+
+
+                    
                 ]
 ,
                 "columnDefs": [

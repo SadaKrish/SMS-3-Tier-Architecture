@@ -129,7 +129,7 @@ namespace SMS.BL.Teacher
 
             bool existingTeacher = _dbEntities.Teachers.Any(s => s.TeacherID == teacher.TeacherID);
 
-            bool teacherteaches = _dbEntities.Teacher_Subject_Allocation.Any(a => a.TeacherID == teacher.TeacherID);
+            //bool teacherteaches = _dbEntities.Teacher_Subject_Allocation.Any(a => a.TeacherID == teacher.TeacherID);
 
             try
             {
@@ -142,14 +142,6 @@ namespace SMS.BL.Teacher
                         msg = "Unable to find the teacher for edit";
                         return false;
                     }
-
-                    //if (editTeacher.IsEnable && teacherteaches)
-                    //{
-                    //    // If IsEnable is true and referenced, only allow changing SubjectCode and Name
-                      
-                    //  //  msg = "Teacher details updated successfully, but IsEnable cannot be changed as the teacher is referenced.";
-                    //    return false;
-                    //}
                     else
                     {
                         // If IsEnable is false or not referenced, allow changing all properties
@@ -171,7 +163,7 @@ namespace SMS.BL.Teacher
                 }
                 else
                 {
-                    // If it's a new subject, add it directly without checks
+                    // If it's a new Teacher, add it directly without checks
                     var newTeacher = new SMS.Data.Teacher();
                     newTeacher.TeacherRegNo = teacher.TeacherRegNo;
                     newTeacher.FirstName = teacher.FirstName;
@@ -205,17 +197,13 @@ namespace SMS.BL.Teacher
             {
                 if (teacher != null)
                 {
-                    if (teacher.Teacher_Subject_Allocation.Any())
-                    {
-                        msg = $"The teacher {teacher.DisplayName} is teaching a subject.";
-                        return false;
-                    }
-
-                    //if (subject.SubjectCode.Any())
+                    //if (teacher.Teacher_Subject_Allocation.Any())
                     //{
-                    //    msg = "This subject cannot be deleted";
+                    //    msg = $"The teacher {teacher.DisplayName} is teaching a subject.";
                     //    return false;
                     //}
+
+                   
 
                     _dbEntities.Teachers.Remove(teacher);
                     _dbEntities.SaveChanges();
