@@ -64,7 +64,8 @@ namespace SMS.BL.Teacher
                 DOB = s.DOB,
                 Address = s.Address,
                 ContactNo = s.ContactNo,
-                IsEnable = s.IsEnable
+                IsEnable = s.IsEnable,
+                IsAllocated = _dbEntities.Teacher_Subject_Allocation.Any(a => a.TeacherID==s.TeacherID)
             }).ToList();
         }
 

@@ -35,6 +35,7 @@ namespace SMS.Models.Teacher
         public string ContactNo { get; set; }
         [DisplayName("Status")]
         public bool IsEnable { get; set; }
+        public bool IsAllocated { get; set; }
         public string DisplayIsEnable
         {
             get

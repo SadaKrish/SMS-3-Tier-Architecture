@@ -70,8 +70,8 @@ namespace SMS.BL.Subject
                 SubjectID = s.SubjectID,
                 SubjectCode = s.SubjectCode,
                 Name = s.Name,
-                IsEnable = s.IsEnable
-
+                IsEnable = s.IsEnable,
+                IsAllocated = _dbEntities.Teacher_Subject_Allocation.Any(a => a.SubjectID == s.SubjectID)
             }).Where(s => s.SubjectID == subjectID).FirstOrDefault();
 
             return result;

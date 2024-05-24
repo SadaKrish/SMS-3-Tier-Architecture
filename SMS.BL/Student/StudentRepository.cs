@@ -56,7 +56,8 @@ namespace SMS.BL.Student
                 DOB = s.DOB,
                 Address = s.Address,
                 ContactNo = s.ContactNo,
-                IsEnable = s.IsEnable
+                IsEnable = s.IsEnable,
+                IsAllocated = _dbEntities.Student_Subject_Teacher_Allocation.Any(a => a.StudentID == s.StudentID)
             }).ToList();
         }
         /// <summary>

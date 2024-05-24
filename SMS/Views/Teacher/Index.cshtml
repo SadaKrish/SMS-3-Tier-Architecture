@@ -226,8 +226,14 @@
                     },
                     {
                         "data": "TeacherID",
-                        "render": function (data) {
-                            return "<a class='btn' style='background-color: #cbf5ee ;' onclick= LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee ;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>"
+                        "render": function (data, type, row) {
+                            // Check if the subject is allocated
+                            if (!row.IsAllocated) {
+
+                                return "<a class='btn' style='background-color: #cbf5ee;' onclick=LoadEditPage(" + data + ")><i class='bi bi-pencil-square'></i></a>  <a class='btn' style='background-color: #cbf5ee;' onclick=Delete(" + data + ")><i class='bi bi-trash' style='color:red;'></i></a>";
+                            } else {
+                                return "<span class='badge bg-success'>Allocated</span>";
+                            }
                         },
                         "orderable": false,
                         "searchable": false
