@@ -195,7 +195,7 @@ namespace SMS.BL.Student
         public bool DeleteStudent(long id, out string msg, out bool requiresConfirmation)
         {
             msg = "";
-            //requiresConfirmation = false;
+            requiresConfirmation = false;
 
             var student = _dbEntities.Students.SingleOrDefault(s => s.StudentID == id);
             try
