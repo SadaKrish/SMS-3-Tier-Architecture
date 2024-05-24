@@ -9,11 +9,7 @@ namespace SMS.BL.Student.Interface
 {
     public interface IStudentRepository
     {
-        /// <summary>
-        /// Get All student details
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<StudentBO> GetAllStudent();
+       
         /// <summary>
         /// get students based on status
         /// </summary>

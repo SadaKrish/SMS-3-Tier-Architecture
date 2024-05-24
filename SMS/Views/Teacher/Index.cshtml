@@ -234,12 +234,10 @@
                     }
                 ],
                 "pageLength": 5,
-                "lengthMenu": [5, 10, 15, 20, 25]
+                "lengthMenu": [5, 10, 15, 20, 25],
+                "searching":false
             });
-            $('#customSearchBox').on('keyup', function () {
-                var column = $('#columnSelect').val();
-                datatable.column(column).search(this.value).draw();
-            });
+           
         }
 
         function getStatusFilterValue(statusFilter) {

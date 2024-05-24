@@ -33,26 +33,7 @@ namespace SMS.BL.Teacher
         /// Retrieve all teacher details
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<TeacherBO> GetAllTeacher()
-        {
-            var allTeachers = _dbEntities.Teachers.Select(t => new TeacherBO()
-            {
-                TeacherID = t.TeacherID,
-                TeacherRegNo = t.TeacherRegNo,
-                FirstName = t.FirstName,
-                MiddleName = t.MiddleName,
-                LastName = t.LastName,
-                DisplayName = t.DisplayName,
-                Email = t.Email,
-                Gender = t.Gender,
-                DOB = t.DOB,
-                Address = t.Address,
-                ContactNo = t.ContactNo,
-                IsEnable = t.IsEnable
-
-            }).OrderBy(s => s.TeacherID).ToList();
-            return allTeachers;
-        }
+      
 
         /// <summary>
         /// get teachers according to the status

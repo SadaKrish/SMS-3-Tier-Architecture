@@ -31,7 +31,7 @@ namespace SMS.BL.Allocation
         }
 
         /// <summary>
-        /// 
+        /// Get all subject allocation according to the status
         /// </summary>
         /// <returns></returns>
         public IEnumerable<SubjectAllocationDetailViewModel> GetAllSubjectAllocations()
@@ -57,8 +57,11 @@ namespace SMS.BL.Allocation
 
             return data;
         }
-
-
+        /// <summary>
+        /// Get subject allocation by id
+        /// </summary>
+        /// <param name="subjectAllocationId"></param>
+        /// <returns></returns>
         public Teacher_Subject_AllocationBO GetSubjectAllocationById(long subjectAllocationId)
         {
             var results = _dbEntities.Teacher_Subject_Allocation.Select(s => new Teacher_Subject_AllocationBO()
@@ -71,6 +74,10 @@ namespace SMS.BL.Allocation
             return results;
 
         }
+        /// <summary>
+        /// get enabled teacher list from teacher list
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<SelectListItem> GetEnabledTeachersList()
         {
             return _dbEntities.Teachers
@@ -81,7 +88,10 @@ namespace SMS.BL.Allocation
                     Text = s.TeacherRegNo + " - " + s.DisplayName
                 });
         }
-
+        /// <summary>
+        /// Get enabled subject list form subject table
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<SelectListItem> GetEnabledSubjectList()
         {
             return _dbEntities.Subjects
@@ -92,7 +102,12 @@ namespace SMS.BL.Allocation
                     Text = s.SubjectCode + " - " + s.Name
                 });
         }
-
+        /// <summary>
+        /// Save subject allocation
+        /// </summary>
+        /// <param name="allocation"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public bool SaveSubjectAllocation(Teacher_Subject_AllocationBO allocation, out string message)
         {
             message = "";
@@ -133,7 +148,12 @@ namespace SMS.BL.Allocation
                 return false;
             }
         }
-
+        /// <summary>
+        /// Delete the subject allocation
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public bool DeleteSubjectAllocation(long id, out string msg)
         {
             msg = "";
@@ -161,7 +181,12 @@ namespace SMS.BL.Allocation
                 return false;
             }
         }
-
+        /// <summary>
+        /// Search subject allocation
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <param name="searchCategory"></param>
+        /// <returns></returns>
         public IEnumerable<SubjectAllocationDetailViewModel> SearchSubjectAllocations(string searchText, string searchCategory)
         {
             var students = GetAllSubjectAllocations();
@@ -187,7 +212,11 @@ namespace SMS.BL.Allocation
 
             return students;
         }
-
+        /// <summary>
+        /// Get all student allocation
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public IEnumerable<StudentAllocationGroupedViewModel> GetAllStudentAllocation(bool? status = null)
         {
             IQueryable<Student_Subject_Teacher_Allocation> query = _dbEntities.Student_Subject_Teacher_Allocation
@@ -225,7 +254,11 @@ namespace SMS.BL.Allocation
 
             return groupedData;
         }
-
+        /// <summary>
+        /// Get the student allocation by id
+        /// </summary>
+        /// <param name="studentAllocationId"></param>
+        /// <returns></returns>
         public Student_Subject_Teacher_AllocationBO GetStudentAllocationById(long studentAllocationId)
         {
             var results = _dbEntities.Student_Subject_Teacher_Allocation.Select(s => new Student_Subject_Teacher_AllocationBO()
@@ -239,7 +272,11 @@ namespace SMS.BL.Allocation
             return results;
 
         }
-
+        /// <summary>
+        /// Get teachers list by subject id
+        /// </summary>
+        /// <param name="subjectID"></param>
+        /// <returns></returns>
         public IEnumerable<object> GetTeachersBySubjectID(int subjectID)
         {
             return _dbEntities.Teacher_Subject_Allocation
@@ -252,6 +289,7 @@ namespace SMS.BL.Allocation
                 })
                 .ToList();
         }
+        //Get the enabled student list
         public IEnumerable<SelectListItem> GetStudentList()
         {
             return _dbEntities.Students
@@ -263,7 +301,10 @@ namespace SMS.BL.Allocation
                 })
                 .ToList();
         }
-
+        /// <summary>
+        /// Get allocated teacher list
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<SelectListItem> GetTeacherList()
         {
             return _dbEntities.Teacher_Subject_Allocation
@@ -274,18 +315,10 @@ namespace SMS.BL.Allocation
                 })
                 .ToList();
         }
-
-        public IEnumerable<SelectListItem> GetSubjectList()
-        {
-            return _dbEntities.Teacher_Subject_Allocation
-                .Select(ts => new SelectListItem
-                {
-                    Value = ts.SubjectID.ToString(),
-                    Text = ts.Subject.SubjectCode + " - " + ts.Subject.Name
-                })
-                .Distinct()
-                .ToList();
-        }
+        /// <summary>
+        /// Get allocated subject list
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<SelectListItem> GetAllSubjectsFromAllocation()
         {
             return _dbEntities.Teacher_Subject_Allocation
@@ -298,7 +331,12 @@ namespace SMS.BL.Allocation
                 .ToList();
         }
 
-
+        /// <summary>
+        /// Save the student allocation details
+        /// </summary>
+        /// <param name="studentAllocation"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public bool SaveStudentAllocation(Student_Subject_Teacher_AllocationBO studentAllocation, out string msg)
         {
             msg = "";
@@ -307,9 +345,6 @@ namespace SMS.BL.Allocation
 
             bool isStudentAllocated = _dbEntities.Student_Subject_Teacher_Allocation.Any(s => s.SubjectAllocationID == studentAllocation.SubjectAllocationID && s.StudentID == studentAllocation.StudentID);
             // bool isSubjectAllocated=Student.
-
-
-
             try
             {
 
@@ -321,9 +356,6 @@ namespace SMS.BL.Allocation
                 var newStudentAllocation = new SMS.Data.Student_Subject_Teacher_Allocation();
                 newStudentAllocation.StudentID = studentAllocation.StudentID;
                 newStudentAllocation.SubjectAllocationID = studentAllocation.SubjectAllocationID;
-
-
-
                 _dbEntities.Student_Subject_Teacher_Allocation.Add(newStudentAllocation);
                 _dbEntities.SaveChanges();
                 msg = "Student Allocation Added Successfully!";
@@ -336,7 +368,12 @@ namespace SMS.BL.Allocation
             }
 
         }
-
+        /// <summary>
+        /// Delete the student allocation
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public bool DeleteStudentAllocation(long id, out string msg)
         {
             msg = "";
@@ -361,7 +398,12 @@ namespace SMS.BL.Allocation
                 return false;
             }
         }
-
+        /// <summary>
+        /// Serach on student allocation
+        /// </summary>
+        /// <param name="searchText"></param>
+        /// <param name="searchCategory"></param>
+        /// <returns></returns>
         public IEnumerable<StudentAllocationGroupedViewModel> SearchStudentAllocations(string searchText, string searchCategory)
         {
             var students = GetAllStudentAllocation();

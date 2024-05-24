@@ -11,27 +11,31 @@
     <div class="panel-heading">
         <h2 class="card-header">Student</h2>
     </div>
-
+    
     <div class="panel-body card-body">
-        <div class="filter">
-            <label for="statusFilter">Filter by Status:</label>
-            <select id="statusFilter">
-                <option value="all">All</option>
-                <option value="enabled">Enabled</option>
-                <option value="disabled">Disabled</option>
-            </select>
-        </div>
-        <!--<select id="searchCriteria">
-            <option value="teacherRegNo">Teacher Registration Number</option>
-            <option value="firstName">First Name</option>
-            <option value="lastName">Last Name</option>-->
-        <!-- Add more options as needed -->
-        <!--</select>
-        <input type="text" id="searchInput" placeholder="Enter search keyword...">
-        <button id="searchButton">Search</button>
-        <div id="searchResults"></div>-->
-        <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Student</a>
+        <div class="controls-container">
+            <a class="btn btn-outline-primary" style="margin: 10px; background-color: #cbf5ee;" onclick="LoadCreatePage()" id="button"> <i class="bi bi-plus"></i>  Add New Student</a>
+            <div class="filter">
+                <label for="statusFilter">Filter by Status:</label>
+                <select id="statusFilter">
+                    <option value="all">All</option>
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                </select>
+            </div>
+            @*<div class="search-container">
+                <select id="searchCategory">
+                    <option value="StudentRegNo">Student Reg No</option>
+                    <option value="FirstName">First Name</option>
+                    <option value="LastName">Last Name</option>
+                    <option value="DisplayName">Display name</option>
+                    <option value="Address">Address</option>
+                   
+                </select>
+                <input type="text" id="customSearchBox" placeholder="Search...">
+            </div>*@
 
+        </div>
         <div class="table-responsive">
             <table id="studentlist" class="table table-bordered table-striped" style="text-align:center; width: 100%;">
                 <thead style="text-align:center;">

@@ -32,7 +32,7 @@ namespace SMS.Controllers
         public ActionResult Index()
         {
             var result = new TeacherViewModel();
-            result.TeacherList = _teacherRepository.GetAllTeacher();
+            result.TeacherList = _teacherRepository.GetTeachers();
             return View(result);
         }
 
@@ -41,10 +41,19 @@ namespace SMS.Controllers
         /// </summary>
         /// <param name="isEnable"></param>
         /// <returns></returns>
+        
         public ActionResult GetTeachers(bool? isEnable = null)
         {
             var teachers = _teacherRepository.GetTeachers(isEnable);
-            return Json(new { data = teachers }, JsonRequestBehavior.AllowGet);
+
+            if (teachers.Any())
+            {
+                return Json(new { success = true, data = teachers }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false, message = "No Data Found" }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         /// <summary>

@@ -27,25 +27,7 @@ namespace SMS.BL.Subject
             _dbEntities = dbEntities;
         }
 
-        /// <summary>
-        /// Get all the teacher details 
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<SubjectBO> GetAllSubject()
-        {
-
-            var allSubjects = _dbEntities.Subjects.Select(s => new SubjectBO()
-            {
-                SubjectID = s.SubjectID,
-                SubjectCode = s.SubjectCode,
-                Name = s.Name,
-                IsEnable = s.IsEnable,
-                IsAllocated=_dbEntities.Teacher_Subject_Allocation.Any(a=>a.SubjectID==s.SubjectID)
-
-            }).OrderBy(t => t.SubjectID).ToList();
-
-            return allSubjects;
-        }
+        
 
         /// <summary>
         /// Get Teacher details based on status
@@ -70,7 +52,7 @@ namespace SMS.BL.Subject
                 Name = s.Name,
                 IsEnable = s.IsEnable,
                 IsAllocated = _dbEntities.Teacher_Subject_Allocation.Any(a => a.SubjectID == s.SubjectID)
-            }).ToList();
+            }).OrderBy(t => t.SubjectID).ToList();
         }
 
 
@@ -94,18 +76,34 @@ namespace SMS.BL.Subject
 
             return result;
         }
+        /// <summary>
+        /// check the existence of SUbject code
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <param name="subjectCode"></param>
+        /// <returns></returns>
         public bool SubjectCodeExists(long subjectId, string subjectCode)
         {
             return _dbEntities.Subjects.Any(s => s.SubjectID != subjectId && s.SubjectCode == subjectCode);
         }
-
+        /// <summary>
+        /// Check ther exsitence of subject name
+        /// </summary>
+        /// <param name="subjectId"></param>
+        /// <param name="subjectName"></param>
+        /// <returns></returns>
         public bool SubjectNameExists(long subjectId, string subjectName)
         {
             return _dbEntities.Subjects.Any(s => s.SubjectID != subjectId && s.Name == subjectName);
         }
 
 
-
+        /// <summary>
+        /// Save the subject record
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public bool SaveSubject(SubjectBO subject, out string msg)
         {
             msg = "";
@@ -240,11 +238,5 @@ namespace SMS.BL.Subject
             message = currentStatus ? "Disabled Successfully" : "Enabled Successfully";
             return true;
         }
-
-
-
-
-
-
     }
 }

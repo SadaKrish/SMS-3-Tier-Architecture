@@ -27,34 +27,11 @@ namespace SMS.BL.Student
         {
             _dbEntities = dbEntities;
         }
-
-        
-
-       
         /// <summary>
-        /// Get the studnet list
+        /// Get the student list according to the status
         /// </summary>
+        /// <param name="isEnable"></param>
         /// <returns></returns>
-        public IEnumerable<StudentBO> GetAllStudent()
-        {
-            var allStudents = _dbEntities.Students.Select(t => new StudentBO()
-            {
-                StudentID = t.StudentID,
-                StudentRegNo = t.StudentRegNo,
-                FirstName = t.FirstName,
-                MiddleName = t.MiddleName,
-                LastName = t.LastName,
-                DisplayName = t.DisplayName,
-                Email = t.Email,
-                Gender = t.Gender,
-                DOB = t.DOB,
-                Address = t.Address,
-                ContactNo = t.ContactNo,
-                IsEnable = t.IsEnable
-
-            }).OrderBy(s => s.StudentID).ToList();
-            return allStudents;
-        }
         public IEnumerable<StudentBO> GetStudents(bool? isEnable = null)
         {
             var query = _dbEntities.Students.AsQueryable();
@@ -82,6 +59,11 @@ namespace SMS.BL.Student
                 IsEnable = s.IsEnable
             }).ToList();
         }
+        /// <summary>
+        /// Get student by id
+        /// </summary>
+        /// <param name="studentID"></param>
+        /// <returns></returns>
         public StudentBO GetStudentByID(long studentID)
         {
             var result =_dbEntities.Students.Select(t => new StudentBO()
@@ -102,15 +84,32 @@ namespace SMS.BL.Student
             }).Where(t => t.StudentID == studentID).FirstOrDefault();
             return result;
         }
+        /// <summary>
+        /// Check the existence of student reg no
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <param name="regNo"></param>
+        /// <returns></returns>
         public bool StudentRegNoExists(long studentId,string regNo)
         {
             return _dbEntities.Students.Any(s => s.StudentID != studentId && s.StudentRegNo == regNo);
         }
+        /// <summary>
+        /// check the existence of display name
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <param name="displayName"></param>
+        /// <returns></returns>
         public bool StudentDisplayNameExists(long studentId, string displayName)
         {
             return _dbEntities.Students.Any(s => s.StudentID != studentId && s.DisplayName == displayName);
         }
-
+        /// <summary>
+        /// save and edit student detials
+        /// </summary>
+        /// <param name="student"></param>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         public bool SaveStudent(StudentBO student, out string msg)
         {
             msg = "";
@@ -187,12 +186,22 @@ namespace SMS.BL.Student
             //return true;
         }
     
-
-
+        /// <summary>
+        /// Check if the student allocated with teacher and subject
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
         public bool IsStudentReferenced(long studentId)
         {
             return _dbEntities.Student_Subject_Teacher_Allocation.Any(tsa => tsa.StudentID == studentId);
         }
+        /// <summary>
+        /// Delete the student record
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="msg"></param>
+        /// <param name="requiresConfirmation"></param>
+        /// <returns></returns>
         public bool DeleteStudent(long id, out string msg, out bool requiresConfirmation)
         {
             msg = "";
@@ -224,7 +233,12 @@ namespace SMS.BL.Student
                 return false;
             }
         }
-
+        /// <summary>
+        /// Change the status of a student
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public bool ToggleStudentEnable(int studentId, out string message)
         {
             var student = _dbEntities.Students.SingleOrDefault(s => s.StudentID == studentId);
@@ -256,7 +270,7 @@ namespace SMS.BL.Student
 
         public IEnumerable<StudentBO> SearchStudents(string searchText, string searchCategory)
         {
-            var students = GetAllStudent();
+            var students = GetStudents();
 
             // Perform the search logic based on the selected category
             if (searchCategory == "StudentRegNo")

@@ -31,7 +31,7 @@ namespace SMS.Controllers
         {
             var result = new SubjectViewModel();
             // result.SubjectList = _subjectBL.GetAllSubject();
-            result.SubjectList = _subjectRepository.GetAllSubject();
+            result.SubjectList = _subjectRepository.GetSubjects();
             return View(result);
         }
         /// <summary>
@@ -42,7 +42,15 @@ namespace SMS.Controllers
         public ActionResult GetSubject(bool? isEnable = null)
         {
             var subjects = _subjectRepository.GetSubjects(isEnable);
-            return Json(new { data = subjects }, JsonRequestBehavior.AllowGet);
+
+            if (subjects.Any())
+            {
+                return Json(new { success = true, data = subjects }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false, message = "No Data Found" }, JsonRequestBehavior.AllowGet);
+            }
         }
         /// <summary>
         /// Add Subject and edit existing subject

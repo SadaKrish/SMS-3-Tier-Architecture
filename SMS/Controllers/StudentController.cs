@@ -31,7 +31,7 @@ namespace SMS.Controllers
         public ActionResult Index()
         {
             var result = new StudentViewModel();
-            result.StudentList = _studentRepository.GetAllStudent();
+            result.StudentList = _studentRepository.GetStudents();
             return View(result);
         }
         /// <summary>
