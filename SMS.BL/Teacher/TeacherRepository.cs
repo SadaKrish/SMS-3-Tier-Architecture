@@ -129,7 +129,7 @@ namespace SMS.BL.Teacher
 
             bool existingTeacher = _dbEntities.Teachers.Any(s => s.TeacherID == teacher.TeacherID);
 
-            //bool teacherteaches = _dbEntities.Teacher_Subject_Allocation.Any(a => a.TeacherID == teacher.TeacherID);
+            bool teacherteaches = _dbEntities.Teacher_Subject_Allocation.Any(a => a.TeacherID == teacher.TeacherID);
 
             try
             {
@@ -144,6 +144,11 @@ namespace SMS.BL.Teacher
                     }
                     else
                     {
+                        if (teacherteaches)
+                        {
+                            msg = $"The teacher {teacher.DisplayName} is teaches subjects";
+                            return false;
+                        }
                         // If IsEnable is false or not referenced, allow changing all properties
                         editTeacher.TeacherRegNo = teacher.TeacherRegNo;
                         editTeacher.FirstName = teacher.FirstName;
