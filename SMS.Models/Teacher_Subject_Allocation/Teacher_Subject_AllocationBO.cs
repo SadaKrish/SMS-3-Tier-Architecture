@@ -12,6 +12,7 @@ namespace SMS.Models.Teacher_Subject_Allocation
         public long SubjectAllocationID { get; set; }
         public long TeacherID { get; set; }
         public long SubjectID { get; set; }
+        public bool IsAllocated { get; set; }
         public virtual ICollection<Student_Subject_Teacher_Allocation> Student_Subject_Teacher_Allocation { get; set; }
       //  public virtual Subject Subject { get; set; }
         //public virtual Teacher Teacher { get; set; }

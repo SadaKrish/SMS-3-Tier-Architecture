@@ -41,6 +41,11 @@ namespace SMS.BL.Allocation
                 .Include("Teacher")
                 .ToList();
 
+            // Get all subject allocation IDs that are assigned to students
+            var assignedSubjectAllocationIds = _dbEntities.Student_Subject_Teacher_Allocation
+                .Select(s => s.SubjectAllocationID)
+                .ToHashSet();
+
             var data = allSubjectAllocations
                 .GroupBy(item => new { item.Teacher.TeacherRegNo, item.Teacher.DisplayName })
                 .Select(g => new SubjectAllocationDetailViewModel
@@ -51,12 +56,14 @@ namespace SMS.BL.Allocation
                     {
                         SubjectAllocationID = item.SubjectAllocationID,
                         SubjectCode = item.Subject.SubjectCode,
-                        Name = item.Subject.Name
+                        Name = item.Subject.Name,
+                        IsAllocated = assignedSubjectAllocationIds.Contains(item.SubjectAllocationID)
                     }).ToList()
                 }).ToList();
 
             return data;
         }
+
         /// <summary>
         /// Get subject allocation by id
         /// </summary>

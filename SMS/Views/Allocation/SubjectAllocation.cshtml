@@ -289,16 +289,19 @@ $(document).ready(function () {
                         "title": "Subject Details",
                         "render": function (data, type, row) {
                             var subjectButtons = data.map(function (subject) {
+                                var deleteIcon = subject.IsAllocated ? '' : `
+                                    <div class="subject-buttons">
+                                        <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'>
+                                            <i class='bi bi-trash' style='color:red;'></i>
+                                        </a>
+                                    </div>
+                                `;
                                 return `
-                    <div class="subject-item1">
-                        <span>${subject.SubjectCode} - ${subject.Name}</span>
-                        <div class="subject-buttons">
-                            <a class='btn' onclick='Delete(${subject.SubjectAllocationID})'>
-                                <i class='bi bi-trash' style='color:red;'></i>
-                            </a>
-                        </div>
-                    </div>
-                `;
+                                    <div class="subject-item1">
+                                        <span>${subject.SubjectCode} - ${subject.Name}</span>
+                                        ${deleteIcon}
+                                    </div>
+                                `;
                             }).join('');
 
                             return subjectButtons;
