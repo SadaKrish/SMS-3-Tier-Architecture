@@ -227,7 +227,7 @@ namespace SMS.BL.Subject
             // If the current status is enabled, check if the subject is referenced in any related entities
             if (currentStatus && IsSubjectReferenced(subjectId))
             {
-                message = $"Cannot change status because {subject.Name} is referenced in other entities.";
+                message = $"Cannot change status because {subject.Name} is allocated for teacher.";
                 return false;
             }
 

@@ -306,9 +306,9 @@ function ToggleEnable(id, isChecked,name) {
                     } else {
                         $('#subjectCheckbox_' + id).prop('checked', !isChecked);
                         Swal.fire({
-                            title: 'Error!',
+                            title: 'Warning!',
                             text: response.message,
-                            icon: 'error'
+                            icon: 'warning'
                         });
                     }
                 },

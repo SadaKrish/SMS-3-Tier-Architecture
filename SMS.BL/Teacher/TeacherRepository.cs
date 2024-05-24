@@ -143,23 +143,13 @@ namespace SMS.BL.Teacher
                         return false;
                     }
 
-                    if (editTeacher.IsEnable && teacherteaches)
-                    {
-                        // If IsEnable is true and referenced, only allow changing SubjectCode and Name
-                        editTeacher.TeacherRegNo = teacher.TeacherRegNo;
-                        editTeacher.FirstName = teacher.FirstName;
-                        editTeacher.MiddleName = teacher.MiddleName;
-                        editTeacher.LastName = teacher.LastName;
-                        editTeacher.DisplayName = teacher.DisplayName;
-                        editTeacher.Email = teacher.Email;
-                        editTeacher.Gender = teacher.Gender;
-                        editTeacher.DOB = teacher.DOB;
-                        editTeacher.Address = teacher.Address;
-                        editTeacher.ContactNo = teacher.ContactNo;
-                        _dbEntities.SaveChanges();
-                        msg = "Teacher details updated successfully, but IsEnable cannot be changed as the teacher is referenced.";
-                        return true;
-                    }
+                    //if (editTeacher.IsEnable && teacherteaches)
+                    //{
+                    //    // If IsEnable is true and referenced, only allow changing SubjectCode and Name
+                      
+                    //  //  msg = "Teacher details updated successfully, but IsEnable cannot be changed as the teacher is referenced.";
+                    //    return false;
+                    //}
                     else
                     {
                         // If IsEnable is false or not referenced, allow changing all properties
@@ -264,7 +254,7 @@ namespace SMS.BL.Teacher
             // If the current status is enabled, check if the subject is referenced in any related entities
             if (currentStatus && IsTeacherReferenced(teacherId))
             {
-                message = $"Cannot change status because {teacher.DisplayName} is referenced in other entities.";
+                message = $"Cannot change status because {teacher.DisplayName} is teaching subject.";
                 return false;
             }
 
