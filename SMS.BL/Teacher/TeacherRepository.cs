@@ -197,13 +197,17 @@ namespace SMS.BL.Teacher
             {
                 if (teacher != null)
                 {
-                    //if (teacher.Teacher_Subject_Allocation.Any())
+                    if (teacher.Teacher_Subject_Allocation.Any())
+                    {
+                        msg = $"The teacher {teacher.DisplayName} is teaching a subject.";
+                        return false;
+                    }
+
+                    //if (subject.SubjectCode.Any())
                     //{
-                    //    msg = $"The teacher {teacher.DisplayName} is teaching a subject.";
+                    //    msg = "This subject cannot be deleted";
                     //    return false;
                     //}
-
-                   
 
                     _dbEntities.Teachers.Remove(teacher);
                     _dbEntities.SaveChanges();

@@ -202,12 +202,12 @@ namespace SMS.BL.Student
             {
                 if (student != null)
                 {
-                    //if (IsStudentReferenced(id))
-                    //{
-                    //    requiresConfirmation = true;
-                    //    msg = $"The student {student.DisplayName} is following a course.";
-                    //    return false;
-                    //}
+                    if (IsStudentReferenced(id))
+                    {
+                        requiresConfirmation = true;
+                        msg = $"The student {student.DisplayName} is following a course.";
+                        return false;
+                    }
 
                     _dbEntities.Students.Remove(student);
                     _dbEntities.SaveChanges();
