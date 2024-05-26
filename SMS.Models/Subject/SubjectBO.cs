@@ -11,9 +11,9 @@ namespace SMS.Models.Subject
     public class SubjectBO
     {
         public long SubjectID { get; set; }
-        [Required, Display(Name = "Subject Code")]
+        [Required(ErrorMessage ="Subject code is required"), Display(Name = "Subject Code")]
         public string SubjectCode { get; set; }
-        [Required, DisplayName("Name")]
+        [Required(ErrorMessage ="Subject Name is required"), DisplayName("Name")]
         public string Name { get; set; }
         [DisplayName("Status")]
         public bool IsEnable { get; set; }

@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "field-validation-error" })
                 </div>
             </div>
             <div class="row form-group d-flex">
@@ -54,7 +54,7 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.EditorFor(model => model.MiddleName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "field-validation-error" })
                 </div>
             </div>
             <div class="row form-group d-flex">
@@ -63,7 +63,7 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "field-validation-error" })
                 </div>
             </div>
             <div class="row form-group d-flex">
@@ -72,7 +72,7 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.EditorFor(model => model.DisplayName, new { htmlAttributes = new { @class = "form-control", id = "displayName" } })
-                    @Html.ValidationMessageFor(model => model.DisplayName, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.DisplayName, "", new { @class = "field-validation-error" })
                     <span id="displayNameAvailability" class="text-danger"></span>
                 </div>
             </div>
@@ -82,7 +82,7 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", type = "email" } })
-                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "field-validation-error" })
                 </div>
             </div>
 
@@ -96,7 +96,7 @@
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
                     </select>
-                    @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "field-validation-error" })
                 </div>
             </div>
 
@@ -106,7 +106,7 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.EditorFor(model => model.DOB, new { htmlAttributes = new { @class = "form-select datepicker", placeholder = "Select Date (YYYY-MM-DD)" } })
-                    @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.DOB, "", new { @class = "field-validation-error" })
                 </div>
             </div>
             <div class="row form-group d-flex">
@@ -115,7 +115,7 @@
                 </div>
                 <div class="col-md p-2">
                     @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "field-validation-error" })
                 </div>
             </div>
             <div class="row form-group d-flex">
@@ -162,7 +162,48 @@
 
     
 
+    //function addStudentSuccess(response) {
+    //    if (response.success) {
+    //        Swal.fire({
+    //            icon: 'success',
+    //            title: 'Success',
+    //            text: response.message,
+    //            showCancelButton: false,
+    //            confirmButtonText: 'OK'
+    //        }).then((result) => {
+    //            if (result.isConfirmed) {
+    //                $("#createoredit").empty();
+    //                $("#studentlist").show();
+    //                $("#button").show();
+    //                $('.panel-body').show();
+    //                $(".filter").show();
+    //                $("#back-to-list").hide();
+    //                $("#studentlist").DataTable().ajax.reload();
+    //            }
+    //        });
+    //    } else {
+    //        // Clear previous validation messages
+    //        $('.field-validation-error').text('');
 
+    //        // Show validation messages under each field
+    //        $.each(response.errors, function (index, error) {
+    //            $.each(error.Errors, function (key, message) {
+    //                var errorMessage = $('<span>').text(message).addClass('text-danger');
+    //                $('[name="' + error.Key + '"]').after(errorMessage);
+    //            });
+    //        });
+
+            
+    //    }
+    //}
+
+    //function addStudentFailure() {
+    //    Swal.fire({
+    //        icon: 'error',
+    //        title: 'Error',
+    //        text: 'An error occurred while submitting the form.'
+    //    });
+    //}
 
     
 </script>

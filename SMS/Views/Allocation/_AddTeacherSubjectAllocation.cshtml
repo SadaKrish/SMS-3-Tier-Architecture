@@ -25,14 +25,16 @@
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.SubjectAllocationID)
-
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="row form-group d-flex">
                 <div class="col-md-4">
                     @Html.Label("Teacher", htmlAttributes: new { @class = "control-label required" })
                 </div>
                 <div class="col-md p-2">
                     @Html.DropDownListFor(model => model.TeacherID, ViewBag.TeacherList as SelectList, "Select Teacher", new { @class = "form-select", id = "teacherDropdown" })
+
                     @Html.ValidationMessageFor(model => model.TeacherID, "", new { @class = "text-danger" })
+                    <span id="teacherDropdownError" class="text-danger"></span>
                 </div>
             </div>
 
@@ -57,5 +59,19 @@
 <script>
     $(document).ready(function () {
         $('.required').append('<span style="color: red">*</span>');
+    });
+
+    $(document).ready(function () {
+        // Handle form submission
+        $("form").submit(function (event) {
+            // Check if the Teacher dropdown has a selected value
+            var teacherId = $("#TeacherID").val();
+            if (teacherId == "" || teacherId == null) {
+                // Prevent form submission
+                event.preventDefault();
+                // Display an error message
+                $("#teacherDropdownError").text("Please select a teacher.");
+            }
+        });
     });
 </script>

@@ -190,14 +190,28 @@
                         // Hide the "Back to List" button
                         $("#back-to-list").hide();
 
+                        // Reload the data table
+                        //var datatable = initializeDataTable();
                         $("#studentlist").DataTable().ajax.reload();
-
-
-
                     }
                 });
             } else {
-                Swal.fire({ icon: 'error', title: 'Error', text: response.message });
+                // Clear previous validation messages
+                $('.text-danger').text('');
+
+                // Show validation messages under each field
+                $.each(response.errors, function (index, error) {
+                    $.each(error.Errors, function (key, message) {
+                        var errorMessage = $('<span>').text(message).addClass('text-danger');
+                        $('[name="' + error.Key + '"]').after(errorMessage);
+                    });
+                });
+
+                //Swal.fire({
+                //    icon: 'error',
+                //    title: 'Error',
+                //    text: response.message
+                //});
             }
         }
 

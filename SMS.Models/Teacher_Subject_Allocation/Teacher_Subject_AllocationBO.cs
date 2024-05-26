@@ -11,9 +11,9 @@ namespace SMS.Models.Teacher_Subject_Allocation
     public class Teacher_Subject_AllocationBO
     {
         public long SubjectAllocationID { get; set; }
-        [Required(ErrorMessage ="Teacher Id is required")]
+        [Required(ErrorMessage ="Teacher is required")]
         public long TeacherID { get; set; }
-        [Required(ErrorMessage = "Subject Id is required")]
+        [Required(ErrorMessage = "Subject is required")]
         public long SubjectID { get; set; }
         public bool IsAllocated { get; set; }
         public virtual ICollection<Student_Subject_Teacher_Allocation> Student_Subject_Teacher_Allocation { get; set; }

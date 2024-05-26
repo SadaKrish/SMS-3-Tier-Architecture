@@ -122,9 +122,14 @@ namespace SMS.Controllers
             }
             else
             {
-                // If model state is not valid, return validation errors
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return Json(new { success = false, message = string.Join("<br>", errors) });
+                var errors = ModelState.Where(ms => ms.Value.Errors.Any())
+                               .Select(ms => new
+                               {
+                                   Key = ms.Key,
+                                   Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                               });
+
+                return Json(new { success = false, errors });
             }
         }
 

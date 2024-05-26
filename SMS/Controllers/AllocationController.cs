@@ -93,21 +93,32 @@ namespace SMS.Controllers
                     bool success;
                     if (subjectAllocation.SubjectAllocationID == 0) // Add new allocation
                     {
-                        success = _allocationRepository.SaveSubjectAllocation(subjectAllocation, out message); 
+                        success = _allocationRepository.SaveSubjectAllocation(subjectAllocation, out message);
                     }
                     else // Edit existing allocation
                     {
                         // Update the existing allocation
-                        success = _allocationRepository.SaveSubjectAllocation(subjectAllocation, out message); 
+                        success = _allocationRepository.SaveSubjectAllocation(subjectAllocation, out message);
                     }
 
-                    
+
                     return Json(new { success, message });
                 }
                 catch (Exception ex)
                 {
                     return Json(new { success = false, message = "An error occurred while processing the request: " + ex.Message });
                 }
+            }
+            else
+            {
+                var errors = ModelState.Where(ms => ms.Value.Errors.Any())
+                              .Select(ms => new
+                              {
+                                  Key = ms.Key,
+                                  Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                              });
+
+                return Json(new { success = false, errors });
             }
 
             // If model state is not valid, re-populate ViewBag and return to the view
@@ -220,6 +231,17 @@ namespace SMS.Controllers
                 {
                     return Json(new { success = false, message = "An error occurred while processing the request: " + ex.Message });
                 }
+            }
+            else 
+            {
+                var errors = ModelState.Where(ms => ms.Value.Errors.Any())
+                              .Select(ms => new
+                              {
+                                  Key = ms.Key,
+                                  Errors = ms.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                              });
+
+                return Json(new { success = false, errors });
             }
 
             // Repopulate the dropdown lists if the model state is not valid
