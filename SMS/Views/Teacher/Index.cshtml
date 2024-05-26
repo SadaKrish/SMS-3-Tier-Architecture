@@ -142,7 +142,7 @@
             "lengthMenu": [5, 10, 15, 20, 25],
             "searching":false
         });
-        
+
     }
 
     function searchAllocations() {
@@ -260,11 +260,11 @@
                     });
                 });
 
-                //Swal.fire({
-                //    icon: 'error',
-                //    title: 'Error',
-                //    text: response.message
-                //});
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message
+                });
             }
         }
 
@@ -369,7 +369,7 @@
                 "lengthMenu": [5, 10, 15, 20, 25],
                 "searching": false
             });
-            
+
         }
 
         $(document).ready(function () {
@@ -381,39 +381,41 @@
             });
         });
         function Delete(id) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "POST",
-                        url: '@Url.Action("Delete","Teacher")/' + id,
-                        success: function (data) {
-                            if (data.success) {
-                                $("#studentlist").DataTable().ajax.reload();
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: data.message,
-                                    icon: 'success'
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Warning!',
-                                    text: data.message,
-                                    icon: 'warning'
-                                });
-                            }
-                        }
-                    });
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Delete","Teacher")/' + id,
+                success: function (data) {
+                    if (data.success) {
+                        //var datatable = initializeDataTable();
+                        $("#studentlist").DataTable().ajax.reload();
+
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: data.message,
+                            icon: 'success'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Warning!',
+                            text: data.message,
+                            icon: 'warning'
+                        });
+                    }
                 }
             });
         }
+    });
+}
 
 
 

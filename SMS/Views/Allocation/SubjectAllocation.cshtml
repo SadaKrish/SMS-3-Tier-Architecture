@@ -218,7 +218,11 @@
                         $('[name="' + error.Key + '"]').after(errorMessage);
                     });
                 });
-
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message
+                });
                
             }
         }

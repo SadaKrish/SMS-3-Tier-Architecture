@@ -61,17 +61,5 @@
         $('.required').append('<span style="color: red">*</span>');
     });
 
-    $(document).ready(function () {
-        // Handle form submission
-        $("form").submit(function (event) {
-            // Check if the Teacher dropdown has a selected value
-            var teacherId = $("#TeacherID").val();
-            if (teacherId == "" || teacherId == null) {
-                // Prevent form submission
-                event.preventDefault();
-                // Display an error message
-                $("#teacherDropdownError").text("Please select a teacher.");
-            }
-        });
-    });
+   
 </script>

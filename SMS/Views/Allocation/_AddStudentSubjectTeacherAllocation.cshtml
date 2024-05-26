@@ -106,4 +106,51 @@
             console.log("Selected SubjectAllocationID:", selectedSubjectAllocationID);
         });
     });
+
+    function addAllocationSuccess(response) {
+        if (response.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: response.message,
+                showCancelButton: false,
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#createoredit").empty();
+
+                    // Show the student list, button, panel body, and filter
+                    $("#studentlist").show();
+                    $("#button").show();
+                    $('.panel-body').show();
+                    $(".filter").show();
+
+                    // Hide the "Back to List" button
+                    $("#back-to-list").hide();
+
+                    // Reload the data table
+                    var datatable = $("#studentlist").DataTable();
+                    datatable.ajax.reload();
+                }
+            });
+        } else {
+            // Clear previous validation messages
+            $('.text-danger').text('');
+
+            // Show validation messages under each field
+            $.each(response.errors, function (index, error) {
+                $.each(error.Errors, function (key, message) {
+                    var errorMessage = $('<span>').text(message).addClass('text-danger');
+                    $('[name="' + error.Key + '"]').after(errorMessage);
+                });
+            });
+
+            //Swal.fire({
+            //    icon: 'error',
+            //    title: 'Error',
+            //    text: response.message
+            //});
+        }
+    }
+
 </script>
